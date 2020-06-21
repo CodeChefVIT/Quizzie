@@ -24,7 +24,10 @@ router.post(
 		const quiz = new Quiz({
 			_id: new mongoose.Types.ObjectId(),
 			quizName: req.body.quizName,
-			adminId: req.user.userId,
+            adminId: req.user.userId,
+            quizDate:req.body.quizDate,
+            quizTime:req.body.quizTime,
+            quizDuration:req.body.quizDuration,
 		});
 		////////////////////////////Add quiz to teacher model/////////////////////////
 		quiz
