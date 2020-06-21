@@ -1,0 +1,15 @@
+.label{
+    padding: 10px !important;
+    color: #ffa500 !important;
+    width: calc(100% - 20px) !important;
+    border-bottom: 2px solid #ffa500 !important;
+}
+
+.radio{
+    color: #ffa500 !important;
+    height: 5vh !important;
+}
+
+.radio:hover{
+    background-color: transparent !important;
+}

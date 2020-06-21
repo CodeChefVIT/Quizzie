@@ -1,0 +1,112 @@
+.login-page {
+	height: calc(100vh - 64px);
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+.login-form {
+	min-height: 100%;
+	background-color: black;
+	margin: 0 25%;
+
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	flex-direction: column;
+	
+}
+
+.form {
+	margin-top: 5%;
+	width: 100%;
+	text-align: center;
+}
+
+.login-head {
+	font-family: 'Montserrat', sans-serif !important;
+	font-weight: bold !important;
+	color: rgb(209, 136, 0) !important;
+}
+
+.form-input {
+	margin: 10px 0 !important;
+	width: 80% !important;
+}
+
+@media screen and (max-width: 768px) {
+	.MuiContainer-root {
+		padding: 0 !important;
+	}
+	.login-form {
+		margin: 0 0;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.login-page {
+		height: calc(100vh - 56px);
+	}
+}
+
+.forgot-section {
+	display: flex;
+	width: 80%;
+	margin-bottom: 5%;
+}
+
+.forgot-pass {
+	font-size: 0.8rem !important;
+}
+
+.forgot-pass:hover {
+	text-decoration: underline;
+}
+
+.login-btn {
+	width: 150px;
+	color: white !important;
+
+	border: 2px solid orange !important;
+	
+	margin-top: 5% !important;
+	margin-bottom: 5% !important;
+
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	letter-spacing: 3px !important;
+}
+
+.login-btn:hover {
+	background-color: orange !important;
+}
+
+.register-link {
+	text-align: center;
+	margin-top: 5%;
+	font-family: "Montserrat", sans-serif !important;
+	text-align: center !important;
+}
+
+.register-link:hover {
+	text-decoration: underline;
+}
+
+@media screen and (max-width: 850px) {
+	.register-link {
+		font-size: 0.85rem;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.register-link {
+		font-size: 0.8rem;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.MuiInputLabel-outlined {
+		font-size: 0.8rem !important;
+	}
+}
