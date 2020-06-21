@@ -99,7 +99,7 @@ function PlayMenuBar() {
 								<Button size="small" className="admin-btn">Admin Panel</Button>
 							</Link> : null}<br />
 							<Button size="large" className="quiz-button" onClick={handleClick}><p className="button-text">Start Quiz</p></Button>
-							<Typography variant="h6" className="onetime-warning">NOTE: You can only take the quiz once!</Typography>
+							<Typography variant="h6" className="onetime-warning">NOTE: You can only take the quizzes once!</Typography>
 						</div>
 					</Grid>
 				</Grid>
