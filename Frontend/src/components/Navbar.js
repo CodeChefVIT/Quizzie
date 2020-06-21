@@ -45,7 +45,7 @@ function Navbar() {
 			<AppBar position="static" className="navbar">
 				<Toolbar>
 					<Link to="/" className="nav-link"><img src="./CC LOGO-01.svg" className="nav-logo"/></Link>
-					<Typography varirant="h6" className="nav-head">The Hunger Games Quiz</Typography>
+					<Typography varirant="h6" className="nav-head">The Quizzie Platform</Typography>
 					<div className="btn-bar">
 						{navLoggedIn === false?
 							<Link className="link" to="/login"><Button color="inherit" className="login">Login</Button></Link>
@@ -59,7 +59,7 @@ function Navbar() {
 			</AppBar>
 
 			<Dialog open={open} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-				PaperProps={{ style: { backgroundColor: '#2d2d2d', color: '#cfcfcf', minWidth: '10%' } }}>
+				PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
 				<DialogTitle>Are you sure you want to logout?</DialogTitle>
 				<div className="btn-div">
 					<Button className="logout-btn m-right" onClick={handleLogout}>Yes</Button>

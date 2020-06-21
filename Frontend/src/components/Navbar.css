@@ -39,12 +39,12 @@
 	color: black !important;
 	font-family: 'Montserrat', sans-serif !important;
 	font-weight: normal !important;
-	flex-grow: 1;
 }
 
 .btn-bar {
 	display: flex !important;
 	justify-content: flex-end !important;
+	flex-grow: 1 !important;
 }
 
 @media screen and (max-width:460px) {
@@ -67,12 +67,13 @@
 }
 
 .login {
-	background-color: orange !important;
+	color: white !important;
+	background-color: #2980B9 !important;
 	font-weight: bold !important;
 }
 
 .login:hover {
-	background-color: rgb(201, 130, 0) !important;
+	background-color: #2f98df !important;
 }
 
 .btn-div {
@@ -82,18 +83,17 @@
 }
 
 .logout-btn {
-	background-color: maroon !important;
+	background-color: coral !important;
 	color: white !important;
-	margin-left: 2% !important;
 	font-weight: bold !important;
 }
 
 .logout-btn:hover {
-	background-color: rgb(95, 0, 0) !important;
+	background-color: rgb(199, 100, 64) !important;
 }
 
 .cancel-btn {
-	background-color: #ffa500 !important;
+	background-color: #2980b9 !important;
 	color: white !important;
 	font-family: "Montserrat", sans-serif !important;
 	font-weight: bold !important;
@@ -108,6 +108,10 @@
 	font-family: 'Montserrat', sans-serif !important;
 	font-size: 1rem !important;
 	margin: 0;
+	color: black !important;
+	margin-right: 2% !important;
+
+	align-self: center;
 }
 
 @media screen and (max-width: 400px) {
