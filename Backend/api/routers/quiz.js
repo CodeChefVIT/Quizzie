@@ -33,7 +33,7 @@ router.post(
 				const quizId = result._id;
 				Admin.updateOne(
 					{ _id: req.user.userId },
-					{ $push: { quizzes:{quizId}} }
+					{ $push: { quizzes: { quizId } } }
 				)
 					.then(async (result1) => {
 						res.status(201).json({
@@ -69,39 +69,50 @@ router.get("/all", checkAuth, async (req, res, next) => {
 		});
 });
 
-router.patch(
-    "/enroll",
-    checkAuth,checkAuthUser,
-	async (req, res, next) => {
-		const userId = req.user.userId;
-		const quizId = req.body.quizId;
-		await Quiz.updateOne(
-			{ _id: quizId },
-			{ $push: { usersEnrolled: {userId}  } }
-		)
-			.exec()
-			.then(async (result) => {
-				await User.updateOne(
-					{ _id: userId },
-					{ $push: { quizzesEnrolled:  {quizId}  } }
-				)
-					.then(async (result1) => {
-                        await res.status(200).json({
-                            message:'Enrolled'
-                        })
-                    })
-					.catch(async (err) => {
-                        res.status(400).json({
-                            message:'Some error'
-                        })
-                    });
-			})
-			.catch(async (err) => {
-				res.status(404).json({
-					message: err,
+router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
+	Quiz.findById(req.body.quizId)
+		.exec()
+		.then(async (result2) => {
+			for (i = 0; i < result2.usersEnrolled.length; i++) {
+				if (result2.usersEnrolled[i].userId == req.user.userId) {
+					return res.status(409).json({ message: "Already enrolled" });
+				}
+			}
+			const userId = req.user.userId;
+			const quizId = req.body.quizId;
+			await Quiz.updateOne(
+				{ _id: quizId },
+				{ $push: { usersEnrolled: { userId } } }
+			)
+				.exec()
+				.then(async (result) => {
+					await User.updateOne(
+						{ _id: userId },
+						{ $push: { quizzesEnrolled: { quizId } } }
+					)
+						.then(async (result1) => {
+							await res.status(200).json({
+								message: "Enrolled",
+							});
+						})
+						.catch(async (err) => {
+							res.status(400).json({
+								message: "Some error",
+							});
+						});
 				});
+		})
+		.catch(async (err) => {
+			res.status(404).json({
+				message: err,
 			});
-	}
-);
+		})
+
+		.catch(async (err) => {
+			res.status(404).json({
+				message: err,
+			});
+		});
+});
 
 module.exports = router;
