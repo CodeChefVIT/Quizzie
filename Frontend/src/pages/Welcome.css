@@ -1,0 +1,43 @@
+.welcome-screen {
+	align-self: center !important;
+	min-width: 90% !important
+}
+
+.welcome-page {
+	height: calc(100vh - 64px) !important; 
+	display: flex !important; 
+	justify-content: center !important;
+}
+
+.heading-section {
+	display: flex;
+	justify-content: center;
+	width: 90% !important;
+}
+
+.quiz-image {
+	max-width: 500px;
+	max-height: 250px;
+}
+
+.pin-section {
+	display: flex;
+	justify-content: flex-end !important;
+}
+
+.pin-image {
+	width: 300px;
+	margin-right: 10%;
+}
+
+@media screen and (max-width:520px) {
+	.quiz-image {
+		max-width: 350px;
+	}
+}
+
+@media screen and (max-width:360px) {
+	.quiz-image {
+		max-width: 85%;
+	}
+}
