@@ -57,7 +57,7 @@ function Welcome() {
 					</Grid>
 					<Hidden smDown>
 						<Grid item xs={12} md={6} className="pin-section">
-							<img src="hg-pin.png" className="pin-image" alt="Mockingjay Pin"></img>
+							<img src="quiz.png" className="pin-image" alt="Mockingjay Pin"></img>
 						</Grid>
 					</Hidden>
 				</Grid>

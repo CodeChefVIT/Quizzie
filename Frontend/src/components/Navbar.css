@@ -99,6 +99,10 @@
 	font-weight: bold !important;
 }
 
+.cancel-btn:hover {
+	background-color: #2f98df !important;
+}
+
 .link {
 	text-decoration: none;
 	color: black;
