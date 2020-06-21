@@ -1,0 +1,131 @@
+.quiz-btn {
+	color: white !important;
+	background-color: transparent !important;
+	width: 70%;
+	border: 3px solid orange !important;
+	margin-bottom: 5% !important;
+}
+
+.quiz-btn p {
+	margin: 5px 0;
+	font-size: 1.2rem;
+
+	font-family: "Montserrat", sans-serif !important;
+	letter-spacing: 2px;
+}
+
+.quiz-btn:focus{
+	outline: 0 !important;
+	background-color: orange !important;
+	transform: skew(-30deg);
+}
+
+.quiz-page {
+	display: flex !important; 
+	justify-content: center !important;
+	overflow: hidden !important;
+}
+
+.quiz-container{
+	display: flex !important;
+	justify-content: center !important;
+	padding-top: 50px !important;
+	width: 100%;
+}
+
+.q-count{
+	display: flex !important; 
+	justify-content: center !important;
+	padding-top: 0px !important;
+	padding-bottom: 0 !important;
+	color: #ffa400 !important;
+	width: 100%;
+}
+
+.timer{
+	display: flex !important; 
+	justify-content: center !important;
+	padding-top: 0px;
+	color: #ff0000 !important;
+	width: 100%;
+}
+
+.timer p, .timer h2 {
+	margin: 0 !important;
+	text-align: center !important;
+}
+
+.button{
+	display: flex !important; 
+	justify-content: center !important;
+	padding-top: 10px;
+	width: 100%;
+}
+
+.submit-button {
+	background-color: red !important;
+	border-color: rgb(145, 0, 0) !important;
+}
+
+@media only screen and (max-width: 440px){
+	.quiz-btn {
+		width: 85%;
+	}
+	.quiz-btn:focus {
+		transform: none;
+	}
+	.quiz-btn p {
+		font-size: 0.7rem;
+	}
+}
+
+@media only screen and (min-width: 440px) {
+	.next-button {
+		transform: skew(-30deg) !important;
+	}
+	
+	.next-button p{
+		transform: skew(30deg);
+	}
+	
+	.prev-button {
+		transform: skew(30deg) !important;
+	}
+	
+	.prev-button p {
+		transform: skew(-30deg);
+	}
+	
+	.quiz-btn:hover {
+		background-color: orange !important;
+		transform: skew(-30deg);
+	}
+	
+	.submit-button:hover , .submit-button:focus {
+		background-color: rgb(201, 1, 1) !important;
+		transform: scale(1);
+	}
+}
+
+.question {
+	color: orange !important;
+	font-size: 1.5rem !important;
+	margin-top: 0 !important;
+	margin-bottom: 50px !important;
+	font-family: "Montserrat", sans-serif !important;
+}
+
+@media screen and (max-width: 800px) {
+	.question {
+		font-size: 1.3rem !important;
+		margin-bottom: 40px !important;
+	}
+}
+
+@media screen and (max-width: 400px) {
+	.question {
+		font-size: 1.1rem !important;
+		margin-bottom: 25px !important;
+	}
+}
+

@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
+
+.m-right {
+	margin-right: 5% !important;
+	margin-bottom: 5% !important;
+}
+
+.m-left {
+	margin-left: 5% !important;
+	margin-bottom: 5% !important;
+}
+
+.root {
+	width: 100%;
+	flex-grow: 1;
+}
+
+.navbar {
+	background-color: black !important;
+	display: flex !important;
+}
+
+.nav-logo {
+	font-family: 'Montserrat', sans-serif !important;
+	font-weight: bolder !important;
+	margin-right: 2% !important;
+	white-space: nowrap;
+}
+
+.nav-logo .link {
+	color: red;
+}
+
+.nav-head {
+	font-family: 'Montserrat', sans-serif !important;
+	font-weight: normal !important;
+	flex-grow: 1;
+}
+
+@media screen and (max-width:460px) {
+	.nav-head {
+		display: none;
+	}
+	.nav-logo {
+		width: 100%;
+	}
+	.logout-btn {
+		font-size: 0.7rem !important;
+	}
+	.login {
+		font-size: 0.7rem !important;
+	}
+}
+
+
+.login {
+	background-color: orange !important;
+	font-weight: bold !important;
+}
+
+.login:hover {
+	background-color: rgb(201, 130, 0) !important;
+}
+
+.btn-div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.logout-btn {
+	background-color: maroon !important;
+	color: white !important;
+	margin-left: 2% !important;
+	font-weight: bold !important;
+}
+
+.logout-btn:hover {
+	background-color: rgb(95, 0, 0) !important;
+}
+
+.cancel-btn {
+	background-color: #ffa500 !important;
+	color: white !important;
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+}
+
+.link {
+	text-decoration: none;
+	color: white;
+}
+
+.nav-user {
+	font-family: 'Montserrat', sans-serif !important;
+	font-size: 1rem !important;
+	margin: 0;
+}
+
+@media screen and (max-width: 400px) {
+	.nav-logo {
+		font-size: 1rem !important;
+		margin-right: 5% !important;
+	}
+	.nav-head {
+		font-size: 0.8rem !important;
+	}
+	.nav-user {
+		font-size: 0.8rem !important;
+	}
+}
+
+
+@media screen and (max-width: 280px) {
+	.nav-user {
+		display: none;
+	}
+	.nav-logo {
+		font-size: 0.7rem !important;
+	}
+}
+
+@media screen and (max-width: 460px) {
+	.cancel-btn {
+		font-size: 0.7rem !important;
+	}
+}
