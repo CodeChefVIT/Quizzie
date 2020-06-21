@@ -19,6 +19,15 @@ const QuizSchema = new mongoose.Schema({
 			ref: "User"}
 		},
 	],
+	quizDate:{
+		type:Date,
+	},
+	quizTime:{
+		type:String,
+	},
+	quizDuration:{
+		type:String,
+	}
 });
 
 module.exports = mongoose.model("Quiz", QuizSchema);

@@ -14,6 +14,10 @@ const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
 
+
+
+
+////Signup
 router.post("/signup", async (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
@@ -64,6 +68,10 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
+
+
+
+////Login
 router.post("/login", async (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
@@ -117,27 +125,48 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
+////Get Profile
 
-
-router.get('/',checkAuthUser,checkAuth,async(req,res,next)=>{
+router.get("/", checkAuthUser, checkAuth, async (req, res, next) => {
 	await User.findById(req.user.userId)
-	.populate({
-        path: "quizzesEnrolled quizzesGiven",
+		.populate({
+			path: "quizzesEnrolled quizzesGiven",
 
-        populate: { path: "quizId" },
-	  })
-	.exec()
-	.then(async(result1)=>{
-		res.status(200).json({
-			result1
+			populate: { path: "quizId" },
 		})
-	})
-	.catch((err)=>{
-		res.status(400).json({
-			message:'Error'
+		.exec()
+		.then(async (result1) => {
+			res.status(200).json({
+				result1,
+			});
 		})
-	})
-	  
-})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Error",
+			});
+		});
+});
+
+//Update user profile
+router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
+	const id = req.user.userId;
+	const updateOps = {};
+	var flag = 0;
+	for (const ops of req.body) {
+		updateOps[ops.propName] = ops.value;
+	}
+	User.updateOne({ _id: id }, { $set: updateOps })
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Profile updated",
+			});
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: err,
+			});
+		});
+});
 
 module.exports = router;

@@ -15,6 +15,9 @@ const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
 
+
+
+//signup
 router.post("/signup", async (req, res, next) => {
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -65,6 +68,10 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
+
+
+
+//login
 router.post("/login", async (req, res, next) => {
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -118,6 +125,9 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
+
+
+//Admin profile
 router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Admin.findById(req.user.userId)
 		.populate({
@@ -138,6 +148,38 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
+
+
+
+////Update admin profile
+router.patch(
+	"/updateProfile",
+	checkAuth,
+	checkAuthAdmin,
+	(req, res, next) => {
+	  const id = req.user.userId;
+	  const updateOps = {};
+	  var flag = 0;
+	  for (const ops of req.body) {
+		updateOps[ops.propName] = ops.value;
+	  }
+	  Admin.updateOne({ _id: id }, { $set: updateOps })
+		.exec()
+		.then((result) => {
+		  res.status(200).json({
+			message: "Profile updated",
+		  });
+		})
+		.catch((err) => {
+		  res.status(500).json({
+			error: err,
+		  });
+		});
+	}
+  );
+
+
+///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Quiz.find({ adminId: req.user.userId })
 		.exec()
@@ -153,6 +195,10 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
+
+
+
+///Number of students enrolled in a particular quiz
 router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
 	await Quiz.findById(req.params.quizId)
 	.populate({
@@ -162,6 +208,11 @@ router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,ne
 	  })
 	.exec()
 	.then(async(result1)=>{
+		if(result1.adminId!=req.user.userId){
+			return res.status(401).json({
+				message:"This is not your quiz"
+			})
+		}
 		res.status(200).json({
 			result1
 		})
