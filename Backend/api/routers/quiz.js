@@ -16,6 +16,9 @@ const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
 const router = express.Router();
 
+
+
+////Create and Innitialise the quiz
 router.post(
 	"/createQuiz",
 	checkAuth,
@@ -29,7 +32,6 @@ router.post(
             quizTime:req.body.quizTime,
             quizDuration:req.body.quizDuration,
 		});
-		////////////////////////////Add quiz to teacher model/////////////////////////
 		quiz
 			.save()
 			.then(async (result) => {
@@ -54,6 +56,9 @@ router.post(
 	}
 );
 
+
+
+///Get all quiz for student dashboard
 router.get("/all", checkAuth, async (req, res, next) => {
 	Quiz.find()
 		.populate("adminId")
@@ -72,6 +77,10 @@ router.get("/all", checkAuth, async (req, res, next) => {
 		});
 });
 
+
+
+
+///Enroll/get access to a quiz
 router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 	Quiz.findById(req.body.quizId)
 		.exec()
@@ -117,5 +126,45 @@ router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		});
 });
+
+
+///Update Quiz
+router.patch("/updateDetails/:quizId", checkAuth, checkAuthAdmin, async (req, res, next) => {
+    await Quiz.findById(req.params.quizId)
+    .exec()
+    .then(async (result1) => {
+        if (result1.adminId != req.user.userId) {
+            return res.status(401).json({
+                message: "This is not your quiz",
+            });
+        }
+        const id = req.params.quizId;
+        const updateOps = {};
+        var flag = 0;
+        for (const ops of req.body) {
+            updateOps[ops.propName] = ops.value;
+        }
+        Quiz.updateOne({ _id: id }, { $set: updateOps })
+            .exec()
+            .then((result) => {
+                res.status(200).json({
+                    message: "Quiz updated",
+                });
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    error: err,
+                });
+            });
+    }).catch((err)=>{
+        res.status(400).json({
+            message:'Some error'
+        })
+    })
+
+
+});
+
+
 
 module.exports = router;

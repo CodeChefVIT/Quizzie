@@ -59,7 +59,7 @@ router.get("/all/:quizId", checkAuth, checkAuthUser, async (req, res, next) => {
 router.post("/add", checkAuth, checkAuthAdmin, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.exec()
-		.then(async (result) => {
+		.then(async (result1) => {
 			if (result1.adminId != req.user.userId) {
 				return res.status(401).json({
 					message: "This is not your quiz",

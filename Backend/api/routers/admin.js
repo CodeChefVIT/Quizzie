@@ -151,6 +151,34 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 
 
 
+////Update admin profile
+router.patch(
+	"/updateProfile",
+	checkAuth,
+	checkAuthAdmin,
+	(req, res, next) => {
+	  const id = req.user.userId;
+	  const updateOps = {};
+	  var flag = 0;
+	  for (const ops of req.body) {
+		updateOps[ops.propName] = ops.value;
+	  }
+	  Admin.updateOne({ _id: id }, { $set: updateOps })
+		.exec()
+		.then((result) => {
+		  res.status(200).json({
+			message: "Profile updated",
+		  });
+		})
+		.catch((err) => {
+		  res.status(500).json({
+			error: err,
+		  });
+		});
+	}
+  );
+
+
 ///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Quiz.find({ adminId: req.user.userId })
