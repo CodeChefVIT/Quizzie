@@ -104,7 +104,7 @@ function PlayMenuBar() {
 					</Grid>
 				</Grid>
 				<Dialog open={modalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-					PaperProps={{ style: { backgroundColor: '#2d2d2d', color: '#cfcfcf', minWidth: '50%' } }}
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
 					style={{ width: '100%' }}>
 					<DialogTitle><p className="modal-head">Important Information</p></DialogTitle>
 					<div className="modal-info">

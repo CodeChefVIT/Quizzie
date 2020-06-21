@@ -169,7 +169,7 @@ function Quiz() {
 					"auth-token": token
 				}
 			}).then(res => {
-				if(res.status === 201) {
+				if(res.status === 2010) {
 					setRedirect(true);
 					return;
 				}
@@ -246,12 +246,12 @@ function Quiz() {
 				<div className="quiz-page">
 					<Grid container xs={12} spacing={5} className="quiz-container">
 						<Grid item xs={10} md={8} lg={7} className="q-count" >
-							<h2 style={{ padding: 0 }}>Question {currentStep}</h2>
+							<h2 style={{ padding: 0 }}>QUESTION {currentStep}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
 							<p style={{margin: 0}}>Time Remaining <h2>{min}:{sec}</h2></p>
 						</Grid>
-						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%', backgroundColor: '#111', borderBottom: '5px solid #222', minHeight: '40vh' }}>
+						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '5px solid #222', minHeight: '40vh' }}>
 							<FormControl style={{ margin: 'auto', width: "100%" }} component="fieldset">
 								<FormLabel className="label" component="legend"><p className="question">{allQuestions[currentQuestion].text}</p></FormLabel>
 								<RadioGroup aria-label="correct-choice" value={currentAns} onChange={handleOptionChange}>

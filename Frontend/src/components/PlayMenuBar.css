@@ -27,8 +27,11 @@
 
 .login-button {
 	background-color: orange !important;
-	
 }
+
+/* .login-button:hover {
+	background-color: #35a1e9 !important;
+} */
 
 .signup-button {
 	background-color: red !important;
@@ -52,21 +55,19 @@
 }
 
 .quiz-button {
-	color: white !important;
+	color: rgba(0, 0, 0, 0.719) !important;
 	background-color: transparent !important;
 	width: 70%;
-	transform: skew(-30deg);
 
-	border: 3px solid orange !important;
+	border: 3px solid #2980b9 !important;
 }
 
 .quiz-button:hover {
-	background-color: orange !important;
-	transform: scale(1.2) skew(-30deg);
+	background-color: #35a1e9 !important;
+	color: white !important;
 }
 
 .button-text {
-	transform: skew(30deg);
 	margin: 0;
 	font-family: "Montserrat", sans-serif;
 	font-size: 1.1rem;
