@@ -20,13 +20,19 @@ const studentSchema = mongoose.Schema({
     match: /^([7-9][0-9]{9})$/g,
   },
   password: { type: String },
-  quizzes: [
+  quizzesGiven: [
     {
       quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
-      marks: { type: Number },
+      marks: { type: Number},
       responses: [],
     },
   ],
+  quizzesEnrolled:[
+    {
+      quizId:{type:mongoose.Schema.Types.ObjectId,
+      ref:"Quiz"}
+    }
+  ]
 });
 
 module.exports = mongoose.model("Student", studentSchema);

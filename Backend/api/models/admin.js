@@ -23,7 +23,8 @@ const adminSchema = mongoose.Schema({
   },
   quizzes: [
     {
-      quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+      quizId:{type: mongoose.Schema.Types.ObjectId,
+      ref: "Quiz" ,}
     },
   ],
 });

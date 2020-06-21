@@ -11,6 +11,7 @@ const Quiz = require("../models/quiz");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
+const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
 
@@ -33,8 +34,8 @@ router.post("/signup", async (req, res, next) => {
 							_id: new mongoose.Types.ObjectId(),
 							email: req.body.email,
 							password: hash,
-                            name: req.body.name,
-                            mobileNumber:req.body.mobileNumber,
+							name: req.body.name,
+							mobileNumber: req.body.mobileNumber,
 						});
 						user
 							.save()
@@ -44,8 +45,8 @@ router.post("/signup", async (req, res, next) => {
 									userDetails: {
 										userId: result._id,
 										email: result.email,
-                                        name: result.name,
-                                        mobileNumber:result.mobileNumber
+										name: result.name,
+										mobileNumber: result.mobileNumber,
 									},
 								});
 							})
@@ -116,5 +117,61 @@ router.post("/login", async (req, res, next) => {
 			});
 		});
 });
+
+router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
+	await Admin.findById(req.user.userId)
+		.populate({
+			path: "quizzes",
+
+			populate: { path: "quizId" },
+		})
+		.exec()
+		.then(async (result1) => {
+			res.status(200).json({
+				result1,
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Error",
+			});
+		});
+});
+
+router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
+	await Quiz.find({ adminId: req.user.userId })
+		.exec()
+		.then(async (result) => {
+			res.status(200).json({
+				result,
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Error",
+			});
+		});
+});
+
+router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
+	await Quiz.findById(req.params.quizId)
+	.populate({
+        path: "usersEnrolled",
+
+        populate: { path: "user" },
+	  })
+	.exec()
+	.then(async(result1)=>{
+		res.status(200).json({
+			result1
+		})
+	})
+	.catch((err)=>{
+		res.status(400).json({
+			message:err
+		})
+	})
+	  
+})
 
 module.exports = router;
