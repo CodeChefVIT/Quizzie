@@ -3,26 +3,26 @@ import {TextField, withStyles} from "@material-ui/core";
 const TextInput = withStyles({
 	root: {
 		'& label': {
-			color: 'rgba(255,255,255, 0.7)',
+			color: 'rgba(0,0,0,0.7)',
 		},
 		'& label.Mui-focused': {
-			color: 'orange',
+			color: '#2980B9',
 		},
 		'& .MuiInput-underline:after': {
-			borderBottomColor: 'orange',
+			borderBottomColor: '#2980B9',
 		},
 		'& .MuiInputBase-input': {
-			color: 'white',
+			color: 'black !important',
 		},
 		'& .MuiOutlinedInput-root': {
 			'& fieldset': {
-			  borderColor: 'rgba(255,255,255, 0.3)',
+			  borderColor: 'rgba(0,0,0,0.7)',
 			},
 			'&:hover fieldset': {
-			  borderColor: 'orange',
+			  borderColor: '#2980B9',
 			},
 			'&.Mui-focused fieldset': {
-			  borderColor: 'orange',
+			  borderColor: '#2980B9',
 			},
 		  },
 	}
