@@ -16,25 +16,35 @@
 }
 
 .navbar {
-	background-color: black !important;
+	background-color: white !important;
 	display: flex !important;
 }
 
 .nav-logo {
-	font-family: 'Montserrat', sans-serif !important;
-	font-weight: bolder !important;
-	margin-right: 2% !important;
-	white-space: nowrap;
+	width: 100%;
+	height: 100%;
+	
+}
+
+.nav-link {
+	width: 150px;
+	margin-right: 2%;
 }
 
 .nav-logo .link {
-	color: red;
+	color: #2980B9;
 }
 
 .nav-head {
+	color: black !important;
 	font-family: 'Montserrat', sans-serif !important;
 	font-weight: normal !important;
 	flex-grow: 1;
+}
+
+.btn-bar {
+	display: flex !important;
+	justify-content: flex-end !important;
 }
 
 @media screen and (max-width:460px) {
@@ -50,8 +60,11 @@
 	.login {
 		font-size: 0.7rem !important;
 	}
-}
 
+	.btn-bar {
+		width: 100% !important;
+	}
+}
 
 .login {
 	background-color: orange !important;
@@ -88,7 +101,7 @@
 
 .link {
 	text-decoration: none;
-	color: white;
+	color: black;
 }
 
 .nav-user {
