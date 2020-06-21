@@ -33,8 +33,8 @@ router.post("/signup", async (req, res, next) => {
 							_id: new mongoose.Types.ObjectId(),
 							email: req.body.email,
 							password: hash,
-                            name: req.body.name,
-                            mobileNumber:req.body.mobileNumber
+							name: req.body.name,
+							mobileNumber: req.body.mobileNumber,
 						});
 						user
 							.save()
@@ -44,8 +44,8 @@ router.post("/signup", async (req, res, next) => {
 									userDetails: {
 										userId: result._id,
 										email: result.email,
-                                        name: result.name,
-                                        mobileNumber:result.mobileNumber
+										name: result.name,
+										mobileNumber: result.mobileNumber,
 									},
 								});
 							})
@@ -116,5 +116,28 @@ router.post("/login", async (req, res, next) => {
 			});
 		});
 });
+
+
+
+router.get('/',checkAuthUser,checkAuth,async(req,res,next)=>{
+	await User.findById(req.user.userId)
+	.populate({
+        path: "quizzesEnrolled quizzesGiven",
+
+        populate: { path: "quizId" },
+	  })
+	.exec()
+	.then(async(result1)=>{
+		res.status(200).json({
+			result1
+		})
+	})
+	.catch((err)=>{
+		res.status(400).json({
+			message:'Error'
+		})
+	})
+	  
+})
 
 module.exports = router;

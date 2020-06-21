@@ -9,7 +9,7 @@ const app = express();
 
 const userRoutes = require("./api/routers/user");
 const adminRoutes = require("./api/routers/admin");
-
+const quizRoutes = require("./api/routers/quiz");
 
 const dbURI = process.env.dbURI;
 
@@ -35,10 +35,7 @@ app.use((req, res, next) => {
 		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
 	);
 	if (req.method === "OPTIONS") {
-		res.header(
-			"Access-Control-Allow-Methods",
-			"PUT, POST, PATCH, DELETE, GET"
-		);
+		res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
 		return res.status(200).json({});
 	}
 	next();
@@ -46,6 +43,7 @@ app.use((req, res, next) => {
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
+app.use("/quiz", quizRoutes);
 
 //route not found
 app.use((req, res, next) => {
