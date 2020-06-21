@@ -15,6 +15,9 @@ const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
 
+
+
+//signup
 router.post("/signup", async (req, res, next) => {
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -65,6 +68,10 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
+
+
+
+//login
 router.post("/login", async (req, res, next) => {
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -118,6 +125,9 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
+
+
+//Admin profile
 router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Admin.findById(req.user.userId)
 		.populate({
@@ -138,6 +148,10 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
+
+
+
+///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Quiz.find({ adminId: req.user.userId })
 		.exec()
@@ -153,6 +167,10 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
+
+
+
+///Number of students enrolled in a particular quiz
 router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
 	await Quiz.findById(req.params.quizId)
 	.populate({
@@ -162,6 +180,11 @@ router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,ne
 	  })
 	.exec()
 	.then(async(result1)=>{
+		if(result1.adminId!=req.user.userId){
+			return res.status(401).json({
+				message:"This is not your quiz"
+			})
+		}
 		res.status(200).json({
 			result1
 		})
