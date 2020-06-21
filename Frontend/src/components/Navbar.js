@@ -44,20 +44,22 @@ function Navbar() {
 			{ redirect ?	<Redirect to="/" /> : null}
 			<AppBar position="static" className="navbar">
 				<Toolbar>
-					<Typography variant="h6" className="nav-logo"> <Link className="link" to="/">SCHOLASTIC | </Link></Typography>
-					<Typography varirant="h6" className="nav-head">The Hunger Games Quiz</Typography>
-					{navLoggedIn === false?
-						<Link className="link" to="/login"><Button color="inherit" className="login">Login</Button></Link>
-						:
-						<Typography variant="h6" className="nav-user">Welcome, {navName}</Typography>
-						
-					}
-					{navLoggedIn? <Button className="logout-btn" onClick={handleLogoutBtn}>Logout</Button>: null}
+					<Link to="/" className="nav-link"><img src="./CC LOGO-01.svg" className="nav-logo"/></Link>
+					<Typography varirant="h6" className="nav-head">The Quizzie Platform</Typography>
+					<div className="btn-bar">
+						{navLoggedIn === false?
+							<Link className="link" to="/login"><Button color="inherit" className="login">Login</Button></Link>
+							:
+							<Typography variant="h6" className="nav-user">Welcome, {navName}</Typography>
+							
+						}
+						{navLoggedIn? <Button className="logout-btn" onClick={handleLogoutBtn}>Logout</Button>: null}
+					</div>
 				</Toolbar>
 			</AppBar>
 
 			<Dialog open={open} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-				PaperProps={{ style: { backgroundColor: '#2d2d2d', color: '#cfcfcf', minWidth: '10%' } }}>
+				PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
 				<DialogTitle>Are you sure you want to logout?</DialogTitle>
 				<div className="btn-div">
 					<Button className="logout-btn m-right" onClick={handleLogout}>Yes</Button>

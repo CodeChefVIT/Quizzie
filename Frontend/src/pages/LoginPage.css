@@ -7,7 +7,7 @@
 }
 .login-form {
 	min-height: 100%;
-	background-color: black;
+	background-color: white;
 	margin: 0 25%;
 
 	display: flex;
@@ -27,7 +27,7 @@
 .login-head {
 	font-family: 'Montserrat', sans-serif !important;
 	font-weight: bold !important;
-	color: rgb(209, 136, 0) !important;
+	color: #2980B9 !important;
 }
 
 .form-input {
@@ -41,6 +41,7 @@
 	}
 	.login-form {
 		margin: 0 0;
+		background-color: transparent;
 	}
 }
 
@@ -66,9 +67,9 @@
 
 .login-btn {
 	width: 150px;
-	color: white !important;
+	color: #2980B9 !important;
 
-	border: 2px solid orange !important;
+	border: 2px solid #2980B9 !important;
 	
 	margin-top: 5% !important;
 	margin-bottom: 5% !important;
@@ -79,7 +80,8 @@
 }
 
 .login-btn:hover {
-	background-color: orange !important;
+	background-color: #2980B9 !important;
+	color: white !important;
 }
 
 .register-link {
@@ -87,6 +89,7 @@
 	margin-top: 5%;
 	font-family: "Montserrat", sans-serif !important;
 	text-align: center !important;
+	color: black;
 }
 
 .register-link:hover {

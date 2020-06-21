@@ -165,7 +165,6 @@ function AdminRegister() {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				<img src="hg-pin.png" className="signup-img" alt="Mokingjay Pin"></img>
 				<Typography variant="h3" color="primary" className="login-head signup-text">Join the force!</Typography><br />
 				{signedUp === true? <Alert severity="success" color="warning">Succesfully Signed Up!</Alert>: null}
 				<form className="form">

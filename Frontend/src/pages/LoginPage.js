@@ -161,7 +161,7 @@ function LoginPage() {
 					<Link to="/forgotPassword" className="link forgot-pass">Forgot your password?</Link>
 				</div>
 				<Button className="login-btn" onClick={handleSubmit}>Login</Button>
-				<Link to="/register" className="link register-link">Don't have an account? Join the rebellion now!</Link>
+				<Link to="/register" className="link register-link">Don't have an account? Join the Quizzie now!</Link>
 			</div>
 		</Container>
 	)
