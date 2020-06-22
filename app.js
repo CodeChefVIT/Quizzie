@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./Backend/api/config/passport-setup");
 const passport = require("passport");
+const cors = require("cors");
 const cookieSession = require("cookie-session");
 
 ////routers
@@ -54,6 +55,8 @@ app.use((req, res, next) => {
 	}
 	next();
 });
+
+app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
