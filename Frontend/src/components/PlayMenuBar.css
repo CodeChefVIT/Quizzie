@@ -139,14 +139,14 @@
 
 .view-marks-button {
 	margin-top: 5% !important;
-	background-color: blue !important;
+	background-color: #2980b9 !important;
 	font-family: "Montserrat", sans-serif !important;
 	font-weight: bold !important;
 	letter-spacing: 2px !important;
 }
 
 .view-marks-button:hover {
-	background-color: rgb(0, 0, 179) !important;
+	background-color: #35a1e9 !important;
 }
 
 .marks-btn-text {

@@ -12,28 +12,7 @@ function PlayMenuBar() {
 		setModalOpen(false);
 	}
 
-	const handleClick = () => {
-		setModalOpen(true);
-	}
-
-	if (closed) {
-		return (
-			<div className="play-container">
-				<Grid container spacing={0}>
-					<Grid item xs={12} md={6} className="not-logged-menu">
-						<Typography variant="h4" className="login-msg closed-msg">The quiz submission has been closed.</Typography>
-						<Typography variant="h6" className="login-msg">Thanks for attending!</Typography>
-						<div className="button-bar">
-							<Link to="/leaderboard" className="link">
-								<Button size="large" className="view-marks-button"><p className="marks-btn-text">View Leaderboard</p></Button>
-							</Link>
-						</div>
-					</Grid>
-				</Grid>
-			</div>
-		);
-	}
-	else if (!isLoggedIn) {
+	if (!isLoggedIn) {
 		return (
 			<div className="play-container">
 				<Grid container spacing={0}>
@@ -52,42 +31,6 @@ function PlayMenuBar() {
 				</Grid>
 			</div>
 		);
-	} else if (testGiven) {
-		return (
-			<div className="thanks play-container">
-				<Grid container spacing={0}>
-					<Grid item xs={12} md={6}>
-						<div className="play-menu">
-							{isAdmin ? <Link to="/admin" className="link">
-								<Button size="small" className="admin-btn">Admin Panel</Button>
-							</Link> : null}
-							<Typography variant="h5" className="onetime-warning thank-text">Thanks for giving the test!</Typography>
-							<Link to="/marks" className="link">
-								<Button size="medium" className="view-marks-button"><p className="marks-btn-text">View Marks</p></Button>
-							</Link>
-						</div>
-					</Grid>
-				</Grid>
-
-			</div>
-		)
-	}
-	else if (blocked) {
-		return (
-			<div className="blocked play-container">
-				<Grid container spacing={0}>
-					<Grid item xs={12} md={6}>
-						<div className="play-menu">
-							{isAdmin ? <Link to="/admin" className="link">
-								<Button size="small" className="admin-btn">Admin Panel</Button>
-							</Link> : null}
-							<Typography variant="h5" className="onetime-warning thank-text">You have been blocked for violating our rules!</Typography>
-						</div>
-					</Grid>
-				</Grid>
-
-			</div>
-		)
 	}
 	else if (isLoggedIn) {
 		return (
@@ -98,12 +41,13 @@ function PlayMenuBar() {
 							{isAdmin ? <Link to="/admin" className="link">
 								<Button size="small" className="admin-btn">Admin Panel</Button>
 							</Link> : null}<br />
-							<Button size="large" className="quiz-button" onClick={handleClick}><p className="button-text">Start Quiz</p></Button>
-							<Typography variant="h6" className="onetime-warning">NOTE: You can only take the quizzes once!</Typography>
+							<Link to="/dashboard" style={{textDecoration: 'none'}}>
+								<Button size="large" className="quiz-button"><p className="button-text">Go to the Dashboard</p></Button>
+							</Link>
 						</div>
 					</Grid>
 				</Grid>
-				<Dialog open={modalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
+				{/* <Dialog open={modalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
 					style={{ width: '100%' }}>
 					<DialogTitle><p className="modal-head">Important Information</p></DialogTitle>
@@ -127,7 +71,7 @@ function PlayMenuBar() {
 								</Link>
 							)}
 					</div>
-				</Dialog>
+				</Dialog> */}
 			</div>
 		);
 	}
