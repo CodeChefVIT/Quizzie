@@ -3,6 +3,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./api/config/passport-setup");
+// const passport = require('passport')
+// const cookieSession = require('cookie-session')
+// const keys = require('../Backend/api/config/keys')
 
 ////routers
 
@@ -11,6 +14,7 @@ const app = express();
 const userRoutes = require("./api/routers/user");
 const adminRoutes = require("./api/routers/admin");
 const quizRoutes = require("./api/routers/quiz");
+const questionRoutes = require("./api/routers/questions");
 const authRoutes = require("./api/routers/auth");
 
 const dbURI = process.env.dbURI;
@@ -29,6 +33,15 @@ mongoose.Promise = global.Promise;
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+// app.use(cookieSession({
+//     maxAge: 24 * 60 * 60 * 1000,
+//     keys: [keys.cookieSession]
+// }));
+
+// // initialize passport
+// app.use(passport.initialize());
+// app.use(passport.session());
+
 // Allow CORS
 app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "*");
@@ -46,6 +59,7 @@ app.use((req, res, next) => {
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/quiz", quizRoutes);
+app.use('/question',questionRoutes)
 app.use("/auth", authRoutes);
 
 //route not found
