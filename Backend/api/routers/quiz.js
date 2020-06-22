@@ -22,7 +22,7 @@ router.post(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		if(req.body.quizType.toLowerCase()=='private'){
+		if (req.body.quizType.toLowerCase() == "private") {
 			const quiz = new Quiz({
 				_id: new mongoose.Types.ObjectId(),
 				quizName: req.body.quizName,
@@ -30,8 +30,39 @@ router.post(
 				quizDate: req.body.quizDate,
 				quizTime: req.body.quizTime,
 				quizDuration: req.body.quizDuration,
-				quizType:req.body.quizType,
-				quizCode:shortid.generate()
+				quizType: req.body.quizType.toLowerCase(),
+				quizCode: shortid.generate(),
+			});
+			quiz
+				.save()
+				.then(async (result) => {
+					const quizId = result._id;
+					Admin.updateOne(
+						{ _id: req.user.userId },
+						{ $push: { quizzes: { quizId } } }
+					)
+						.then(async (result1) => {
+							res.status(201).json({
+								message: "created",
+								result,
+							});
+						})
+						.catch(async (err) => {
+							res.status(400).json({ error: "err1" });
+						});
+				})
+				.catch((err) => {
+					res.status(400).json({ error: "err" });
+				});
+		} else {
+			const quiz = new Quiz({
+				_id: new mongoose.Types.ObjectId(),
+				quizName: req.body.quizName,
+				adminId: req.user.userId,
+				quizDate: req.body.quizDate,
+				quizTime: req.body.quizTime,
+				quizDuration: req.body.quizDuration,
+				quizType: req.body.quizType.toLowerCase(),
 			});
 			quiz
 				.save()
@@ -55,45 +86,12 @@ router.post(
 					res.status(400).json({ error: "err" });
 				});
 		}
-		else{
-			const quiz = new Quiz({
-				_id: new mongoose.Types.ObjectId(),
-				quizName: req.body.quizName,
-				adminId: req.user.userId,
-				quizDate: req.body.quizDate,
-				quizTime: req.body.quizTime,
-				quizDuration: req.body.quizDuration,
-				quizType:req.body.quizType,
-			});
-			quiz
-				.save()
-				.then(async (result) => {
-					const quizId = result._id;
-					Admin.updateOne(
-						{ _id: req.user.userId },
-						{ $push: { quizzes: { quizId } } }
-					)
-						.then(async (result1) => {
-							res.status(201).json({
-								message: "created",
-								result,
-							});
-						})
-						.catch(async (err) => {
-							res.status(400).json({ error: "err1" });
-						});
-				})
-				.catch((err) => {
-					res.status(400).json({ error: "err" });
-				});
-		}
-		
 	}
 );
 
 ///Get all quiz for student dashboard
 router.get("/all", checkAuth, async (req, res, next) => {
-	Quiz.find()
+	Quiz.find({ quizType: "public" })
 		.populate("adminId")
 		.select("-__v")
 		.exec()
@@ -157,6 +155,58 @@ router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 		});
 });
 
+//Enroll in a private quiz
+router.patch(
+	"/enrollPrivate",
+	checkAuth,
+	checkAuthUser,
+	async (req, res, next) => {
+		Quiz.findById({ quizCode: req.body.quizCode, quizId: req.body.quizId })
+			.exec()
+			.then(async (result2) => {
+				for (i = 0; i < result2.usersEnrolled.length; i++) {
+					if (result2.usersEnrolled[i].userId == req.user.userId) {
+						return res.status(409).json({ message: "Already enrolled" });
+					}
+				}
+				const userId = req.user.userId;
+				const quizId = req.body.quizId;
+				await Quiz.updateOne(
+					{ _id: quizId },
+					{ $push: { usersEnrolled: { userId } } }
+				)
+					.exec()
+					.then(async (result) => {
+						await User.updateOne(
+							{ _id: userId },
+							{ $push: { quizzesEnrolled: { quizId } } }
+						)
+							.then(async (result1) => {
+								await res.status(200).json({
+									message: "Enrolled",
+								});
+							})
+							.catch(async (err) => {
+								res.status(400).json({
+									message: "Some error",
+								});
+							});
+					});
+			})
+			.catch(async (err) => {
+				res.status(404).json({
+					message: err,
+				});
+			})
+
+			.catch(async (err) => {
+				res.status(404).json({
+					message: err,
+				});
+			});
+	}
+);
+
 ///Update Quiz
 router.patch(
 	"/updateDetails/:quizId",
@@ -198,30 +248,24 @@ router.patch(
 	}
 );
 
-router.get(
-	"/checkAdmin",
-	checkAuth,
-	checkAuthAdmin,
-	async (req, res, next) => {
-		await Quiz.findOne({_id:req.body.quizId})
-			.then(async (result) => {
-				if(result.adminId==req.user.userId){
-					return res.status(200).json({
-						message:'This is your quiz',
-					})
-				}
-				else{
-					return res.status(401).json({
-						message:"This is not your quiz"
-					})
-				}
-			})
-			.catch((err) => {
-				res.status(400).json({
-					message:'Please enter a correct quizId'
-				})
+router.get("/checkAdmin", checkAuth, checkAuthAdmin, async (req, res, next) => {
+	await Quiz.findOne({ _id: req.body.quizId })
+		.then(async (result) => {
+			if (result.adminId == req.user.userId) {
+				return res.status(200).json({
+					message: "This is your quiz",
+				});
+			} else {
+				return res.status(401).json({
+					message: "This is not your quiz",
+				});
+			}
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Please enter a correct quizId",
 			});
-	}
-);
+		});
+});
 
 module.exports = router;
