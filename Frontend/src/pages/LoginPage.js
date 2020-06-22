@@ -77,7 +77,7 @@ function LoginPage() {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let url = `https://scholastic-quiz-app.herokuapp.com/api/user/login`;
+			let url = `https://quizzie-api.herokuapp.com/user/login`;
 
 			let data = {
 				"email": email,
@@ -90,18 +90,16 @@ function LoginPage() {
 					response = res;
 				});
 
+				console.log(response);
 				if(response.status === 200) {
-					changeName(response.data.name);
+					changeName(response.data.userDetails.name);
 					setLoggedIn(true);
-					setAuthToken(response.data.authToken);
+					setAuthToken(response.data.token);
 
-					if(response.data.isAdmin === true) {
-						setAdmin(true);
-					} 
 
 					localStorage.setItem('userLoggedIn', true);
-					localStorage.setItem('name', response.data.user.name);
-					localStorage.setItem("authToken", response.data.authToken);
+					localStorage.setItem('name', response.data.userDetails.name);
+					localStorage.setItem("authToken", response.data.token);
 
 					setRedirect(true);
 				} 

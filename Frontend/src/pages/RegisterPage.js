@@ -13,10 +13,6 @@ function RegisterPage() {
 	const [nameError, setNameError] = useState("");
 	const [nameChanged, setNameChanged] = useState(false);
 
-	const [regNo, setRegNo] = useState("");
-	const [regError, setRegError] = useState("");
-	const [regChanged, setRegChanged] = useState(false);
-
 	const [phoneNumber, setPhoneNumber] = useState("");
 	const [phoneNumberError, setPhoneNumberError] = useState("");
 	const [phoneNumberChanged, setPhoneNumberChanged] = useState(false);
@@ -42,11 +38,6 @@ function RegisterPage() {
 	const handleNameChange = (event) => {
 		setNameChanged(true);
 		changeName(event.target.value);
-	}
-	
-	const handleRegChange = (event) => {
-		setRegChanged(true);
-		setRegNo(event.target.value);
 	}
 	
 	const handlePhoneChange = (event) => {
@@ -80,20 +71,16 @@ function RegisterPage() {
 		if(password.length === 0) setPasswordError(emptyText("Password"));
 		else setPasswordError("");
 		
-		if(regNo.length === 0) setRegError(emptyText("Registration Number"));
-		else setRegError("");
-		
 		if(phoneNumber.length === 0) setPhoneNumberError(emptyText("Phone Number"));
 		else setPhoneNumberError("");
 
-	}, [name, email, password, regNo, phoneNumber]);
+	}, [name, email, password, phoneNumber]);
 
 	const handleSubmit = async (event) => {
 		// event.preventDefault();
 		setNameChanged(true);
 		setPasswordChanged(true);
 		setEmailChanged(true);
-		setRegChanged(true);
 		setPhoneNumberChanged(true);
 
 		let errors = false;
@@ -118,11 +105,6 @@ function RegisterPage() {
 			errors = true;
 		}
 
-		if(regNo === "") {
-			setRegError(emptyText("Registration Number"));
-			errors = true;
-		}
-
 		if(phoneNumber === "") {
 			setPhoneNumberError(emptyText("Phone Number"));
 			errors = true;
@@ -133,14 +115,12 @@ function RegisterPage() {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let url = `https://scholastic-quiz-app.herokuapp.com/api/user/register`;
+			let url = `https://quizzie-api.herokuapp.com/user/signup`;
 			
 			let data = {
 				name: name,
 				email: email,
 				password: password,
-				registrationNumber: regNo.trim().toUpperCase(),
-				phoneNumber: phoneNumber,
 			}
 
 			let response = null;
@@ -149,22 +129,13 @@ function RegisterPage() {
 					response = res;
 				});
 
-				if(response.status === 200) {
+				if(response.status === 201) {
 					setSignedUp(true);
 					setRedirect(true);
 				} 
 			} catch(error) {
-				if(error.response.status === 401) {
-					setError(true);
-					setErrorText("Email already exists");
-				} else if(error.response.status === 402) {
-					setError(true);
-					setErrorText("Registration number already exists!");
-				} 
-				else {
-					console.log(error);
-					setPasswordChanged(false);
-				}
+				console.log(error);
+				setPasswordChanged(false);
 				changePassword("");
 				setPasswordChanged(false);
 			}	
@@ -193,17 +164,6 @@ function RegisterPage() {
 						variant="outlined"
 						value={name}
 						onChange={handleNameChange}
-						onKeyPress={keyPress}></TextInput>
-					<TextInput
-						error={regChanged? (regError.length === 0? false: true): false}
-						helperText={regChanged? (regError.length === 0? null: regError): null}
-						id="reg-no"
-						label="Registration Number (NA for externals)"
-						type="text"
-						className="form-input"
-						variant="outlined"
-						value={regNo}
-						onChange={handleRegChange}
 						onKeyPress={keyPress}></TextInput>
 					<TextInput
 						error={phoneNumberChanged? (phoneNumberError.length === 0? false: true): false}
