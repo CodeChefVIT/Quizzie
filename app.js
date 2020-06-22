@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./Backend/api/config/passport-setup");
 const passport = require("passport");
+const cors = require("cors");
 const cookieSession = require("cookie-session");
 
 ////routers
@@ -46,7 +47,7 @@ app.use((req, res, next) => {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header(
 		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization,auth-token"
 	);
 	if (req.method === "OPTIONS") {
 		res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
@@ -54,6 +55,8 @@ app.use((req, res, next) => {
 	}
 	next();
 });
+
+app.use(cors());
 
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
