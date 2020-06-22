@@ -7,6 +7,7 @@ import Loading from "./Loading";
 import axios from "axios";
 import '../components/ProfileSection';
 import ProfileSection from "../components/ProfileSection";
+import HistorySection from '../components/HistorySection';
 
 
 function Dashboard() {
@@ -89,10 +90,10 @@ function Dashboard() {
 						Item One
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
-						Item Two
+						<HistorySection profile={profile} />
 					</TabPanel>
 					<TabPanel value={tab} index={2}>
-						<ProfileSection />
+						<ProfileSection profile={profile}/>
 					</TabPanel>
 				</div>
 			</Container>
@@ -108,7 +109,7 @@ function TabPanel(props) {
 			id={`simple-tabpanel-${props.index}`}
 			  aria-labelledby={`simple-tab-${props.index}`}
 		>
-			<p>{props.children}</p>
+			<div>{props.children}</div>
 		</div>
 	)
 }
