@@ -42,9 +42,14 @@ passport.use(
 						expiresIn: "1d",
 					}
 				);
-				User.updateOne(({_id:currentUser._id},{$set:{token}})).then((user)=>{
-					console.log('user is: ', currentUser,token);
-					done(null, currentUser);
+				User.updateOne(({_id:currentUser._id},{$set:{token}})).then((result5)=>{
+					console.log(result5)
+					User.findById(currentUser._id).then((user)=>{
+						console.log('user is: ', user);
+						done(null, user);
+					}).catch((err)=>{
+						console.log(err)
+					})
 				}).catch((err)=>{
 					console.log(err)
 				})
@@ -69,9 +74,14 @@ passport.use(
 							expiresIn: "1d",
 						}
 					);
-					User.updateOne(({_id:newUser._id},{$set:{token}})).then((user)=>{
-						console.log('user is: ', newUser);
-						done(null, newUser);
+					User.updateOne(({_id:newUser._id},{$set:{token}})).then((result5)=>{
+						console.log(result5)
+						User.findById(newUser._id).then((user)=>{
+							console.log('user is: ', user);
+							done(null, user);
+						}).catch((err)=>{
+							console.log(err)
+						})
 					}).catch((err)=>{
 						console.log(err)
 					})
