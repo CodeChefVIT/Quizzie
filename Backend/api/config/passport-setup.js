@@ -21,7 +21,6 @@ passport.deserializeUser((id, done) => {
 
 
 
-console.log(process.env.clientID)
 passport.use(
     new GoogleStrategy({
 

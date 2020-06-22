@@ -16,8 +16,6 @@ const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
 const router = express.Router();
 
-
-
 ////Create and Innitialise the quiz
 router.post(
 	"/createQuiz",
@@ -27,10 +25,10 @@ router.post(
 		const quiz = new Quiz({
 			_id: new mongoose.Types.ObjectId(),
 			quizName: req.body.quizName,
-            adminId: req.user.userId,
-            quizDate:req.body.quizDate,
-            quizTime:req.body.quizTime,
-            quizDuration:req.body.quizDuration,
+			adminId: req.user.userId,
+			quizDate: req.body.quizDate,
+			quizTime: req.body.quizTime,
+			quizDuration: req.body.quizDuration,
 		});
 		quiz
 			.save()
@@ -56,8 +54,6 @@ router.post(
 	}
 );
 
-
-
 ///Get all quiz for student dashboard
 router.get("/all", checkAuth, async (req, res, next) => {
 	Quiz.find()
@@ -76,9 +72,6 @@ router.get("/all", checkAuth, async (req, res, next) => {
 			});
 		});
 });
-
-
-
 
 ///Enroll/get access to a quiz
 router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
@@ -127,44 +120,71 @@ router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 		});
 });
 
-
 ///Update Quiz
-router.patch("/updateDetails/:quizId", checkAuth, checkAuthAdmin, async (req, res, next) => {
-    await Quiz.findById(req.params.quizId)
-    .exec()
-    .then(async (result1) => {
-        if (result1.adminId != req.user.userId) {
-            return res.status(401).json({
-                message: "This is not your quiz",
-            });
-        }
-        const id = req.params.quizId;
-        const updateOps = {};
-        var flag = 0;
-        for (const ops of req.body) {
-            updateOps[ops.propName] = ops.value;
-        }
-        Quiz.updateOne({ _id: id }, { $set: updateOps })
-            .exec()
-            .then((result) => {
-                res.status(200).json({
-                    message: "Quiz updated",
-                });
-            })
-            .catch((err) => {
-                res.status(500).json({
-                    error: err,
-                });
-            });
-    }).catch((err)=>{
-        res.status(400).json({
-            message:'Some error'
-        })
-    })
+router.patch(
+	"/updateDetails/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.findById(req.params.quizId)
+			.exec()
+			.then(async (result1) => {
+				if (result1.adminId != req.user.userId) {
+					return res.status(401).json({
+						message: "This is not your quiz",
+					});
+				}
+				const id = req.params.quizId;
+				const updateOps = {};
+				var flag = 0;
+				for (const ops of req.body) {
+					updateOps[ops.propName] = ops.value;
+				}
+				Quiz.updateOne({ _id: id }, { $set: updateOps })
+					.exec()
+					.then((result) => {
+						res.status(200).json({
+							message: "Quiz updated",
+						});
+					})
+					.catch((err) => {
+						res.status(500).json({
+							error: err,
+						});
+					});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Some error",
+				});
+			});
+	}
+);
 
-
-});
-
-
+router.get(
+	"/checkAdmin",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.findOne({_id:req.body.quizId})
+			.then(async (result) => {
+				if(result.adminId==req.user.userId){
+					return res.status(200).json({
+						message:'This is your quiz',
+					})
+				}
+				else{
+					return res.status(401).json({
+						message:"This is not your quiz"
+					})
+				}
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message:'Please enter a correct quizId'
+				})
+			});
+	}
+);
 
 module.exports = router;
