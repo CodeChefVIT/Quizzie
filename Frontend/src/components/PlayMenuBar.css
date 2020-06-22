@@ -88,6 +88,9 @@
 	.onetime-warning {
 		font-size: 1rem !important;
 	}
+	.button-text {
+		font-size: 0.7rem !important;
+	}
 }
 
 .modal-head {

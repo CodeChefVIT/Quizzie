@@ -25,6 +25,10 @@ function Navbar() {
 		setLoggedIn(false);
 		setOpen(false);
 		setRedirect(true);
+
+		setInterval(() => {
+			setRedirect(false);
+		}, 1000)
 	}
 
 	useEffect(() => {
@@ -39,7 +43,6 @@ function Navbar() {
 	})
 
 	return (
-		
 		<div className="root">
 			{ redirect ?	<Redirect to="/" /> : null}
 			<AppBar position="static" className="navbar">

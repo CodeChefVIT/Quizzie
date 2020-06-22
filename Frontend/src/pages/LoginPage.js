@@ -90,12 +90,10 @@ function LoginPage() {
 					response = res;
 				});
 
-				console.log(response);
 				if(response.status === 200) {
 					changeName(response.data.userDetails.name);
 					setLoggedIn(true);
 					setAuthToken(response.data.token);
-
 
 					localStorage.setItem('userLoggedIn', true);
 					localStorage.setItem('name', response.data.userDetails.name);

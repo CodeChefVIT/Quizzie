@@ -8,33 +8,8 @@ import Loading from "./Loading";
 
 function Welcome() {
 	const [loading, setLoading] = useState(true);
-	const {setLoggedIn, changeName, setAdmin, setTestGiven, setBlocked, setCCStarted} = useContext(InfoContext);
+	const { setLoggedIn } = useContext(InfoContext);
 
-	const authenticate = async () => {
-		let token = localStorage.getItem('authToken');
-		let url = `https://scholastic-quiz-app.herokuapp.com/checkAuth`;
-		let response = null;
-
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				response = res;
-			})
-			changeName(response.data.name);
-			setAdmin(response.data.isAdmin);
-			setTestGiven(response.data.testGiven);
-			setBlocked(response.data.isBlocked);
-			setCCStarted(response.data.ccStarted);
-			setLoggedIn(true);
-		} catch(error) {
-			localStorage.clear()
-			setLoggedIn(false);
-		}
-		setLoading(false);
-	}
 
 	useEffect(() => {
 		const token = localStorage.getItem('authToken');
@@ -42,7 +17,8 @@ function Welcome() {
 			setLoggedIn(false);
 			setLoading(false);
 		} else {
-			authenticate();
+			setLoggedIn(true);
+			setLoading(false);
 		}
 	}, []);
 

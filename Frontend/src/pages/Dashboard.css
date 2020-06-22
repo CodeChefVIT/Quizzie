@@ -14,7 +14,7 @@
 .dash-section {
 	background-color: white !important;
 	width: 100% !important;
-	min-height: 80vh !important;
+	/* min-height: 80vh !important; */
 }
 
 .bg-white {
