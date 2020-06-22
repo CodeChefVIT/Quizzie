@@ -121,6 +121,7 @@ function RegisterPage() {
 				name: name,
 				email: email,
 				password: password,
+				mobileNumber: phoneNumber,
 			}
 
 			let response = null;

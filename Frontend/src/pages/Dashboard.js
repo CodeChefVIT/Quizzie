@@ -73,7 +73,7 @@ function Dashboard() {
 			<Container className="dashboard-page">
 				<Typography variant="h4" className="dash-head">Dashboard</Typography>
 				<div className="dash-section">
-					<AppBar position="static" color="default" className="bg-white">
+					<AppBar position="static" color="default" className="bg-white tab-bar">
 						<Tabs
 							value={tab}
 							onChange={handleTabChange}

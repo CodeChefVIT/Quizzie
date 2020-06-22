@@ -38,9 +38,6 @@ function PlayMenuBar() {
 				<Grid container spacing={0}>
 					<Grid item xs={12} md={6}>
 						<div className="play-menu">
-							{isAdmin ? <Link to="/admin" className="link">
-								<Button size="small" className="admin-btn">Admin Panel</Button>
-							</Link> : null}<br />
 							<Link to="/dashboard" style={{textDecoration: 'none'}}>
 								<Button size="large" className="quiz-button"><p className="button-text">Go to the Dashboard</p></Button>
 							</Link>
