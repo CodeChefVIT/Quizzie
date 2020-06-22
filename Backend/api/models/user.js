@@ -9,7 +9,7 @@ const studentSchema = mongoose.Schema({
   googleId:{
     type:String
   },
-  name: { type: String, required: true },
+  name: { type: String,},
     
   userType: { type: String, default: "User" },
   email: {
