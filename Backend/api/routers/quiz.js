@@ -22,35 +22,72 @@ router.post(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		const quiz = new Quiz({
-			_id: new mongoose.Types.ObjectId(),
-			quizName: req.body.quizName,
-			adminId: req.user.userId,
-			quizDate: req.body.quizDate,
-			quizTime: req.body.quizTime,
-			quizDuration: req.body.quizDuration,
-		});
-		quiz
-			.save()
-			.then(async (result) => {
-				const quizId = result._id;
-				Admin.updateOne(
-					{ _id: req.user.userId },
-					{ $push: { quizzes: { quizId } } }
-				)
-					.then(async (result1) => {
-						res.status(201).json({
-							message: "created",
-							result,
-						});
-					})
-					.catch(async (err) => {
-						res.status(400).json({ error: "err1" });
-					});
-			})
-			.catch((err) => {
-				res.status(400).json({ error: "err" });
+		if(req.body.quizType.toLowerCase()=='private'){
+			const quiz = new Quiz({
+				_id: new mongoose.Types.ObjectId(),
+				quizName: req.body.quizName,
+				adminId: req.user.userId,
+				quizDate: req.body.quizDate,
+				quizTime: req.body.quizTime,
+				quizDuration: req.body.quizDuration,
+				quizType:req.body.quizType,
+				quizCode:shortid.generate()
 			});
+			quiz
+				.save()
+				.then(async (result) => {
+					const quizId = result._id;
+					Admin.updateOne(
+						{ _id: req.user.userId },
+						{ $push: { quizzes: { quizId } } }
+					)
+						.then(async (result1) => {
+							res.status(201).json({
+								message: "created",
+								result,
+							});
+						})
+						.catch(async (err) => {
+							res.status(400).json({ error: "err1" });
+						});
+				})
+				.catch((err) => {
+					res.status(400).json({ error: "err" });
+				});
+		}
+		else{
+			const quiz = new Quiz({
+				_id: new mongoose.Types.ObjectId(),
+				quizName: req.body.quizName,
+				adminId: req.user.userId,
+				quizDate: req.body.quizDate,
+				quizTime: req.body.quizTime,
+				quizDuration: req.body.quizDuration,
+				quizType:req.body.quizType,
+			});
+			quiz
+				.save()
+				.then(async (result) => {
+					const quizId = result._id;
+					Admin.updateOne(
+						{ _id: req.user.userId },
+						{ $push: { quizzes: { quizId } } }
+					)
+						.then(async (result1) => {
+							res.status(201).json({
+								message: "created",
+								result,
+							});
+						})
+						.catch(async (err) => {
+							res.status(400).json({ error: "err1" });
+						});
+				})
+				.catch((err) => {
+					res.status(400).json({ error: "err" });
+				});
+		}
+		
 	}
 );
 
