@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
+const passportSetup = require("./api/config/passport-setup");
 
 ////routers
 
@@ -10,6 +11,7 @@ const app = express();
 const userRoutes = require("./api/routers/user");
 const adminRoutes = require("./api/routers/admin");
 const quizRoutes = require("./api/routers/quiz");
+const authRoutes = require("./api/routers/auth");
 
 const dbURI = process.env.dbURI;
 
@@ -44,6 +46,7 @@ app.use((req, res, next) => {
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/quiz", quizRoutes);
+app.use("/auth", authRoutes);
 
 //route not found
 app.use((req, res, next) => {

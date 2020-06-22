@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
 const nodemailer = require("nodemailer");
+const passport = require("passport");
 //const sharp = require('sharp');
 const User = require("../models/user");
 const Quiz = require("../models/quiz");
@@ -12,10 +13,9 @@ const Quiz = require("../models/quiz");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 
+
+
 const router = express.Router();
-
-
-
 
 ////Signup
 router.post("/signup", async (req, res, next) => {
@@ -68,6 +68,14 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
+
+
+
+//Auth with google
+
+
+
+router.get("/logout", async (req, res, next) => {});
 
 
 

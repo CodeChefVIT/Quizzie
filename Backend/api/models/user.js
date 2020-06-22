@@ -6,13 +6,14 @@ const Admin = require("./admin");
 
 const studentSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
+  googleId:{
+    type:String
+  },
   name: { type: String, required: true },
     
   userType: { type: String, default: "User" },
   email: {
     type: String,
-    required: true,
-    unique: true,
     match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
   },
   mobileNumber: {
