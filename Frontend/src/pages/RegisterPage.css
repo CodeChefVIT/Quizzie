@@ -1,6 +1,5 @@
-.signup-img {
-	width: 100px;
-	margin-bottom: 5%;
+.signup-btn {
+	margin-bottom: 0 !important;
 }
 
 @media screen and (max-width: 870px) {
@@ -9,18 +8,7 @@
 	}
 }
 
-@media screen and (max-width: 700px) {
-	.signup-img {
-		margin-bottom: 5%;
-	}
-}
-
 @media screen and (max-width: 380px) {
-	.signup-img {
-		width: 80px;
-		margin-bottom: 5%;
-	}
-
 	.signup-text {
 		font-size: 2rem !important;
 		margin-bottom: -5% !important;

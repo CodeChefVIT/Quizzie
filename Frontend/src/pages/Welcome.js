@@ -53,11 +53,11 @@ function Welcome() {
 			<div className="welcome-screen">
 				<Grid container spacing={0}>
 					<Grid item xs={12} md={6} className="heading-section">
-						<img src="head.png" className="quiz-image" alt="Welcome to Hunger Games"></img>
+						<img src="head.png" className="quiz-image" alt="Welcome to Quizzie"></img>
 					</Grid>
 					<Hidden smDown>
 						<Grid item xs={12} md={6} className="pin-section">
-							<img src="quiz.png" className="pin-image" alt="Mockingjay Pin"></img>
+							<img src="quiz.png" className="pin-image" alt="User Representation"></img>
 						</Grid>
 					</Hidden>
 				</Grid>

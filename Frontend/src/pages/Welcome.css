@@ -18,6 +18,7 @@
 .quiz-image {
 	max-width: 500px;
 	max-height: 250px;
+	margin-bottom: 2% !important;
 }
 
 .pin-section {

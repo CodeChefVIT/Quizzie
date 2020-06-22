@@ -6,12 +6,11 @@ import './ErrorPage.css';
 
 function ErrorPage() {
 	return (
-		<Redirect to="/" />
-		// <div className="error-section">
-		// 	<Container>
-		// 		<Typography variant="h2" className="error-msg">Oops! Looks like there are no districts with this URL!</Typography>
-		// 	</Container>
-		// </div>
+		<div className="error-section">
+			<Container>
+				<Typography variant="h2" className="error-msg">Oops! Looks like there is nothing on this URL!</Typography>
+			</Container>
+		</div>
 	)
 }
 

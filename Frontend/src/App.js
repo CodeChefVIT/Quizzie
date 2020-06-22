@@ -7,13 +7,11 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import Admin from './pages/Admin';
 import Quiz from './pages/Quiz';
-import QuizCC from './pages/QuizCC';
 import ErrorPage from './pages/ErrorPage';
-import Leaderboard from './pages/Leaderboard';
 import AdminRegister from './pages/AdminRegister';
 import InfoContext from './context/InfoContext';
 import ForgotPassword from './pages/ForgotPassword';
-import MarksPage from './pages/MarksPage';
+import Dashboard from './pages/Dashboard';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -52,6 +50,9 @@ function App() {
 					<Route exact path="/">
 						<Welcome />
 					</Route>
+					<Route exact path="/dashboard">
+						<Dashboard />
+					</Route>
 					<Route exact path="/register">
 						<RegisterPage />
 					</Route>
@@ -61,12 +62,6 @@ function App() {
 					<Route exact path="/quiz">
 						<Quiz />
 					</Route>
-					<Route exact path="/ccquiz">
-						<QuizCC />
-					</Route>
-					<Route exact path="/marks">
-						<MarksPage />
-					</Route>
 					<Route exact path="/adminRegister">
 						<AdminRegister />
 					</Route>
@@ -75,9 +70,6 @@ function App() {
 					</Route>
 					<Route exact path="/forgotPassword">
 						<ForgotPassword />
-					</Route>
-					<Route exact path="/leaderboard">
-						<Leaderboard />
 					</Route>
 					<Route path='*'>
 						<ErrorPage />
