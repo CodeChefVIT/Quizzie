@@ -2,20 +2,19 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
-const passportSetup = require("./Backend/api/config/passport-setup");
+const passportSetup = require("./api/config/passport-setup");
 const passport = require("passport");
 const cookieSession = require("cookie-session");
-const keys = require("./Backend/api/config/keys");
 
 ////routers
 
 const app = express();
 
-const userRoutes = require("./Backend/api/routers/user");
-const adminRoutes = require("./Backend/api/routers/admin");
-const quizRoutes = require("./Backend/api/routers/quiz");
-const questionRoutes = require("./Backend/api/routers/questions");
-const authRoutes = require("./Backend/api/routers/auth");
+const userRoutes = require("./api/routers/user");
+const adminRoutes = require("./api/routers/admin");
+const quizRoutes = require("./api/routers/quiz");
+const questionRoutes = require("./api/routers/questions");
+const authRoutes = require("./api/routers/auth");
 
 const dbURI = process.env.dbURI;
 

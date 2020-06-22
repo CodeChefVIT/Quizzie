@@ -93,16 +93,15 @@ passport.use(
 							expiresIn: "1d",
 						}
 					);
-					User.updateOne(({_id:newUser._id},{$set:{token}})).then((result5)=>{
-						console.log(result5)
-						User.findById(newUser._id).then((user)=>{
-							console.log('user is: ', user);
-							done(null, user);
+					console.log(token)
+					User.findById(newUser._id).then((result7)=>{
+						result7.token = token
+						result7.save().then((user)=>{
+							console.log(user)
+							done(null,user)
 						}).catch((err)=>{
 							console.log(err)
 						})
-					}).catch((err)=>{
-						console.log(err)
 					})
                 }).catch((err)=>{
 					console.log(err)
