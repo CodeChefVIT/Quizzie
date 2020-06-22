@@ -1,47 +1,73 @@
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("../models/user");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const keys = require('./keys');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken')
 
-const keys = require("./keys");
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((id, done) => {
+    User.findById(id).then((user) => {
+        done(null, user);
+    });
+});
 
 passport.use(
-	new GoogleStrategy(
-		{
-			// options for google strategy
+    new GoogleStrategy({
+        // options for google strategy
+        clientID: keys.google.clientID,
+        clientSecret: keys.google.clientSecret,
+        callbackURL: '/auth/google/redirect'
+    }, (accessToken, refreshToken, profile, done) => {
+        // check if user already exists in our own db
+        User.findOne({googleId: profile.id}).then((currentUser) => {
+            if(currentUser){
+				// already have this user
+				const token = jwt.sign(
+					{
+						userType: currentUser.userType,
+						userId: currentUser._id,
+						email: currentUser.email,
+						name: currentUser.name,
+						mobileNumber: currentUser.mobileNumber,
+					},
+					process.env.jwtSecret,
+					{
+						expiresIn: "1d",
+					}
+				);
+				User.updateOne(({_id:currentUser._id},{$set:{token}})).then((user)=>{
+					console.log('user is: ', currentUser,token);
+					done(null, currentUser);
+				})
 
-			callbackURL: "/auth/google/redirect",
-			clientID: keys.google.clientID /* add your client ID here */,
-			clientSecret: keys.google.clientSecret /* add your client secret here */,
-		},
-		(accessToken, refreshToken, profile, done) => {
-			console.log(profile);
-			new User({
-				_id: new mongoose.Types.ObjectId(),
-				name: profile._json.name,
-				email: profile._json.email,
-				googleId: profile.id,
-			})
-				.save()
-				.then(async (result) => {
+            } else {
+                // if not, create user in our db
+                new User({
+                    googleId: profile.id,
+                    username: profile.displayName
+                }).save().then((newUser) => {
 					const token = jwt.sign(
 						{
-							userType: result.userType,
-							userId: result._id,
-							email: result.email,
-							name: result.name,
-							mobileNumber: result.mobileNumber,
+							userType: currentUser.userType,
+							userId: currentUser._id,
+							email: currentUser.email,
+							name: currentUser.name,
+							mobileNumber: currentUser.mobileNumber,
 						},
-						keys.jwtSecret,
+						process.env.jwtSecret,
 						{
 							expiresIn: "1d",
 						}
 					);
-
-                
-					console.log("new user created", result,'token',token);
-				});
-		}
-	)
+					User.updateOne(({_id:currentUser._id},{$set:{token}})).then((user)=>{
+						console.log('user is: ', newUser);
+						done(null, newUser);
+					})
+                });
+            }
+        });
+    })
 );
