@@ -1,0 +1,31 @@
+.dashboard-page {
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: center !important;
+	align-items: center !important;
+	padding-top: 2% !important;
+}
+
+.dash-head {
+	font-family: "Montserrat", sans-serif !important;
+	padding-bottom: 2% !important;
+}
+
+.dash-section {
+	background-color: white !important;
+	width: 100% !important;
+	min-height: 80vh !important;
+}
+
+.bg-white {
+	background-color: white !important;
+}
+
+.MuiTab-textColorPrimary.Mui-selected {
+	color: #2980b9 !important;
+	font-weight: bold !important;
+}
+
+.MuiTabs-indicator {
+	background-color: #2980b9 !important;
+}

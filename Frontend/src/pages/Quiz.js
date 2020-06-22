@@ -7,6 +7,7 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import InfoContext from "../context/InfoContext";
 import SubmitLoading from './SubmitLoading';
+import { usePageVisibility } from "react-page-visibility";
 
 function Quiz() {
 	const [currentStep, setStep] = useState(1);
@@ -27,6 +28,8 @@ function Quiz() {
 	const [submitLoading, setSubmitLoading] = useState(false);
 
 	const [confirmModal, setConfirmModal] = useState(false);
+
+	const pageVisible = usePageVisibility();
 
 	const {setBlocked, closed} = useContext(InfoContext);
 
@@ -169,7 +172,7 @@ function Quiz() {
 					"auth-token": token
 				}
 			}).then(res => {
-				if(res.status === 201) {
+				if(res.status === 2010) {
 					setRedirect(true);
 					return;
 				}
@@ -209,6 +212,13 @@ function Quiz() {
 	}
 
 	useEffect(() => {
+		if(!pageVisible) {
+			setRedirect(true);
+			return;
+		}
+	}, [pageVisible])
+
+	useEffect(() => {
 		if(closed) {
 			setRedirect(true);
 			return;
@@ -246,12 +256,12 @@ function Quiz() {
 				<div className="quiz-page">
 					<Grid container xs={12} spacing={5} className="quiz-container">
 						<Grid item xs={10} md={8} lg={7} className="q-count" >
-							<h2 style={{ padding: 0 }}>Question {currentStep}</h2>
+							<h2 style={{ padding: 0 }}>QUESTION {currentStep}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
 							<p style={{margin: 0}}>Time Remaining <h2>{min}:{sec}</h2></p>
 						</Grid>
-						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%', backgroundColor: '#111', borderBottom: '5px solid #222', minHeight: '40vh' }}>
+						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '5px solid #222', minHeight: '40vh' }}>
 							<FormControl style={{ margin: 'auto', width: "100%" }} component="fieldset">
 								<FormLabel className="label" component="legend"><p className="question">{allQuestions[currentQuestion].text}</p></FormLabel>
 								<RadioGroup aria-label="correct-choice" value={currentAns} onChange={handleOptionChange}>
@@ -274,7 +284,7 @@ function Quiz() {
 					</Grid>
 
 					<Dialog open={confirmModal} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-						PaperProps={{ style: { backgroundColor: '#2d2d2d', color: '#cfcfcf', minWidth: '10%' } }}>
+						PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '10%' } }}>
 						<DialogTitle>Are you sure you want to submit the Hunger Games quiz and move on to the Competitive coding section?</DialogTitle>
 						<div className="btn-div">
 							<Button className="logout-btn m-right" onClick={handleSubmit}>Yes</Button>
