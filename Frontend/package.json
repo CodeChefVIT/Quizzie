@@ -13,6 +13,7 @@
     "material-table": "^1.58.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-page-visibility": "^6.2.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "react-router-sitemap": "^1.2.0",

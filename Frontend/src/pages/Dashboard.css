@@ -16,3 +16,16 @@
 	width: 100% !important;
 	min-height: 80vh !important;
 }
+
+.bg-white {
+	background-color: white !important;
+}
+
+.MuiTab-textColorPrimary.Mui-selected {
+	color: #2980b9 !important;
+	font-weight: bold !important;
+}
+
+.PrivateTabIndicator-colorPrimary-151 {
+	background-color: #2980b9 !important;
+}

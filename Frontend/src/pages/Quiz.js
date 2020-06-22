@@ -7,6 +7,7 @@ import axios from "axios";
 import { Redirect } from "react-router-dom";
 import InfoContext from "../context/InfoContext";
 import SubmitLoading from './SubmitLoading';
+import { usePageVisibility } from "react-page-visibility";
 
 function Quiz() {
 	const [currentStep, setStep] = useState(1);
@@ -27,6 +28,8 @@ function Quiz() {
 	const [submitLoading, setSubmitLoading] = useState(false);
 
 	const [confirmModal, setConfirmModal] = useState(false);
+
+	const pageVisible = usePageVisibility();
 
 	const {setBlocked, closed} = useContext(InfoContext);
 
@@ -207,6 +210,13 @@ function Quiz() {
 		setLoading(false);
 		intervalId = setInterval(() => tick(), 1000);
 	}
+
+	useEffect(() => {
+		if(!pageVisible) {
+			setRedirect(true);
+			return;
+		}
+	}, [pageVisible])
 
 	useEffect(() => {
 		if(closed) {
