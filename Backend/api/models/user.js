@@ -33,7 +33,10 @@ const studentSchema = mongoose.Schema({
       quizId:{type:mongoose.Schema.Types.ObjectId,
       ref:"Quiz"}
     }
-  ]
+  ],
+  token:{
+    type:String
+  }
 });
 
 module.exports = mongoose.model("Student", studentSchema);

@@ -1,4 +1,5 @@
 Backend/node_modules
-Backend/.env
+.env
+node_modules
 Backend/api/config/keys.js
 Frontend/node_modules

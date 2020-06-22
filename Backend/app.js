@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./api/config/passport-setup");
-const passport = require('passport')
-const cookieSession = require('cookie-session')
-const keys = require('../Backend/api/config/keys')
+const passport = require("passport");
+const cookieSession = require("cookie-session");
+const keys = require("../Backend/api/config/keys");
 
 ////routers
 
@@ -59,7 +59,7 @@ app.use((req, res, next) => {
 app.use("/user", userRoutes);
 app.use("/admin", adminRoutes);
 app.use("/quiz", quizRoutes);
-app.use('/question',questionRoutes)
+app.use("/question", questionRoutes);
 app.use("/auth", authRoutes);
 
 //route not found
