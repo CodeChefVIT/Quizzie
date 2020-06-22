@@ -1,9 +1,9 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const keys = require('./keys');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
+require('dotenv').config()
 
 passport.serializeUser((user, done) => {
     done(null, user.id);
@@ -18,11 +18,16 @@ passport.deserializeUser((id, done) => {
 	})
 });
 
+
+
+
+console.log(process.env.clientID)
 passport.use(
     new GoogleStrategy({
+
         // options for google strategy
-        clientID: keys.google.clientID,
-        clientSecret: keys.google.clientSecret,
+        clientID: process.env.clientID,
+        clientSecret: process.env.clientSecret,
         callbackURL: '/auth/google/redirect'
     }, (accessToken, refreshToken, profile, done) => {
         // check if user already exists in our own db
@@ -42,24 +47,37 @@ passport.use(
 						expiresIn: "1d",
 					}
 				);
-				User.updateOne(({_id:currentUser._id},{$set:{token}})).then((result5)=>{
-					console.log(result5)
-					User.findById(currentUser._id).then((user)=>{
-						console.log('user is: ', user);
-						done(null, user);
+				console.log(token)
+				console.log('profile',profile)
+
+
+				User.findById(currentUser._id).then((result7)=>{
+					result7.token = token
+					result7.save().then((user)=>{
+						console.log(user)
+						done(null,user)
 					}).catch((err)=>{
 						console.log(err)
 					})
-				}).catch((err)=>{
-					console.log(err)
 				})
+				// User.updateOne(({_id:currentUser._id},{$set:{token}})).then((result5)=>{
+				// 	console.log(result5)
+				// 	User.findById(currentUser._id).then((user)=>{
+				// 		console.log('user is: ', user);
+				// 		done(null, user);
+				// 	}).catch((err)=>{
+				// 		console.log(err)
+				// 	})
+				// }).catch((err)=>{
+				// 	console.log(err)
+				// })
 
             } else {
                 // if not, create user in our db
                 new User({
 					_id: new mongoose.Types.ObjectId(),
                     googleId: profile.id,
-                    username: profile.displayName
+                    name: profile.displayName
                 }).save().then((newUser) => {
 					const token = jwt.sign(
 						{
@@ -74,16 +92,15 @@ passport.use(
 							expiresIn: "1d",
 						}
 					);
-					User.updateOne(({_id:newUser._id},{$set:{token}})).then((result5)=>{
-						console.log(result5)
-						User.findById(newUser._id).then((user)=>{
-							console.log('user is: ', user);
-							done(null, user);
+					console.log(token)
+					User.findById(newUser._id).then((result7)=>{
+						result7.token = token
+						result7.save().then((user)=>{
+							console.log(user)
+							done(null,user)
 						}).catch((err)=>{
 							console.log(err)
 						})
-					}).catch((err)=>{
-						console.log(err)
 					})
                 }).catch((err)=>{
 					console.log(err)
