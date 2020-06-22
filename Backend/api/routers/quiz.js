@@ -161,7 +161,7 @@ router.patch(
 	checkAuth,
 	checkAuthUser,
 	async (req, res, next) => {
-		Quiz.findById({ quizCode: req.body.quizCode})
+		Quiz.findOne({ quizCode: req.body.quizCode})
 			.exec()
 			.then(async (result2) => {
 				for (i = 0; i < result2.usersEnrolled.length; i++) {
