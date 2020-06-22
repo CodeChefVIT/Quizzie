@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './RegisterPage.css';
 import { Container, Typography, Button } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
-import {Redirect} from "react-router-dom";
+import {Redirect, Link} from "react-router-dom";
 import TextInput from "../components/TextInput";
 import * as EmailValidator from "email-validator";
 import axios from 'axios';
@@ -179,7 +179,6 @@ function RegisterPage() {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				{/* <img src="hg-pin.png" className="signup-img" alt="Mokingjay Pin"></img> */}
 				<Typography variant="h3" color="primary" className="login-head signup-text">Join the force!</Typography><br />
 				{signedUp === true? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert>: null}
 				{error === true? <Alert severity="warning" color="warning">{errorText}</Alert>: null}
@@ -241,7 +240,8 @@ function RegisterPage() {
 						onChange={handlePasswordChange}
 						onKeyPress={keyPress}></TextInput>
 				</form>
-				<Button className="login-btn" onClick={handleSubmit}>Sign Up</Button>
+				<Button className="login-btn signup-btn" onClick={handleSubmit}>Sign Up</Button>
+				{/* <Link to="/registerOrganiser" className="link register-link">Are you an Organiser? Go to the organiser signup!</Link> */}
 			</div>
 		</Container>
 	)
