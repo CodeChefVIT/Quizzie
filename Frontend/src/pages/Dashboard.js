@@ -8,6 +8,7 @@ import axios from "axios";
 import '../components/ProfileSection';
 import ProfileSection from "../components/ProfileSection";
 import HistorySection from '../components/HistorySection';
+import QuizzesSection from "../components/QuizzesSection";
 
 
 function Dashboard() {
@@ -87,7 +88,7 @@ function Dashboard() {
 						</Tabs>
 					</AppBar>
 					<TabPanel value={tab} index={0}>
-						Item One
+						<QuizzesSection />
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
 						<HistorySection profile={profile} />

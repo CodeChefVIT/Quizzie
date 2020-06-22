@@ -1,7 +1,7 @@
 import React from "react";
 import './HistorySection.css';
 
-function HistroySection(props) {
+function HistorySection(props) {
 	const profile = props.profile;
 
 	return (
@@ -13,4 +13,4 @@ function HistroySection(props) {
 	)
 }
 
-export default HistroySection;
+export default HistorySection;
