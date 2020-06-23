@@ -22,6 +22,7 @@ function LoginPage(props) {
 	const [redirect, setRedirect] = useState(false);
 
 	const type = props.match.params.type;
+	const type1 = type === "user" ? "user" : "organizer";
 
 	const [isLoading, setLoading] = useState(false);
 
@@ -132,7 +133,7 @@ function LoginPage(props) {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				<Typography variant="h3" color="primary" className="login-head">Login Now!</Typography><br />
+				<Typography variant="h3" color="primary" className="login-head">{type==="user"?"Login Now": "Organizer Login"}</Typography><br />
 				{didLogin === false? <Alert severity="error">{errorText}</Alert>: null}
 				<form className="form">
 					<TextInput
@@ -163,7 +164,7 @@ function LoginPage(props) {
 					<Link to="/forgotPassword" className="link forgot-pass">Forgot your password?</Link>
 				</div>
 				<Button className="login-btn" onClick={handleSubmit}>Login</Button>
-				<Link to="/register" className="link register-link">Don't have an account? Join the Quizzie now!</Link>
+				<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
 			</div>
 		</Container>
 	)

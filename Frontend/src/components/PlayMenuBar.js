@@ -31,7 +31,7 @@ function PlayMenuBar() {
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
 					style={{ width: '100%' }}>
 					<div className="modal-info">
-						<Typography variant="h5">Are you a student or an organizer?</Typography>
+						<Typography variant="h5" className="type-head">Are you a student or an organizer?</Typography>
 						<div className="modal-btns">
 							<Link to="/login/user" className="link">
 								<Button variant="outlined" color="primary" className="modal-select-btn modal-student">Student</Button>
@@ -46,7 +46,7 @@ function PlayMenuBar() {
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
 					style={{ width: '100%' }}>
 					<div className="modal-info">
-						<Typography variant="h5">Are you a student or an organizer?</Typography>
+						<Typography variant="h5" className="type-head">Are you a student or an organizer?</Typography>
 						<div className="modal-btns">
 							<Link to="/register/user" className="link">
 								<Button variant="outlined" color="primary" className="modal-select-btn modal-student">Student</Button>

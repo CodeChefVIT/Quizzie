@@ -122,9 +122,20 @@
 	border-color: #2980b9 !important;
 }
 
+.type-head {
+	text-align: center !important;
+	font-weight: bold !important;
+}
+
 @media screen and (max-width: 520px) {
 	.modal-text {
 		font-size: 0.8rem !important;
+	}
+}
+
+@media screen and (max-width: 420px) {
+	.type-head {
+		font-size: 1.2rem !important;
 	}
 }
 

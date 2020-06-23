@@ -157,7 +157,7 @@ function RegisterPage(props) {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				<Typography variant="h3" color="primary" className="login-head signup-text">Join the force!</Typography><br />
+				<Typography variant="h3" color="primary" className="login-head signup-text">{type === "user"? "Join the force!" : "Organizer Sign Up"}</Typography><br />
 				{signedUp === true? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert>: null}
 				{error === true? <Alert severity="warning" color="warning">{errorText}</Alert>: null}
 				<form className="form">
