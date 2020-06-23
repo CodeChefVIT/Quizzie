@@ -6,10 +6,10 @@ import InfoContext from '../context/InfoContext';
 
 function PlayMenuBar() {
 	const { isLoggedIn, isAdmin, testGiven, blocked, ccStarted, closed } = useContext(InfoContext);
-	const [modalOpen, setModalOpen] = useState(false);
+	const [loginModalOpen, setLoginModalOpen] = useState(false);
 
 	const onCloseHandle = () => {
-		setModalOpen(false);
+		setLoginModalOpen(false);
 	}
 
 	if (!isLoggedIn) {
@@ -20,15 +20,26 @@ function PlayMenuBar() {
 						<Typography variant="h4" className="login-msg">You are not logged in!</Typography>
 						<Typography variant="h6" className="login-msg">Login/Signup to continue!</Typography>
 						<div className="button-bar">
-							<Link to="/login" className="link">
-								<Button size="large" className="action-button login-button">Login</Button>
-							</Link>
+							<Button size="large" className="action-button login-button" onClick={() => setLoginModalOpen(true)}>Login</Button>
 							<Link to="/register" className="link">
 								<Button size="large" className="action-button signup-button">SignUp</Button>
 							</Link>
 						</div>
 					</Grid>
 				</Grid>
+				<Dialog open={loginModalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
+					style={{ width: '100%' }}>
+					<div className="modal-info">
+						<Typography variant="h5">Are you a student or an organizer?</Typography>
+						<div className="modal-btns">
+							<Link to="/login" className="link">
+								<Button variant="outlined" color="primary" className="modal-select-btn modal-student">Student</Button>
+							</Link>
+							<Button variant="outlined" color="secondary" className="modal-select-btn modal-organizer">Organizer</Button>
+						</div>
+					</div>
+				</Dialog>
 			</div>
 		);
 	}
@@ -44,31 +55,6 @@ function PlayMenuBar() {
 						</div>
 					</Grid>
 				</Grid>
-				{/* <Dialog open={modalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
-					style={{ width: '100%' }}>
-					<DialogTitle><p className="modal-head">Important Information</p></DialogTitle>
-					<div className="modal-info">
-						<Typography variant="h6" className="modal-text bold">1) AFTER STARTING THE QUIZ, PLEASE DO NOT REFRESH OR CLOSE THE WEBSITE.
-												YOU WILL BE GIVEN TWO CHANCES, AFTER WHICH YOU WILL BE BANNED FROM GIVING THE QUIZ AGAIN.</Typography>
-						<Typography variant="h6" className="modal-text">2) The quiz contains two sections, the Hunger Games Trivia and Competitive Coding.</Typography>
-						<Typography variant="h6" className="modal-text">4) You will be given 10 minutes for each section, that is, 20 minutes for the whole quiz.</Typography>
-						<Typography variant="h6" className="modal-text">5) The first section contains 25 questions and the second section contains 10 questions, of the MCQ format.
-												 There is no negative marking.</Typography>
-						<Typography variant="h6" className="modal-text">6) This quiz can be submitted only once.</Typography>
-						<Typography variant="h6" className="modal-text">7) After submitting the quiz, you will be able to see your marks.</Typography>
-						<Typography variant="h5" className="modal-text bold">8) IMPORTANT: IF YOU LEAVE THE QUIZ PAGE WITHOUT HITTING THE SUBMIT BUTTON,
-												YOUR ATTEMPT WILL NOT COUNT!</Typography>
-						{!ccStarted ? (<Link to="/quiz" className="link">
-							<Button className="quiz-modal-btn">Let's Go!</Button>
-						</Link>)
-							: (
-								<Link to="/ccquiz" className="link">
-									<Button className="quiz-modal-btn">Let's Go!</Button>
-								</Link>
-							)}
-					</div>
-				</Dialog> */}
 			</div>
 		);
 	}
