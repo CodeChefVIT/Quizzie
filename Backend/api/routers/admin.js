@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
 const Admin = require("../models/admin");
 const Quiz = require("../models/quiz");
+const User =require('../models/user')
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
@@ -185,15 +186,21 @@ router.patch(
 ///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Quiz.find({ adminId: req.user.userId })
+		// .populate({
+		// 	path: "usersEnrolled",
+
+		// 	populate: { path: "userId" },
+		// })
 		.exec()
 		.then(async (result) => {
 			res.status(200).json({
 				result,
 			});
+
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message: "Error",
+				message: err
 			});
 		});
 });
@@ -204,18 +211,13 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 ///Number of students enrolled in a particular quiz
 router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
 	await Quiz.findById(req.params.quizId)
-	.populate({
-        path: "usersEnrolled",
+	// .populate({
+    //     path: "usersEnrolled",
 
-        populate: { path: "user" },
-	  })
+    //     populate: { path: "userId" },
+	//   })
 	.exec()
 	.then(async(result1)=>{
-		if(result1.adminId!=req.user.userId){
-			return res.status(401).json({
-				message:"This is not your quiz"
-			})
-		}
 		res.status(200).json({
 			result1
 		})

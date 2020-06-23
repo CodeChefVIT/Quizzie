@@ -40,7 +40,7 @@ router.post("/signup", async (req, res, next) => {
 							email: req.body.email,
 							password: hash,
 							name: req.body.name,
-							// mobileNumber: req.body.mobileNumber,
+							mobileNumber: req.body.mobileNumber,
 						});
 						user
 							.save()
@@ -51,7 +51,7 @@ router.post("/signup", async (req, res, next) => {
 										userId: result._id,
 										email: result.email,
 										name: result.name,
-										// mobileNumber: result.mobileNumber,
+										mobileNumber: result.mobileNumber,
 									},
 								});
 							})

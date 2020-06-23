@@ -16,13 +16,14 @@ const adminRoutes = require("./Backend/api/routers/admin");
 const quizRoutes = require("./Backend/api/routers/quiz");
 const questionRoutes = require("./Backend/api/routers/questions");
 const authRoutes = require("./Backend/api/routers/auth");
+const generalRoutes = require("./Backend/api/routers/general");
 
 const dbURI = process.env.dbURI;
 
 mongoose
 	.connect(dbURI, {
 		useNewUrlParser: true,
-		useCreateIndex: true, 
+		useCreateIndex: true,
 		useUnifiedTopology: true,
 	})
 	.then(() => console.log("Database Connected"))
@@ -63,6 +64,7 @@ app.use("/admin", adminRoutes);
 app.use("/quiz", quizRoutes);
 app.use("/question", questionRoutes);
 app.use("/auth", authRoutes);
+app.use("/general", generalRoutes);
 
 //route not found
 app.use((req, res, next) => {
