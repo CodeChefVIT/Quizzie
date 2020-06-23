@@ -53,9 +53,7 @@ function App() {
 					<Route exact path="/dashboard">
 						<Dashboard />
 					</Route>
-					<Route exact path="/register">
-						<RegisterPage />
-					</Route>
+					<Route exact path="/register/:type" component={RegisterPage} />
 					<Route exact path="/admin">
 						<Admin />
 					</Route>
@@ -65,9 +63,7 @@ function App() {
 					<Route exact path="/adminRegister">
 						<AdminRegister />
 					</Route>
-					<Route exact path="/login">
-						<LoginPage />
-					</Route>
+					<Route exact path="/login/:type" component={LoginPage} />
 					<Route exact path="/forgotPassword">
 						<ForgotPassword />
 					</Route>

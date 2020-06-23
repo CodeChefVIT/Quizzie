@@ -10,7 +10,7 @@ import axios from "axios";
 import Loading from "./Loading";
 
 
-function LoginPage() {
+function LoginPage(props) {
 	const [email, changeEmail] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [emailChanged, setEmailChanged] = useState(false);
@@ -20,6 +20,8 @@ function LoginPage() {
 	const [didLogin, setDidLogin] = useState(null);
 	const [errorText, setErrorText] = useState("Error Logging In! Try again....");
 	const [redirect, setRedirect] = useState(false);
+
+	const type = props.match.params.type;
 
 	const [isLoading, setLoading] = useState(false);
 
@@ -77,7 +79,11 @@ function LoginPage() {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let url = `https://quizzie-api.herokuapp.com/user/login`;
+			let lType = "user";
+
+			if(type === "organizer") lType = "admin";
+
+			let url = `https://quizzie-api.herokuapp.com/${lType}/login`;
 
 			let data = {
 				"email": email,

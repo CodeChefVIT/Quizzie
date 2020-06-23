@@ -8,7 +8,7 @@ import * as EmailValidator from "email-validator";
 import axios from 'axios';
 import Loading from "./Loading";
 
-function RegisterPage() {
+function RegisterPage(props) {
 	const [name, changeName] = useState("");
 	const [nameError, setNameError] = useState("");
 	const [nameChanged, setNameChanged] = useState(false);
@@ -32,6 +32,8 @@ function RegisterPage() {
 	const [isLoading, setLoading] = useState(false);
 	const [error, setError] = useState(false);
 	const [errorText, setErrorText] = useState("");
+
+	const type = props.match.params.type;
 
 	const emptyText = (type) =>  `${type} cannot be empty`;
 
@@ -115,7 +117,11 @@ function RegisterPage() {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let url = `https://quizzie-api.herokuapp.com/user/signup`;
+			let sType = "user";
+
+			if(type === "organizer") sType = "admin";
+
+			let url = `https://quizzie-api.herokuapp.com/${sType}/signup`;
 			
 			let data = {
 				name: name,
@@ -144,7 +150,7 @@ function RegisterPage() {
 		setLoading(false);
 	}
 	if(redirect === true){
-		return <Redirect to='/login' />
+		return <Redirect to='/' />
 	}
 	return (
 		isLoading? <Loading />

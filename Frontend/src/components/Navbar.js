@@ -12,9 +12,11 @@ function Navbar() {
 	const [redirect, setRedirect] = useState(false);
 
 	const [open, setOpen] = useState(false);
+	const [loginModalOpen, setLoginModalOpen] = useState(false);
 
 	const onCloseHandle = () => {
 		setOpen(false);
+		setLoginModalOpen(false);
 	}
 	const handleLogoutBtn = () => {
 		setOpen(true);
@@ -47,11 +49,11 @@ function Navbar() {
 			{ redirect ?	<Redirect to="/" /> : null}
 			<AppBar position="static" className="navbar">
 				<Toolbar>
-					<Link to="/" className="nav-link"><img src="./CC LOGO-01.svg" className="nav-logo"/></Link>
+					<Link to="/" className="nav-link"><img src="../CC LOGO-01.svg" className="nav-logo"/></Link>
 					<Typography varirant="h6" className="nav-head">The Quizzie Platform</Typography>
 					<div className="btn-bar">
 						{navLoggedIn === false?
-							<Link className="link" to="/login"><Button color="inherit" className="login">Login</Button></Link>
+							<Button color="inherit" className="login" onClick={() => setLoginModalOpen(true)}>Login</Button>
 							:
 							<Typography variant="h6" className="nav-user">Welcome, {navName}</Typography>
 							
@@ -69,6 +71,25 @@ function Navbar() {
 					<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>
 				</div>
 			</Dialog>
+			<Dialog open={loginModalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
+					style={{ width: '100%' }}>
+					<div className="modal-info">
+						<Typography variant="h5">Are you a student or an organizer?</Typography>
+						<div className="modal-btns">
+							<Link to="/login/user" className="link">
+								<Button variant="outlined" color="primary" 
+									className="modal-select-btn modal-student" 
+									onClick={() => setLoginModalOpen(false)}>Student</Button>
+							</Link>
+							<Link to="/login/organizer" className="link">
+								<Button variant="outlined" color="secondary" 
+									className="modal-select-btn modal-organizer" 
+									onClick={() => setLoginModalOpen(false)}>Organizer</Button>
+							</Link>
+						</div>
+					</div>
+				</Dialog>
 		</div>
 	);
 }
