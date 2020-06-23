@@ -30,6 +30,12 @@
 	color: #2980B9 !important;
 }
 
+@media screen and (max-width: 440px) {
+	.login-head {
+		font-size: 2rem !important;
+	}
+}
+
 .form-input {
 	margin: 10px 0 !important;
 	width: 80% !important;

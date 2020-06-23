@@ -10,7 +10,7 @@
 
 @media screen and (max-width: 380px) {
 	.signup-text {
-		font-size: 2rem !important;
+		font-size: 1.8rem !important;
 		margin-bottom: -5% !important;
 	}
 }
