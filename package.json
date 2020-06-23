@@ -28,6 +28,7 @@
 		"shortid": "^2.2.15"
 	},
 	"devDependencies": {
-		"nodemon": "^2.0.4"
+		"nodemon": "^2.0.4",
+		"node-pre-gyp": "0.12.0"
 	}
 }

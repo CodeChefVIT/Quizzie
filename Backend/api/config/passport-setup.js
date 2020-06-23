@@ -77,7 +77,7 @@ passport.use(
 					_id: new mongoose.Types.ObjectId(),
                     googleId: profile.id,
 					name: profile.displayName,
-					email:profile._json.email
+					email:profile.emails[0].value
                 }).save().then((newUser) => {
 					const token = jwt.sign(
 						{
