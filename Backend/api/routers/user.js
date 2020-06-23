@@ -133,6 +133,11 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
+router.get('/google',(req,res,next)=>{
+	res.send('Welcome you are logged in as '+req.user.name)
+})
+
+
 ////Get Profile
 
 router.get("/", checkAuthUser, checkAuth, async (req, res, next) => {
