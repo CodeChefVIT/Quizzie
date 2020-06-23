@@ -1,0 +1,25 @@
+.profile-section {
+	padding: 5% !important;
+}
+
+.profile-param {
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	color: #35a1e9 !important;
+
+	padding-bottom: 2% !important;
+}
+
+.profile-data {
+	font-weight: normal !important;
+	color: black !important;
+}
+
+@media screen and (max-width: 420px) {
+	.profile-section {
+		padding-top: 10% !important;
+	}
+	.profile-param {
+		font-size: 1.1rem !important;
+	}
+}

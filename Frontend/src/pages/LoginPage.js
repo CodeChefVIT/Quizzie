@@ -10,7 +10,7 @@ import axios from "axios";
 import Loading from "./Loading";
 
 
-function LoginPage() {
+function LoginPage(props) {
 	const [email, changeEmail] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [emailChanged, setEmailChanged] = useState(false);
@@ -20,6 +20,9 @@ function LoginPage() {
 	const [didLogin, setDidLogin] = useState(null);
 	const [errorText, setErrorText] = useState("Error Logging In! Try again....");
 	const [redirect, setRedirect] = useState(false);
+
+	const type = props.match.params.type;
+	const type1 = type === "user" ? "user" : "organizer";
 
 	const [isLoading, setLoading] = useState(false);
 
@@ -77,7 +80,11 @@ function LoginPage() {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let url = `https://quizzie-api.herokuapp.com/user/login`;
+			let lType = "user";
+
+			if(type === "organizer") lType = "admin";
+
+			let url = `https://quizzie-api.herokuapp.com/${lType}/login`;
 
 			let data = {
 				"email": email,
@@ -90,12 +97,10 @@ function LoginPage() {
 					response = res;
 				});
 
-				console.log(response);
 				if(response.status === 200) {
 					changeName(response.data.userDetails.name);
 					setLoggedIn(true);
 					setAuthToken(response.data.token);
-
 
 					localStorage.setItem('userLoggedIn', true);
 					localStorage.setItem('name', response.data.userDetails.name);
@@ -128,7 +133,7 @@ function LoginPage() {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				<Typography variant="h3" color="primary" className="login-head">Login Now!</Typography><br />
+				<Typography variant="h3" color="primary" className="login-head">{type==="user"?"Login Now": "Organizer Login"}</Typography><br />
 				{didLogin === false? <Alert severity="error">{errorText}</Alert>: null}
 				<form className="form">
 					<TextInput
@@ -159,7 +164,7 @@ function LoginPage() {
 					<Link to="/forgotPassword" className="link forgot-pass">Forgot your password?</Link>
 				</div>
 				<Button className="login-btn" onClick={handleSubmit}>Login</Button>
-				<Link to="/register" className="link register-link">Don't have an account? Join the Quizzie now!</Link>
+				<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
 			</div>
 		</Container>
 	)

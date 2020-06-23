@@ -26,7 +26,7 @@
 }
 
 .login-button {
-	background-color: orange !important;
+	background-color: #2980b9 !important;
 }
 
 /* .login-button:hover {
@@ -88,6 +88,9 @@
 	.onetime-warning {
 		font-size: 1rem !important;
 	}
+	.button-text {
+		font-size: 0.7rem !important;
+	}
 }
 
 .modal-head {
@@ -98,15 +101,41 @@
 
 .modal-info {
 	padding: 5% !important;
+	display: flex !important;
+	align-items: center !important;
+	flex-direction: column !important;
 }
 
-.modal-text {
-	font-size: 1.1rem !important;
+.modal-btns {
+	width: 100% !important;
+	padding-top: 4% !important;
+	text-align: center;
+}
+
+.modal-select-btn {
+	font-weight: bold !important;
+}
+
+.modal-student {
+	margin-right: 2% !important;
+	color: #2980b9 !important;
+	border-color: #2980b9 !important;
+}
+
+.type-head {
+	text-align: center !important;
+	font-weight: bold !important;
 }
 
 @media screen and (max-width: 520px) {
 	.modal-text {
 		font-size: 0.8rem !important;
+	}
+}
+
+@media screen and (max-width: 420px) {
+	.type-head {
+		font-size: 1.2rem !important;
 	}
 }
 
