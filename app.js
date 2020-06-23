@@ -22,7 +22,7 @@ const dbURI = process.env.dbURI;
 mongoose
 	.connect(dbURI, {
 		useNewUrlParser: true,
-		useCreateIndex: true,
+		useCreateIndex: true, 
 		useUnifiedTopology: true,
 	})
 	.then(() => console.log("Database Connected"))
@@ -81,8 +81,6 @@ app.use((error, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-
-
 
 app.listen(PORT, () => {
 	console.log(`Listening on port ${PORT}`);
