@@ -19,6 +19,7 @@ const router = express.Router();
 
 ////Signup
 router.post("/signup", async (req, res, next) => {
+	console.log('signup')
 	User.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -33,12 +34,13 @@ router.post("/signup", async (req, res, next) => {
 							error: err,
 						});
 					} else {
+						console.log('ashf')
 						const user = new User({
 							_id: new mongoose.Types.ObjectId(),
 							email: req.body.email,
 							password: hash,
 							name: req.body.name,
-							mobileNumber: req.body.mobileNumber,
+							// mobileNumber: req.body.mobileNumber,
 						});
 						user
 							.save()
@@ -49,7 +51,7 @@ router.post("/signup", async (req, res, next) => {
 										userId: result._id,
 										email: result.email,
 										name: result.name,
-										mobileNumber: result.mobileNumber,
+										// mobileNumber: result.mobileNumber,
 									},
 								});
 							})
@@ -134,7 +136,13 @@ router.post("/login", async (req, res, next) => {
 });
 
 router.get('/google',(req,res,next)=>{
-	res.send('Welcome you are logged in as '+req.user.name)
+	res.send('Welcome you are logged in as '+req.user)
+})
+
+
+
+router.get('/hello',(req,res,next)=>{
+	res.send('HELLO')
 })
 
 

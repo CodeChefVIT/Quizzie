@@ -22,7 +22,7 @@ const dbURI = process.env.dbURI;
 mongoose
 	.connect(dbURI, {
 		useNewUrlParser: true,
-		useCreateIndex: true,
+		useCreateIndex: true, 
 		useUnifiedTopology: true,
 	})
 	.then(() => console.log("Database Connected"))
