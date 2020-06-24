@@ -13,6 +13,7 @@ const studentSchema = mongoose.Schema({
 	userType: { type: String, default: "User" },
 	email: {
 		type: String,
+		lowercase:true,
 		match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 	},
 	mobileNumber: {
