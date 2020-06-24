@@ -155,7 +155,11 @@ router.delete('/:quizId',checkAuth,checkAuthOwner,async(req,res,next)=>{
             var currentUser = result.usersEnrolled[i].userId
             await User.updateOne(
                 { _id: currentUser },
-                { $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+                { $pull: { quizzesEnrolled: { quizId: req.params.quizId } } }
+                // await Student.updateOne(
+                //     { _id: currentStudent },
+                //     { $pull: { batchesOpted: currentBatchId } }
+                //   )
               ).then(async(result1)=>{
                   console.log(result1)
                 // await User.updateOne({_id:currentUser},{$pull:{quizzesGiven:{quizId:req.body.quizId}}}).then(async(result3)=>{
@@ -171,8 +175,8 @@ router.delete('/:quizId',checkAuth,checkAuthOwner,async(req,res,next)=>{
                   })
               })
             }
-            await Admin.updateOne({_id:result.adminId},{$pull:{quizzes:{quizId:req.body.quizId}}}).then(async(result3)=>{
-                await Quiz.deleteOne({_id:req.body.quizId}).then((result4)=>{
+            await Admin.updateOne({_id:result.adminId},{$pull:{quizzes:{quizId:req.params.quizId}}}).then(async(result3)=>{
+                await Quiz.deleteOne({_id:req.params.quizId}).then((result4)=>{
                     res.status(200).json({
                         message:"Successfully deleted"
                     })
