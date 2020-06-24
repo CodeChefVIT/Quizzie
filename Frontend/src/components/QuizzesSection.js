@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import './QuizzesSection.css';
 import axios from "axios";
 
-function QuizzesSection() {
+function QuizzesSection(props) {
+	const [userType, setUserType] = useState(props.type);
 	const [quizzes, setQuizzes] = useState([]);
 
 	const getQuizzes = async () => {
