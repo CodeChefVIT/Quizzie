@@ -111,6 +111,8 @@ router.post("/login", async (req, res, next) => {
 							expiresIn: "1d",
 						}
 					);
+
+				
 					return res.status(200).json({
 						message: "Auth successful",
 						userDetails: {

@@ -147,6 +147,51 @@ router.get("/allQuizzes", checkAuth, checkAuthOwner, async (req, res, next) => {
 });
 
 
-
+router.delete('/:quizId',checkAuth,checkAuthOwner,async(req,res,next)=>{
+    await Quiz.findById(req.params.quizId).then(async(result)=>{
+        var numUsers = result.usersEnrolled.length
+        //Remove quiz from student array
+        for(i=0;i<numUsers;i++){
+            var currentUser = result.usersEnrolled[i].userId
+            await User.updateOne(
+                { _id: currentUser },
+                { $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+              ).then(async(result1)=>{
+                  console.log(result1)
+                // await User.updateOne({_id:currentUser},{$pull:{quizzesGiven:{quizId:req.body.quizId}}}).then(async(result3)=>{
+                //     console.log(result3)
+                // }).catch((err)=>{
+                //     res.status(400).json({
+                //         message:'Unexpected error occured'
+                //     })
+                // })
+              }).catch((err)=>{
+                  res.status(400).json({
+                      message:'some error'
+                  })
+              })
+            }
+            await Admin.updateOne({_id:result.adminId},{$pull:{quizzes:{quizId:req.body.quizId}}}).then(async(result3)=>{
+                await Quiz.deleteOne({_id:req.body.quizId}).then((result4)=>{
+                    res.status(200).json({
+                        message:"Successfully deleted"
+                    })
+                }).catch((err)=>{
+                    res.status(400).json({
+                        message:'cant happen'
+                    })
+                })
+            }).catch((err)=>{
+                res.status(400).json({
+                    message:'Unexpected'
+                })
+            })
+            
+    }).catch((err)=>{
+        res.status(400).json({
+            message:'Unexpected'
+        })
+    })
+})
 
 module.exports = router;
