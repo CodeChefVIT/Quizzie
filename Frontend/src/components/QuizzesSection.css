@@ -6,6 +6,24 @@
 	flex-direction: column;
 }
 
+.quiz-btn-section {
+	margin-bottom: 2% !important;
+}
+
+.join-quiz-btn {
+	background-color: green !important;
+	color: white !important;
+
+	font-weight: bold !important;
+	letter-spacing: 1px !important;
+}
+
+@media screen and (max-width: 500px) {
+	.join-quiz-btn {
+		font-size: 0.7rem !important;
+	}
+}
+
 .up-quizzes {
 	color: #2980b9 !important;
 	font-family: "Montserrat", sans-serif !important;
@@ -14,6 +32,8 @@
 
 	margin-bottom: 5% !important;
 }
+
+
 
 .root {
 	display: flex;

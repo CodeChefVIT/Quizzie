@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import './QuizzesSection.css';
 import axios from "axios";
 import QuizLoading from './QuizLoading';
-import { GridList, GridListTile, GridListTileBar, Typography } from "@material-ui/core";
+import { GridList, GridListTile, GridListTileBar, Typography, Button } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
@@ -45,6 +46,9 @@ function QuizzesSection(props) {
 	} else {
 		return (
 			<div className="quizzes-section">
+				<div className="quiz-btn-section">
+					<Button className="join-quiz-btn"><AddIcon />Join a Quiz</Button>
+				</div>
 				<Typography variant="h5" className="up-quizzes">Upcoming Quizzes</Typography>
 				{quizzes.length === 0? <p>Sorry! No quizzes available at the moment!</p>
 				: 
@@ -55,7 +59,8 @@ function QuizzesSection(props) {
 									<img src="../CC LOGO-01.svg" />
 									<GridListTileBar 
 										title={quiz.quizName} 
-										subtitle={`By: ${quiz.adminId.name}`}/>
+										subtitle={`By: ${quiz.adminId.name}`}
+									/>
 								</GridListTile>
 							))}
 						</GridList>
