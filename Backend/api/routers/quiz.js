@@ -164,9 +164,7 @@ router.patch(
 		Quiz.findOne({ quizCode: req.body.quizCode})
 			.exec()
 			.then(async (result2) => {
-				console.log(result2)
 				for (i = 0; i < result2.usersEnrolled.length; i++) {
-					console.log(result2.usersEnrolled)
 					if (result2.usersEnrolled[i].userId == req.user.userId) {
 						return res.status(409).json({ message: "Already enrolled" });
 					}
@@ -203,7 +201,7 @@ router.patch(
 
 			.catch(async (err) => {
 				res.status(404).json({
-					message: err,
+					message: "Invalid Code",
 				});
 			});
 	}

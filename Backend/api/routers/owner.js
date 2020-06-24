@@ -10,29 +10,26 @@ const passport = require("passport");
 const User = require("../models/user");
 const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
-const Owner = require('../models/owner')
+const Owner = require("../models/owner");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthOwner = require("../middleware/checkAuthOwner");
 
-
 const router = express.Router();
 
-router.post('/signup',async(req,res,next)=>{
-    Owner.find({ email: req.body.email })
+router.post("/signup", async (req, res, next) => {
+	Owner.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
 			if (user.length >= 1) {
 				res.status(409).json({
 					message: "Email already exists",
 				});
-            } 
-            else if(req.body.signupCode!=process.env.ownerKey){
-                return res.status(400).json({
-                    message:"Incorrect signup code"
-                })
-            }
-            else {
+			} else if (req.body.signupCode != process.env.ownerKey) {
+				return res.status(400).json({
+					message: "Incorrect signup code",
+				});
+			} else {
 				bcrypt.hash(req.body.password, 10, (err, hash) => {
 					if (err) {
 						return res.status(500).json({
@@ -44,8 +41,8 @@ router.post('/signup',async(req,res,next)=>{
 							email: req.body.email,
 							password: hash,
 							name: req.body.name,
-                            mobileNumber: req.body.mobileNumber,
-                            boardPosition:req.body.boardPosition,
+							mobileNumber: req.body.mobileNumber,
+							boardPosition: req.body.boardPosition,
 						});
 						user
 							.save()
@@ -56,8 +53,8 @@ router.post('/signup',async(req,res,next)=>{
 										userId: result._id,
 										email: result.email,
 										name: result.name,
-                                        mobileNumber: result.mobileNumber,
-                                        boardPosition:result.boardPosition,
+										mobileNumber: result.mobileNumber,
+										boardPosition: result.boardPosition,
 									},
 								});
 							})
@@ -75,11 +72,10 @@ router.post('/signup',async(req,res,next)=>{
 				error: err,
 			});
 		});
-})
+});
 
-
-router.post('/login',async(req,res,next)=>{
-    Owner.find({ email: req.body.email })
+router.post("/login", async (req, res, next) => {
+	Owner.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
 			if (user.length < 1) {
@@ -100,8 +96,8 @@ router.post('/login',async(req,res,next)=>{
 							userId: user[0]._id,
 							email: user[0].email,
 							name: user[0].name,
-                            mobileNumber: user[0].mobileNumber,
-                            boardPosition:user[0].boardPosition
+							mobileNumber: user[0].mobileNumber,
+							boardPosition: user[0].boardPosition,
 						},
 						process.env.jwtSecret,
 						{
@@ -115,8 +111,8 @@ router.post('/login',async(req,res,next)=>{
 							userId: user[0]._id,
 							name: user[0].name,
 							email: user[0].email,
-                            mobileNumber: user[0].mobileNumber,
-                            boardPosition:  user[0].boardPosition,
+							mobileNumber: user[0].mobileNumber,
+							boardPosition: user[0].boardPosition,
 						},
 						token: token,
 					});
@@ -131,6 +127,26 @@ router.post('/login',async(req,res,next)=>{
 				error: err,
 			});
 		});
-})
+});
+
+router.get("/allQuizzes", checkAuth, checkAuthOwner, async (req, res, next) => {
+    Quiz.find({})
+    .populate('adminId')
+    .exec()
+    .then((result)=>{
+        res.status(200).json({
+            message:"Retrived",
+            result
+        })
+    })
+    .catch((err)=>{
+        res.status(400).json({
+            error:err
+        })
+    });
+});
+
+
+
 
 module.exports = router;
