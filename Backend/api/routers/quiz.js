@@ -164,19 +164,21 @@ router.patch(
 		Quiz.findOne({ quizCode: req.body.quizCode})
 			.exec()
 			.then(async (result2) => {
+				console.log(result2)
 				for (i = 0; i < result2.usersEnrolled.length; i++) {
+					console.log(result2.usersEnrolled)
 					if (result2.usersEnrolled[i].userId == req.user.userId) {
 						return res.status(409).json({ message: "Already enrolled" });
 					}
 				}
 				const userId = req.user.userId;
-				const quizId = req.body.quizId;
 				await Quiz.updateOne(
-					{ _id: quizId },
+					{quizCode:req.body.quizCode },
 					{ $push: { usersEnrolled: { userId } } }
 				)
 					.exec()
 					.then(async (result) => {
+						const quizId = result2._id
 						await User.updateOne(
 							{ _id: userId },
 							{ $push: { quizzesEnrolled: { quizId } } }

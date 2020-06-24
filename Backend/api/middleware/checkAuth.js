@@ -5,7 +5,7 @@ module.exports = function (req, res, next) {
   if (!token) return res.status(400).send("Access Denied!, no token entered");
 
   try {
-    const verified = JWT.verify(token, "supBitch");
+    const verified = JWT.verify(token, process.env.jwtSecret);
 
     req.user = verified;
     // console.log(verified);

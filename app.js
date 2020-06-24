@@ -7,8 +7,6 @@ const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 
-
-
 ////routers
 
 const app = express();
@@ -19,6 +17,7 @@ const quizRoutes = require("./Backend/api/routers/quiz");
 const questionRoutes = require("./Backend/api/routers/questions");
 const authRoutes = require("./Backend/api/routers/auth");
 const generalRoutes = require("./Backend/api/routers/general");
+const ownerRoutes = require("./Backend/api/routers/owner");
 
 const dbURI = process.env.dbURI;
 
@@ -67,9 +66,7 @@ app.use("/quiz", quizRoutes);
 app.use("/question", questionRoutes);
 app.use("/auth", authRoutes);
 app.use("/general", generalRoutes);
-
-
-
+app.use("/owner", ownerRoutes);
 
 //route not found
 app.use((req, res, next) => {
