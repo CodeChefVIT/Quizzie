@@ -17,8 +17,13 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res);
-				setQuizzes(res.data.result);
+				let quizList = []
+				res.data.result.map((quiz) => {
+					if(quiz.quizType === "public")
+						quizList.push(quiz);
+				});
+
+				setQuizzes(quizList);
 			})
 		} catch(error) {
 			console.log(error);
