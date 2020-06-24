@@ -186,11 +186,11 @@ router.patch(
 ///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Quiz.find({ adminId: req.user.userId })
-		// .populate({
-		// 	path: "usersEnrolled",
+		.populate({
+			path: "usersEnrolled",
 
-		// 	populate: { path: "userId" },
-		// })
+			populate: { path: "userId" },
+		})
 		.exec()
 		.then(async (result) => {
 			res.status(200).json({
@@ -211,11 +211,11 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 ///Number of students enrolled in a particular quiz
 router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
 	await Quiz.findById(req.params.quizId)
-	// .populate({
-    //     path: "usersEnrolled",
+	.populate({
+        path: "usersEnrolled",
 
-    //     populate: { path: "userId" },
-	//   })
+        populate: { path: "userId" },
+	  })
 	.exec()
 	.then(async(result1)=>{
 		res.status(200).json({
