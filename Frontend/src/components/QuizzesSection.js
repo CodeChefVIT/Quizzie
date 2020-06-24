@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import './QuizzesSection.css';
 import axios from "axios";
 import QuizLoading from './QuizLoading';
-import { GridList, GridListTile, GridListTileBar, Typography, Button, Dialog } from "@material-ui/core";
-import AddIcon from '@material-ui/icons/Add';
+import { GridList, GridListTile, GridListTileBar, Typography, Button, Dialog, isWidthUp, withWidth } from "@material-ui/core";
+import {Add, Check} from '@material-ui/icons';
 import TextInput from "./TextInput";
 
 function QuizzesSection(props) {
@@ -14,6 +14,14 @@ function QuizzesSection(props) {
 	const [joinModal, setJoinModal] = useState(false);
 	const [quizCode, setQuizCode] = useState("");
 	const [quizCodeError, setQuizCodeError] = useState(false);
+
+	const getCols = () => {
+		if(isWidthUp('md', props.width)) {
+			return 3;
+		}
+
+		return 2;
+	}
 
 	const onCloseHandle = () => {
 		setJoinModal(false);
@@ -88,13 +96,14 @@ function QuizzesSection(props) {
 		return (
 			<div className="quizzes-section">
 				<div className="quiz-btn-section">
-					<Button className="join-quiz-btn" onClick={onJoinClick}><AddIcon />Join a Quiz</Button>
+					<Button className="join-quiz-btn" onClick={onJoinClick}><Check />Join a Quiz</Button>
+					{userType === "admin"? <Button className="create-quiz-btn"><Add />Create a quiz</Button>: null}
 				</div>
 				<Typography variant="h5" className="up-quizzes">Upcoming Quizzes</Typography>
 				{quizzes.length === 0? <p>Sorry! No quizzes available at the moment!</p>
 				: 
 					<div className="quiz-list root">
-						<GridList cols={3} className="grid-list">
+						<GridList cols={getCols()} className="grid-list">
 							{quizzes.map((quiz) => (
 								<GridListTile key={quiz._id} className="quiz-tile">
 									<img src="../CC LOGO-01.svg" />
@@ -129,4 +138,4 @@ function QuizzesSection(props) {
 	}
 }
 
-export default QuizzesSection;
+export default withWidth()(QuizzesSection);

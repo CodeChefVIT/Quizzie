@@ -110,6 +110,7 @@ function Dashboard() {
 							aria-label="full width tabs dashboard"
 						>
 							<Tab label="Quizzes" />
+							{userType === "admin"? <Tab label="Your Quizzes" />: null}
 							<Tab label="History" />
 							<Tab label="Profile" />
 						</Tabs>

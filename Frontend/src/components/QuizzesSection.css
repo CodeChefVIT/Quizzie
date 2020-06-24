@@ -18,6 +18,13 @@
 	letter-spacing: 1px !important;
 }
 
+.create-quiz-btn {
+	background-color: red !important;
+	margin-left: 2% !important;
+	color: white !important;
+	font-weight: bold !important;
+}
+
 @media screen and (max-width: 500px) {
 	.join-quiz-btn {
 		font-size: 0.7rem !important;
@@ -32,8 +39,6 @@
 
 	margin-bottom: 5% !important;
 }
-
-
 
 .root {
 	display: flex;
