@@ -8,11 +8,11 @@ module.exports = function (req, res, next) {
     const verified = JWT.verify(token, process.env.jwtSecret);
     req.user = verified;
     // console.log(req.user);
-    if (req.user.userType === "Admin") {
+    if (req.user.userType === "Owner") {
       next();
     } else {
       res.status(409).json({
-        message: "not an Admin",
+        message: "not an owner",
       });
     }
   } catch (err) {
