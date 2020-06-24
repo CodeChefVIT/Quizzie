@@ -46,3 +46,24 @@
 	flex-wrap: nowrap;
     transform: translateZ(0);
 }
+
+.quiz-code-field {
+	margin-top: 5% !important;
+}
+
+.join-sub {
+	font-weight: normal !important;
+	font-family: "Montserrat", sans-serif !important;
+	font-size: 1rem !important;
+}
+
+.join-modal-btn {
+	margin-top: 5% !important;
+}
+
+@media screen and (max-width: 520px) {
+	.join-sub {
+		font-size: 0.8rem !important;
+	}
+
+} 
