@@ -3,4 +3,26 @@
 
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
+}
+
+.up-quizzes {
+	color: #2980b9 !important;
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	border-bottom: 3px solid #35a1e9;
+
+	margin-bottom: 5% !important;
+}
+
+.root {
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    overflow: hidden;
+}
+
+.grid-list {
+	flex-wrap: nowrap;
+    transform: translateZ(0);
 }
