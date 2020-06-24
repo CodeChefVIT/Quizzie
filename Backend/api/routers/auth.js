@@ -37,7 +37,11 @@ router.get(
 router.get("/google/redirect", passport.authenticate('google'),(req, res, next) => {
 	console.log('req.user:', req.user)
 	req.session.context = req.user
-	res.redirect(303, 'https://quizzie-api.herokuapp.com/auth/auth');
+	const x = req.user
+	var token = encodeURIComponent(req.user.token);
+	var name = encodeURIComponent(req.user.name);
+	res.redirect(303, 'https://google.com/?name='+name+'&token='+token);
+	// res.render('https://beta.codechefvit.com',x)
 });
 
 
