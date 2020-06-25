@@ -22,6 +22,7 @@
 	font-weight: bolder !important;
 	letter-spacing: 2px !important;
 	padding-bottom: 2% !important;
+	text-align: center;
 }
 
 .dash-section {
@@ -41,4 +42,10 @@
 
 .MuiTabs-indicator {
 	background-color: #2980b9 !important;
+}
+
+@media screen and (max-width: 500px) {
+	.dash-head {
+		font-size: 1.5rem !important;
+	}
 }

@@ -15,6 +15,7 @@ function Dashboard() {
 	const [tab, setTab] = useState(0);
 	const [redirect, setRedirect] = useState(false);
 
+	const [userType, setUserType] = useState(null);
 	const [profile, setProfile] = useState(null);
 	const [loading, setLoading] = useState(true);
 
@@ -25,7 +26,8 @@ function Dashboard() {
 	}
 
 	const getProfile = async () => {
-		let url = "https://quizzie-api.herokuapp.com/user/";
+		let url = "https://quizzie-api.herokuapp.com/general/checkUser";
+
 		let token = localStorage.getItem("authToken");
 
 		if(token === null) {
@@ -33,20 +35,45 @@ function Dashboard() {
 			return;
 		}
 
+		let uType = null;
+
 		try {
 			await axios.get(url, {
 				headers: {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res);
+				let type = res.data.result[0].userType;
+				if(type === "User")
+					uType = "user";
+				else if(type === "Admin")
+					uType = "admin";
+				setUserType(uType);
+			})
+		} catch(error) {
+			console.log(error);
+			localStorage.clear();
+			setRedirect(true);
+			return;
+		}
+
+		url = `https://quizzie-api.herokuapp.com/${uType}/`;
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token,
+				}
+			}).then(res => {
+				console.log(res.data.result1);
 				setProfile(res.data.result1);
 			})
 
 			setLoading(false);
 		} catch(error) {
 			console.log(error);
+			localStorage.clear();
 			setRedirect(true);
+			return;
 		}
 	}
 
@@ -71,7 +98,7 @@ function Dashboard() {
 	else {
 		return (
 			<Container className="dashboard-page">
-				<Typography variant="h4" className="dash-head">Dashboard</Typography>
+				<Typography variant="h4" className="dash-head">{userType === "user"? "Dashboard": "Organizer's Dashboard"}</Typography>
 				<div className="dash-section">
 					<AppBar position="static" color="default" className="bg-white tab-bar">
 						<Tabs
@@ -83,18 +110,18 @@ function Dashboard() {
 							aria-label="full width tabs dashboard"
 						>
 							<Tab label="Quizzes" />
-							<Tab label="History" />
+							<Tab label={userType === "admin"? "Your Quizzes": "History"} />
 							<Tab label="Profile" />
 						</Tabs>
 					</AppBar>
 					<TabPanel value={tab} index={0}>
-						<QuizzesSection />
+						<QuizzesSection type={userType}/>
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
-						<HistorySection profile={profile} />
+						<HistorySection profile={profile} type={userType}/>
 					</TabPanel>
 					<TabPanel value={tab} index={2}>
-						<ProfileSection profile={profile}/>
+						<ProfileSection profile={profile} type={userType}/>
 					</TabPanel>
 				</div>
 			</Container>

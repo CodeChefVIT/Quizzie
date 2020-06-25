@@ -47,7 +47,7 @@ function Navbar() {
 	return (
 		<div className="root">
 			{ redirect ?	<Redirect to="/" /> : null}
-			<AppBar position="static" className="navbar">
+			<AppBar position="static" className="navbar" elevation={4}>
 				<Toolbar>
 					<Link to="/" className="nav-link"><img src="../CC LOGO-01.svg" className="nav-logo"/></Link>
 					<Typography varirant="h6" className="nav-head">The Quizzie Platform</Typography>

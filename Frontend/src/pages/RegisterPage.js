@@ -150,7 +150,8 @@ function RegisterPage(props) {
 		setLoading(false);
 	}
 	if(redirect === true){
-		return <Redirect to='/' />
+		let to = (type === "user"? "user": "organizer");
+		return <Redirect to={`/login/${to}`} />
 	}
 	return (
 		isLoading? <Loading />

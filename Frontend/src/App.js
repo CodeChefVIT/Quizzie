@@ -12,6 +12,7 @@ import AdminRegister from './pages/AdminRegister';
 import InfoContext from './context/InfoContext';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
+import CreateQuiz from './pages/CreateQuiz';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -52,6 +53,9 @@ function App() {
 					</Route>
 					<Route exact path="/dashboard">
 						<Dashboard />
+					</Route>
+					<Route exact path="/createQuiz">
+						<CreateQuiz />
 					</Route>
 					<Route exact path="/register/:type" component={RegisterPage} />
 					<Route exact path="/admin">
