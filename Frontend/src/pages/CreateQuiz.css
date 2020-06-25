@@ -1,5 +1,6 @@
 .create-quiz-page {
-	height: calc(100vh - 64px);
+	min-height: calc(100vh - 64px);
+	height: 100%;
 }
 
 .create-form {
@@ -10,12 +11,13 @@
 	align-items: center !important;
 	
 	margin: 0 20% !important;
-	height: 100% !important
+	min-height: inherit !important;
 }
 
 @media screen and (max-width: 600px) {
 	.create-quiz-page {
-		height: calc(100vh - 56px);
+		min-height: calc(100vh - 56px);
+		height: 100%;
 	}
 }
 
@@ -68,4 +70,18 @@
 .create-btn {
 	width: 30% !important;
 	margin-top: 10% !important;
+	margin-bottom: 2% !important;
+}
+
+@media screen and (max-width:520px) {
+	.create-btn {
+		font-size: 0.7rem !important;
+		width: 40% !important;
+	}
+}
+
+.create-subtitle {
+	text-align: center !important;
+	padding: 0 20% !important;
+	font-size: 0.8rem !important;
 }

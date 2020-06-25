@@ -71,7 +71,6 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res);
 				onCloseHandle();
 				setSnackBar(true);
 			})
@@ -121,7 +120,6 @@ function QuizzesSection(props) {
 						quizList.push(quiz);
 				});
 				
-				console.log(quizList);
 				setQuizzes(quizList);
 				setLoading(false);
 			})

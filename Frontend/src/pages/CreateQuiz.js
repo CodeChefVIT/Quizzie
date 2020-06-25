@@ -15,6 +15,7 @@ function CreateQuiz() {
 	const [type, setType] = useState("private");
 
 	const [loading, setLoading] = useState(false);
+	const [redirect, setRedirect] = useState(false);
 
 	const onQuizNameChange = (event) => {
 		setQuizName(event.target.value);
@@ -51,17 +52,21 @@ function CreateQuiz() {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res);
+				setLoading(false);
+				setRedirect(true);
 			})
 		} catch(error) {
 			console.log(error);
+			setLoading(false);
 		}
-
-		setLoading(false);
 	}
 	if(loading) {
 		return (
 			<Loading />
+		)
+	} else if(redirect) {
+		return (
+			<Redirect to="/dashboard" />
 		)
 	}
 	else {
@@ -124,6 +129,8 @@ function CreateQuiz() {
 						</Select>
 	
 						<Button className="login-btn create-btn" onClick={handleSubmit}>Create Quiz</Button>
+						<Typography variant="subtitle1" className="create-subtitle">NOTE: After creating the quiz, you can add questions 
+								by editing the quiz in YOUR QUIZZES section of the dashboard.</Typography>
 					</div>
 				</div>
 			</Container>
