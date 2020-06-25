@@ -11,6 +11,7 @@ const User = require("../models/user");
 const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const Owner = require("../models/owner");
+const Question = require('../models/question')
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthOwner = require("../middleware/checkAuthOwner");
@@ -146,101 +147,180 @@ router.get("/allQuizzes", checkAuth, checkAuthOwner, async (req, res, next) => {
 		});
 });
 
-router.delete("/quiz/:quizId", checkAuth, checkAuthOwner, async (req, res, next) => {
-	await Quiz.findById(req.params.quizId)
-		.then(async (result) => {
-			var numUsers = result.usersEnrolled.length;
-			//Remove quiz from student array
-			for (i = 0; i < numUsers; i++) {
-				var currentUser = result.usersEnrolled[i].userId;
-				await User.updateOne(
-					{ _id: currentUser },
-					{ $pull: { quizzesEnrolled: { quizId: req.params.quizId } } }
-				)
-					.then(async (result1) => {
-						console.log(result1);
-						// await User.updateOne({_id:currentUser},{$pull:{quizzesGiven:{quizId:req.body.quizId}}}).then(async(result3)=>{
-						//     console.log(result3)
-						// }).catch((err)=>{
-						//     res.status(400).json({
-						//         message:'Unexpected error occured'
-						//     })
-						// })
-					})
-					.catch((err) => {
-						res.status(400).json({
-							message: "some error",
-						});
-					});
-			}
-			await Admin.updateOne(
-				{ _id: result.adminId },
-				{ $pull: { quizzes: { quizId: req.params.quizId } } }
-			)
-				.then(async (result3) => {
-					await Quiz.deleteOne({ _id: req.params.quizId })
-						.then((result4) => {
-							res.status(200).json({
-								message: "Successfully deleted",
-							});
+router.delete(
+	"/quiz/:quizId",
+	checkAuth,
+	checkAuthOwner,
+	async (req, res, next) => {
+		await Quiz.findById(req.params.quizId)
+			.then(async (result) => {
+				var numUsers = result.usersEnrolled.length;
+				//Remove quiz from student array
+				for (i = 0; i < numUsers; i++) {
+					var currentUser = result.usersEnrolled[i].userId;
+					await User.updateOne(
+						{ _id: currentUser },
+						{ $pull: { quizzesEnrolled: { quizId: req.params.quizId } } }
+					)
+						.then(async (result1) => {
+							console.log(result1);
+							// await User.updateOne({_id:currentUser},{$pull:{quizzesGiven:{quizId:req.body.quizId}}}).then(async(result3)=>{
+							//     console.log(result3)
+							// }).catch((err)=>{
+							//     res.status(400).json({
+							//         message:'Unexpected error occured'
+							//     })
+							// })
 						})
 						.catch((err) => {
 							res.status(400).json({
-								message: "cant happen",
+								message: "some error",
 							});
 						});
-				})
-				.catch((err) => {
-					res.status(400).json({
-						message: "Unexpected",
+				}
+				await Admin.updateOne(
+					{ _id: result.adminId },
+					{ $pull: { quizzes: { quizId: req.params.quizId } } }
+				)
+					.then(async (result3) => {
+						await Question.deleteMany({ quizId: req.params.quizId })
+							.then(async(result4) => {
+								await Quiz.deleteOne({_id:req.params.quizId})
+								.then((result5)=>{								
+									res.status(200).json({
+									message: "Successfully deleted",
+								});
+							})
+								.catch((err)=>{
+									res.status(400).json({
+										message:'Unexpected Error'
+									})
+								})
+
+							})
+							.catch((err) => {
+								res.status(400).json({
+									message: "cant happen",
+								});
+							});
+					})
+					.catch((err) => {
+						res.status(400).json({
+							message: "Unexpected",
+						});
 					});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Unexpected",
 				});
+			});
+	}
+);
+
+router.get("/allAdmins", checkAuth, checkAuthOwner, async (req, res, next) => {
+	await Admin.find({})
+		.populate({
+			path: "quizzes",
+
+			populate: { path: "quizId" },
+		})
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Retrivied",
+				result,
+			});
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message: "Unexpected",
+				message: "Some error occurred",
+			});
+		});
+});
+router.get("/allUsers", checkAuth, checkAuthOwner, async (req, res, next) => {
+	await User.find({})
+		.populate({
+			path: "quizzesEnrolled",
+
+			populate: { path: "quizId" },
+		})
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Retrivied",
+				result,
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Some error occurred",
 			});
 		});
 });
 
-
-router.get('/allAdmins',checkAuth,checkAuthOwner,async(req,res,next)=>{
-    await Admin.find({}).populate({
-        path: "quizzes",
-
-        populate: { path: "quizId" },
-    })
-    .exec()
-    .then((result)=>{
-        res.status(200).json({
-            message:"Retrivied",
-            result
-        })
-    })
-    .catch((err)=>{
-        res.status(400).json({
-            messgae:'Some error occurred',
-        })
-    })
-})
-router.get('/allUsers',checkAuth,checkAuthOwner,async(req,res,next)=>{
-    await User.find({}).populate({
-        path: "quizzesEnrolled",
-
-        populate: { path: "quizId" },
-    })
-    .exec()
-    .then((result)=>{
-        res.status(200).json({
-            message:"Retrivied",
-            result
-        })
-    })
-    .catch((err)=>{
-        res.status(400).json({
-            messgae:'Some error occurred',
-        })
-    })
-})
+router.delete(
+	"/admin/:adminId",
+	checkAuth,
+	checkAuthOwner,
+	async (req, res, next) => {
+		await Admin.findById(req.params.adminId)
+			.exec()
+			.then(async(result) => {
+                const numQuizzes = result.quizzes.length
+                for(i=0;i<numQuizzes;i++){
+					const currentQuiz = result.quizzes[i].quizId
+					await Quiz.findById(currentQuiz)
+					.exec()
+					.then(async(result1)=>{
+						const numOfUsers = result1.usersEnrolled.length
+						for(j=0;j<numOfUsers;j++){
+							const currUser = result1.usersEnrolled[j].userId
+							await User.updateOne({_id:currUser},
+												{ $pull: { quizzesEnrolled: { quizId: currentQuiz } } }
+												).then(async(result3)=>{
+													await Question.deleteMany({quizId:currentQuiz})
+													.then(async(result4)=>{
+														await Quiz.deleteOne({_id:currentQuiz}).then(async(result5)=>{
+														})
+													})
+													.catch(async(err)=>{
+														await res.status(400).json({
+															message:"some error occurred"
+														})
+													})
+												}).catch(async(err)=>{
+													await res.status(400).json({
+														message:"Unexpected Erro"
+													})
+												})
+						}
+					})
+					.catch(async(err)=>{
+						await res.status(400).json({
+							message:'Unexpected Err'
+						})
+					})
+				}
+				await Admin.deleteOne({_id:req.params.adminId})
+				.then(async(result6)=>{
+					await res.status(200).json({
+						message:'Successfully Deleted'
+					})
+				})
+				.catch(async(err)=>{
+					await res.status(400).json({
+						message:'Some error'
+					})
+				})
+				
+            })
+			.catch(async(err)=>{
+				await res.status(400).json({
+					message:'Unexpected Erroor'
+				})
+			});
+	}
+);
 
 module.exports = router;
