@@ -39,6 +39,7 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
+		getQuizzes();
 	}
 
 	const onJoinClick = () => {
@@ -101,6 +102,7 @@ function QuizzesSection(props) {
 	}
 
 	const getQuizzes = async () => {
+		setLoading(true);
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/all";
 
