@@ -230,4 +230,72 @@ router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,ne
 	  
 })
 
+
+
+
+////Delete profile 
+// router.delete(
+// 	"/",
+// 	checkAuth,
+// 	checkAuthAdmin,
+// 	async (req, res, next) => {
+// 		await Admin.findById(req.user.userId)
+// 			.exec()
+// 			.then(async(result) => {
+//                 const numQuizzes = result.quizzes.length
+//                 for(i=0;i<numQuizzes;i++){
+// 					const currentQuiz = result.quizzes[i].quizId
+// 					await Quiz.findById(currentQuiz)
+// 					.exec()
+// 					.then(async(result1)=>{
+// 						const numOfUsers = result1.usersEnrolled.length
+// 						for(j=0;j<numOfUsers;j++){
+// 							const currUser = result1.usersEnrolled[j].userId
+// 							await User.updateOne({_id:currUser},
+// 												{ $pull: { quizzesEnrolled: { quizId: currentQuiz } } }
+// 												).then(async(result3)=>{
+// 													await Question.deleteMany({quizId:currentQuiz})
+// 													.then(async(result4)=>{
+// 														await Quiz.deleteOne({_id:currentQuiz}).then(async(result5)=>{
+// 														})
+// 													})
+// 													.catch(async(err)=>{
+// 														await res.status(400).json({
+// 															message:"some error occurred"
+// 														})
+// 													})
+// 												}).catch(async(err)=>{
+// 													await res.status(400).json({
+// 														message:"Unexpected Erro"
+// 													})
+// 												})
+// 						}
+// 					})
+// 					.catch(async(err)=>{
+// 						await res.status(400).json({
+// 							message:'Unexpected Err'
+// 						})
+// 					})
+// 				}
+// 				await Admin.deleteOne({_id:req.user.userId})
+// 				.then(async(result6)=>{
+// 					await res.status(200).json({
+// 						message:'Successfully Deleted'
+// 					})
+// 				})
+// 				.catch(async(err)=>{
+// 					await res.status(400).json({
+// 						message:'Some error'
+// 					})
+// 				})
+				
+//             })
+// 			.catch(async(err)=>{
+// 				await res.status(400).json({
+// 					message:'Unexpected Erroor'
+// 				})
+// 			});
+// 	}
+// );
+
 module.exports = router;
