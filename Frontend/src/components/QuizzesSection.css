@@ -40,7 +40,7 @@
 	margin-bottom: 5% !important;
 }
 
-.root {
+.root1 {
 	display: flex;
     flex-wrap: wrap;
     justify-content: space-around;
@@ -72,3 +72,11 @@
 	}
 
 } 
+
+.enroll-icon {
+	color: white !important;
+}
+
+.m-top {
+	margin-top: 5% !important;
+}
