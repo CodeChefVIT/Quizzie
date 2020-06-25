@@ -48,3 +48,24 @@
 .date-time-select .MuiInputBase-input {
 	color: black !important;
 }
+
+.time-slider {
+	width: 50% !important;
+}
+
+.MuiSlider-root {
+	color: #2980b9 !important;
+}
+
+.type-select {
+	width: 30% !important;
+}
+
+.type-select .MuiInputBase-input {
+	color: black !important;
+}
+
+.create-btn {
+	width: 30% !important;
+	margin-top: 10% !important;
+}

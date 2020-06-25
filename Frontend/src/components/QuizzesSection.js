@@ -150,7 +150,7 @@ function QuizzesSection(props) {
 					</Button> : null}
 				</div>
 				<Typography variant="h5" className="up-quizzes">Upcoming Quizzes</Typography>
-				{quizzes.length === 0 ? <p>Sorry! No quizzes available at the moment!</p>
+				{quizzes.length === 0 ? <p style={{textAlign: 'center'}}>Sorry! No quizzes available at the moment!</p>
 					:
 					<div className="quiz-list root1">
 						<GridList cols={getCols()} className="grid-list">
