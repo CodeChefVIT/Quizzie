@@ -3,4 +3,80 @@
 
 	display: flex;
 	justify-content: center;
+	flex-direction: column;
+}
+
+.quiz-btn-section {
+	margin-bottom: 2% !important;
+}
+
+.join-quiz-btn {
+	background-color: green !important;
+	color: white !important;
+
+	font-weight: bold !important;
+	letter-spacing: 1px !important;
+}
+
+.create-quiz-btn {
+	background-color: red !important;
+	margin-left: 2% !important;
+	color: white !important;
+	font-weight: bold !important;
+}
+
+@media screen and (max-width: 500px) {
+	.join-quiz-btn {
+		font-size: 0.7rem !important;
+	}
+}
+
+.up-quizzes {
+	color: #2980b9 !important;
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	border-bottom: 3px solid #35a1e9;
+
+	margin-bottom: 5% !important;
+}
+
+.root1 {
+	display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    overflow: hidden;
+}
+
+.grid-list {
+	flex-wrap: nowrap;
+    transform: translateZ(0);
+}
+
+.quiz-code-field {
+	margin-top: 5% !important;
+}
+
+.join-sub {
+	font-weight: normal !important;
+	font-family: "Montserrat", sans-serif !important;
+	font-size: 1rem !important;
+}
+
+.join-modal-btn {
+	margin-top: 5% !important;
+}
+
+@media screen and (max-width: 520px) {
+	.join-sub {
+		font-size: 0.8rem !important;
+	}
+
+} 
+
+.enroll-icon {
+	color: white !important;
+}
+
+.m-top {
+	margin-top: 5% !important;
 }
