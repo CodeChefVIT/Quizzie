@@ -64,7 +64,6 @@ function Dashboard() {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res.data.result1);
 				setProfile(res.data.result1);
 			})
 
