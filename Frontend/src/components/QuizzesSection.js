@@ -7,6 +7,7 @@ import { GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
 import { Add, Check } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
@@ -137,7 +138,10 @@ function QuizzesSection(props) {
 			<div className="quizzes-section">
 				<div className="quiz-btn-section">
 					<Button className="join-quiz-btn" onClick={onJoinClick}><Check />Join a Quiz</Button>
-					{userType === "admin" ? <Button className="create-quiz-btn"><Add />Create a quiz</Button> : null}
+					{userType === "admin" ?
+					<Button className="create-quiz-btn" component={Link} to="/createQuiz">
+						<Add />Create a quiz
+					</Button> : null}
 				</div>
 				<Typography variant="h5" className="up-quizzes">Upcoming Quizzes</Typography>
 				{quizzes.length === 0 ? <p>Sorry! No quizzes available at the moment!</p>
