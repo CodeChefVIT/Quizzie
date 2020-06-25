@@ -39,7 +39,7 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
-		getQuizzes();
+		if(userType === "user") getQuizzes();
 	}
 
 	const onJoinClick = () => {
@@ -72,9 +72,12 @@ function QuizzesSection(props) {
 				}
 			}).then(res => {
 				console.log(res);
+				onCloseHandle();
+				setSnackBar(true);
 			})
 		} catch (error) {
 			console.log(error);
+			setErrorSnack(true);
 		}
 	}
 
@@ -117,7 +120,8 @@ function QuizzesSection(props) {
 					if (quiz.quizType === "public")
 						quizList.push(quiz);
 				});
-
+				
+				console.log(quizList);
 				setQuizzes(quizList);
 				setLoading(false);
 			})
@@ -173,17 +177,21 @@ function QuizzesSection(props) {
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%' } }}
 					style={{ width: '100%' }}>
 					<div className="modal-info">
-						<Typography variant="h5" className="type-head">JOIN A PRIVATE QUIZ</Typography>
-						<Typography variant="h6" className="type-head join-sub">Enter the code of the quiz you want to join</Typography>
-						<TextInput
-							error={quizCodeError}
-							helperText={quizCodeError ? "Required" : null}
-							label="Quiz Code"
-							variant="outlined"
-							value={quizCode}
-							onChange={handleJoinChange}
-							className="quiz-code-field" />
-						<Button className="join-quiz-btn join-modal-btn" onClick={handleJoinSubmit}>Join!</Button>
+						{userType === "admin" ? <Typography variant="h6" className="type-head join-sub">Organizers cannot enroll in quizzes.</Typography> :
+							<div style={{display: 'flex', flexDirection: "column"}}>
+								<Typography variant="h5" className="type-head">JOIN A PRIVATE QUIZ</Typography>
+								<Typography variant="h6" className="type-head join-sub">Enter the code of the quiz you want to join</Typography>
+								<TextInput
+									error={quizCodeError}
+									helperText={quizCodeError ? "Required" : null}
+									label="Quiz Code"
+									variant="outlined"
+									value={quizCode}
+									onChange={handleJoinChange}
+									className="quiz-code-field" />
+								<Button className="join-quiz-btn join-modal-btn" onClick={handleJoinSubmit}>Join!</Button>
+							</div>
+						}
 					</div>
 				</Dialog>
 				<Dialog open={enrollModal} onClose={onCloseHandle} aria-labelledby="enroll-quiz-modal"
@@ -202,10 +210,10 @@ function QuizzesSection(props) {
 						}
 					</div>
 				</Dialog>
-				<Snackbar open={snackbar} autoHideDuration={3000} onClose={() => setSnackBar(false)}>
+				<Snackbar open={snackbar} autoHideDuration={1000} onClose={() => setSnackBar(false)}>
 					<Alert variant="filled" severity="success" onClose={() => setSnackBar(false)}>Successfully Enrolled!</Alert>
 				</Snackbar>
-				<Snackbar open={errorSnack} autoHideDuration={3000} onClose={() => setErrorSnack(false)}>
+				<Snackbar open={errorSnack} autoHideDuration={1000} onClose={() => setErrorSnack(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setErrorSnack(false)}>There was some error. Please try again!</Alert>
 				</Snackbar>
 			</div>
