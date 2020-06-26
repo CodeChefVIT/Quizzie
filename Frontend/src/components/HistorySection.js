@@ -4,6 +4,7 @@ import { GridList, GridListTile, GridListTileBar, Tooltip, IconButton, isWidthUp
 import { Check, Create } from "@material-ui/icons";
 import axios from "axios";
 import QuizLoading from "./QuizLoading";
+import { Link } from "react-router-dom";
 
 function HistorySection(props) {
 	const [userType, setUserType] = useState(props.type);
@@ -30,7 +31,6 @@ function HistorySection(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setQuizzes(res.result);
 				setLoading(false);
 			})
@@ -64,7 +64,9 @@ function HistorySection(props) {
 							subtitle={`By: You`}
 							actionIcon={
 								<Tooltip title="Edit">
-									<IconButton aria-label={`edit ${quiz.quizId.quizName}`}>
+									<IconButton aria-label={`edit ${quiz.quizId.quizName}`} 
+										component={Link} to={`/editQuiz/${quiz._id}`}>
+
 										<Create className="enroll-icon" />
 									</IconButton>
 								</Tooltip>
