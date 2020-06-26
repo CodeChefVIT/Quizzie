@@ -1,0 +1,87 @@
+.create-quiz-page {
+	min-height: calc(100vh - 64px);
+	height: 100%;
+}
+
+.create-form {
+	background-color: white !important;
+
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	
+	margin: 0 20% !important;
+	min-height: inherit !important;
+}
+
+@media screen and (max-width: 600px) {
+	.create-quiz-page {
+		min-height: calc(100vh - 56px);
+		height: 100%;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.create-form {
+		margin: 0 !important;
+	}
+}
+
+.create-head {
+	margin-top: 5% !important;
+
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	color: #2980b9 !important;
+}
+
+.create-form-inputs {
+	padding-top: 5% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	width: 100%;
+}
+
+.date-time-select {
+	text-align: center !important;
+}
+
+.date-time-select .MuiInputBase-input {
+	color: black !important;
+}
+
+.time-slider {
+	width: 50% !important;
+}
+
+.MuiSlider-root {
+	color: #2980b9 !important;
+}
+
+.type-select {
+	width: 30% !important;
+}
+
+.type-select .MuiInputBase-input {
+	color: black !important;
+}
+
+.create-btn {
+	width: 30% !important;
+	margin-top: 10% !important;
+	margin-bottom: 2% !important;
+}
+
+@media screen and (max-width:520px) {
+	.create-btn {
+		font-size: 0.7rem !important;
+		width: 40% !important;
+	}
+}
+
+.create-subtitle {
+	text-align: center !important;
+	padding: 0 20% !important;
+	font-size: 0.8rem !important;
+}
