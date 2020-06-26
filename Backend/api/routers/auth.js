@@ -40,7 +40,7 @@ router.get("/google/redirect", passport.authenticate('google'),(req, res, next) 
 	const x = req.user
 	var token = encodeURIComponent(req.user.token);
 	var name = encodeURIComponent(req.user.name);
-	res.redirect(303, 'https://google.com/?name='+name+'&token='+token);
+	res.redirect(303, 'https://quizzie-cc.netlify.app/dashboard/?name='+name+'&token='+token);
 	// res.render('https://beta.codechefvit.com',x)
 });
 
