@@ -145,6 +145,8 @@ function RegisterPage(props) {
 				setPasswordChanged(false);
 				changePassword("");
 				setPasswordChanged(false);
+				setErrorText("There was some error!");
+				setError(true);
 			}	
 		}
 		setLoading(false);
