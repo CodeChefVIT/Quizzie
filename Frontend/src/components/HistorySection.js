@@ -65,7 +65,7 @@ function HistorySection(props) {
 							actionIcon={
 								<Tooltip title="Edit">
 									<IconButton aria-label={`edit ${quiz.quizId.quizName}`} 
-										component={Link} to={`/editQuiz/${quiz._id}`}>
+										component={Link} to={`/editQuiz/${quiz.quizId._id}`}>
 										<Create className="enroll-icon" />
 									</IconButton>
 								</Tooltip>

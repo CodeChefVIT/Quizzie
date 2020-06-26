@@ -52,6 +52,10 @@
     transform: translateZ(0);
 }
 
+.enrolled-list {
+	margin-bottom: 5% !important;
+}
+
 .quiz-code-field {
 	margin-top: 5% !important;
 }

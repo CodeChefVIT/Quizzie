@@ -114,6 +114,8 @@ function QuizzesSection(props) {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/all";
+		
+		let quizList = []
 
 		try {
 			await axios.get(url, {
@@ -121,10 +123,14 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
-				let quizList = []
 				res.data.result.map((quiz) => {
-					if (quiz.quizType === "public")
-						quizList.push(quiz);
+					if (quiz.quizType === "public") {
+						if(userType === "user") {
+							if(!profile.quizzesEnrolled.find(o => o.quizId._id === quiz._id))
+								quizList.push(quiz);
+						} else 
+							quizList.push(quiz);
+					}
 				});
 
 				setQuizzes(quizList);
@@ -155,7 +161,7 @@ function QuizzesSection(props) {
 					</Button> : null}
 				</div>
 				{userType === "user" ?
-					<div>
+					<div className="enrolled-list">
 						<Typography variant="h5" className="up-quizzes">Enrolled Quizzes</Typography>
 						{profile.quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
 							:
