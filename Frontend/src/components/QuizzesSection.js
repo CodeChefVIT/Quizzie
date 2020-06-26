@@ -6,7 +6,7 @@ import {
 	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
 	isWidthUp, withWidth, IconButton, Tooltip, Snackbar
 } from "@material-ui/core";
-import { Add, Check } from '@material-ui/icons';
+import { Add, Check, Info } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -44,7 +44,6 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
-		if (userType === "user") getQuizzes();
 	}
 
 	const onJoinClick = () => {
@@ -172,11 +171,10 @@ function QuizzesSection(props) {
 											<img src="../CC LOGO-01.svg" />
 											<GridListTileBar
 												title={quiz.quizId.quizName}
-												subtitle={`By: admin`}
 												actionIcon={
-													<Tooltip title="Enroll">
-														<IconButton aria-label={`enroll ${quiz.quizName}`} onClick={() => handleEnrollButton(quiz)}>
-															<Check className="enroll-icon" />
+													<Tooltip title="Info">
+														<IconButton aria-label={`info ${quiz.quizName}`}>
+															<Info className="enroll-icon" />
 														</IconButton>
 													</Tooltip>
 												}
