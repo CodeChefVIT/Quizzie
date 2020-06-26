@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import './QuizzesSection.css';
 import axios from "axios";
 import QuizLoading from './QuizLoading';
-import { GridList, GridListTile, GridListTileBar, Typography, Button, Dialog, 
-		isWidthUp, withWidth, IconButton, Tooltip, Snackbar } from "@material-ui/core";
-import { Add, Check } from '@material-ui/icons';
+import {
+	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
+	isWidthUp, withWidth, IconButton, Tooltip, Snackbar
+} from "@material-ui/core";
+import { Add, Check, Info } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -12,6 +14,7 @@ import { Link } from "react-router-dom";
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
 	const [userType, setUserType] = useState(props.type);
+	const [profile, setProfile] = useState(props.profile);
 	const [quizzes, setQuizzes] = useState([]);
 
 	const [joinModal, setJoinModal] = useState(false);
@@ -23,6 +26,8 @@ function QuizzesSection(props) {
 	const [enrollQuizId, setEnrollQuizId] = useState("");
 	const [snackbar, setSnackBar] = useState(false);
 	const [errorSnack, setErrorSnack] = useState(false);
+
+	const setRefresh = props.refresh;
 
 	const getCols = () => {
 		if (isWidthUp('md', props.width)) {
@@ -39,7 +44,6 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
-		if(userType === "user") getQuizzes();
 	}
 
 	const onJoinClick = () => {
@@ -71,6 +75,7 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
+				setRefresh(true);
 				onCloseHandle();
 				setSnackBar(true);
 			})
@@ -94,10 +99,11 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then((res) => {
+				setRefresh(true);
 				onCloseHandle();
 				setSnackBar(true);
 			})
-		}catch(error) {
+		} catch (error) {
 			console.log(error);
 			setErrorSnack(true);
 		}
@@ -107,6 +113,8 @@ function QuizzesSection(props) {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/all";
+		
+		let quizList = []
 
 		try {
 			await axios.get(url, {
@@ -114,12 +122,16 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
-				let quizList = []
 				res.data.result.map((quiz) => {
-					if (quiz.quizType === "public")
-						quizList.push(quiz);
+					if (quiz.quizType === "public") {
+						if(userType === "user") {
+							if(!profile.quizzesEnrolled.find(o => o.quizId._id === quiz._id))
+								quizList.push(quiz);
+						} else 
+							quizList.push(quiz);
+					}
 				});
-				
+
 				setQuizzes(quizList);
 				setLoading(false);
 			})
@@ -143,12 +155,39 @@ function QuizzesSection(props) {
 				<div className="quiz-btn-section">
 					<Button className="join-quiz-btn" onClick={onJoinClick}><Check />Join a Quiz</Button>
 					{userType === "admin" ?
-					<Button className="create-quiz-btn" component={Link} to="/createQuiz">
-						<Add />Create a quiz
+						<Button className="create-quiz-btn" component={Link} to="/createQuiz">
+							<Add />Create a quiz
 					</Button> : null}
 				</div>
+				{userType === "user" ?
+					<div className="enrolled-list">
+						<Typography variant="h5" className="up-quizzes">Enrolled Quizzes</Typography>
+						{profile.quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
+							:
+							<div className="quiz-list root1">
+								<GridList cols={getCols()} className="grid-list">
+									{profile.quizzesEnrolled.map((quiz) => (
+										<GridListTile key={quiz._id} className="quiz-tile">
+											<img src="../CC LOGO-01.svg" />
+											<GridListTileBar
+												title={quiz.quizId.quizName}
+												actionIcon={
+													<Tooltip title="Info">
+														<IconButton aria-label={`info ${quiz.quizName}`}>
+															<Info className="enroll-icon" />
+														</IconButton>
+													</Tooltip>
+												}
+											/>
+										</GridListTile>
+									))}
+								</GridList>
+							</div>
+						}
+					</div>
+					: null}
 				<Typography variant="h5" className="up-quizzes">Upcoming Quizzes</Typography>
-				{quizzes.length === 0 ? <p style={{textAlign: 'center'}}>Sorry! No quizzes available at the moment!</p>
+				{quizzes.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
 					:
 					<div className="quiz-list root1">
 						<GridList cols={getCols()} className="grid-list">
@@ -176,7 +215,7 @@ function QuizzesSection(props) {
 					style={{ width: '100%' }}>
 					<div className="modal-info">
 						{userType === "admin" ? <Typography variant="h6" className="type-head join-sub">Organizers cannot enroll in quizzes.</Typography> :
-							<div style={{display: 'flex', flexDirection: "column"}}>
+							<div style={{ display: 'flex', flexDirection: "column" }}>
 								<Typography variant="h5" className="type-head">JOIN A PRIVATE QUIZ</Typography>
 								<Typography variant="h6" className="type-head join-sub">Enter the code of the quiz you want to join</Typography>
 								<TextInput
