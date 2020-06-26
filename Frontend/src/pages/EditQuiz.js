@@ -5,7 +5,7 @@ function EditQuiz(props) {
 	const quizId = props.match.params.id;
 
 	useEffect(() => {
-		console.log(quizId);
+		console.log(props.location.prop);
 	}, [])
 
 	return (
