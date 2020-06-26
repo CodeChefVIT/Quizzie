@@ -28,6 +28,11 @@ const userSchema = mongoose.Schema({
 			responses: [],
 		},
 	],
+	quizzesStarted:[
+		{
+			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+		}
+	],
 	quizzesEnrolled: [
 		{
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
