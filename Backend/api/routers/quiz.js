@@ -4,17 +4,29 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
+const  session = require('express-session')
+const cookieParser = require('cookie-parser')
 const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
 const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const User = require("../models/user");
+const Question = require("../models/question");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
 const router = express.Router();
+
+
+router.use(cookieParser())
+router.use(session({secret:'mySecret',resave:false,saveUninitialized:false,"cookie": {
+	"maxAge": 60*60*1000,
+	"expires": 40*60*1000,
+	}}))
+
+
 
 ////Create and Innitialise the quiz
 router.post(
@@ -267,5 +279,63 @@ router.get("/checkAdmin", checkAuth, checkAuthAdmin, async (req, res, next) => {
 			});
 		});
 });
+
+
+router.patch('/start',checkAuth,checkAuthUser,async(req,res,next)=>{
+	await Question.find({quizId:req.body.quizId})
+	.select('-__v')
+	.exec()
+	.then(async(result)=>{
+		await User.findById(req.user.userId)
+		.then(async(result2)=>{
+			var flag = 0 
+			var numQuiz = result2.quizzesStarted.length
+			var numEnrolled = result2.quizzesEnrolled.length
+			for(i=0;i<numEnrolled;i++){
+				if(result2.quizzesEnrolled[i].quizId==req.body.quizId){
+					flag = 1
+				}
+			}
+
+			for(i=0;i<numQuiz;i++){
+				if(result2.quizzesStarted[i].quizId==req.body.quizId){
+					return res.status(401).json({
+						message:'Quiz already started'
+					})
+				}
+			}
+			if(flag===0){
+				return res.status(400).json({
+					message:"You are not enrolled in this quiz"
+				})
+			}
+			var quizId=req.body.quizId
+			req.session.questions = result
+			await User.updateOne({_id:req.user.userId},{$push:{quizzesStarted:{quizId}}})
+			.exec()
+			.then((result1)=>{
+				res.status(200).json({
+					message:'Quiz started for '+req.user.name
+				})
+			})
+			.catch((err)=>{
+				res.status(400).json({
+					message:'some error occurred'
+				})
+			})
+		})
+		.catch((err)=>{
+			res.status(400).json({
+				message:'Some error Occurred'
+			})
+		})
+
+	})
+	.catch((err)=>{
+		res.status(400).json({
+			message:'some error'
+		})
+	})
+})
 
 module.exports = router;

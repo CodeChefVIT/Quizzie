@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
+const cookieParser = require('cookie-parser')
 const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
 const Quiz = require("../models/quiz");
@@ -15,7 +16,14 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
+const  session = require('express-session')
+
+
+
 const router = express.Router();
+
+router.use(cookieParser())
+router.use(session({secret:'mySecret',resave:false,saveUninitialized:false}))
 
 router.get("/all/:quizId", checkAuth, async (req, res, next) => {
 	await Question.find({ quizId: req.params.quizId })
@@ -101,5 +109,6 @@ router.delete("/:questionId", async (req, res, next) => {
 			})
 		});
 });
+
 
 module.exports = router;
