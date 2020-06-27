@@ -108,8 +108,12 @@ function QuizzesSection(props) {
 		let url = "https://quizzie-api.herokuapp.com/quiz/enrollPrivate";
 		let token = localStorage.getItem("authToken");
 
+		let data = {
+			"quizCode": quizCode
+		}
+
 		try {
-			await axios.patch(url, {
+			await axios.patch(url, data, {
 				headers: {
 					"auth-token": token,
 				}
@@ -120,6 +124,7 @@ function QuizzesSection(props) {
 			})
 		} catch (error) {
 			console.log(error);
+			setEnrollSnack(false);
 			setErrorSnack(true);
 		}
 	}
