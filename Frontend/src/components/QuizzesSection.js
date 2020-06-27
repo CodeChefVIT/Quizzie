@@ -25,6 +25,8 @@ function QuizzesSection(props) {
 	const [enrollModal, setEnrollModal] = useState(false);
 	const [enrollQuizName, setEnrollQuiz] = useState("");
 	const [enrollQuizId, setEnrollQuizId] = useState("");
+
+	const [enrollSnack, setEnrollSnack] = useState(false);
 	const [snackbar, setSnackBar] = useState(false);
 	const [errorSnack, setErrorSnack] = useState(false);
 
@@ -102,6 +104,7 @@ function QuizzesSection(props) {
 			return;
 		}
 		setQuizCodeError(false);
+		setEnrollSnack(true);
 		let url = "https://quizzie-api.herokuapp.com/quiz/enrollPrivate";
 		let token = localStorage.getItem("authToken");
 
@@ -122,6 +125,7 @@ function QuizzesSection(props) {
 	}
 
 	const handleEnroll = async () => {
+		setEnrollSnack(true);
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/enroll";
 
@@ -146,6 +150,7 @@ function QuizzesSection(props) {
 	}
 
 	const handleUnenroll = async () => {
+		setEnrollSnack(true);
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/unenroll";
 
@@ -306,17 +311,17 @@ function QuizzesSection(props) {
 					</div>
 				</Dialog>
 				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
-					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%', maxHeight:'40%' } }}
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '40%', maxHeight:'40%' } }}
 					style={{ width: '100%' }}>
 					<DialogTitle style={{textAlign: 'center', fontWeight: 'bold'}}>Quiz Info</DialogTitle>
 					
 					{/* From the profile section */}
 					{infoLoading? <Loading /> :
 						<div className="modal-info">
-							<Typography variant="h6" className="profile-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
-							<Typography variant="h6" className="profile-param">Date: <span className="profile-data">{new Date(currQuiz.quizDate).toDateString()}</span></Typography>
-							<Typography variant="h6" className="profile-param">Time: <span className="profile-data">{new Date(currQuiz.quizDate).toLocaleTimeString()}</span></Typography>
-							<Button className="unenroll-btn m-top" onClick={handleUnenroll}>
+							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
+							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(currQuiz.quizDate).toDateString()}</span></Typography>
+							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(currQuiz.quizDate).toLocaleTimeString()}</span></Typography>
+							<Button className="unenroll-btn" onClick={handleUnenroll}>
 								<Block style={{color: 'white'}}/>Unenroll
 							</Button>
 						</div>
@@ -327,6 +332,9 @@ function QuizzesSection(props) {
 				</Snackbar>
 				<Snackbar open={errorSnack} autoHideDuration={2000} onClose={() => setErrorSnack(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setErrorSnack(false)}>There was some error. Please try again!</Alert>
+				</Snackbar>
+				<Snackbar open={enrollSnack} autoHideDuration={5000} onClose={() => setEnrollSnack(false)}>
+					<Alert variant="filled" severity="info" onClose={() => setErrorSnack(false)}>Processing... Please Wait!</Alert>
 				</Snackbar>
 			</div>
 		)
