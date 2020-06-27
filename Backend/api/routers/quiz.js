@@ -333,12 +333,19 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 					)
 						.exec()
 						.then(async(result1) => {
-
-							
+							var data = []
+							for(i=0;i<result.length;i++){
+								object ={
+									quizId:result[i].quizId,
+									description:result[i].description,
+									options:result[i].options
+								}
+								data.push(object)
+							}
 							await res.status(200).json({
 								message: "Quiz started for " + req.user.name,
-								result
-
+								data
+								
 							});
 						})
 						.catch((err) => {
