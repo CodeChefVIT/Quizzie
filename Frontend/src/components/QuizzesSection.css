@@ -82,3 +82,9 @@
 .m-top {
 	margin-top: 5% !important;
 }
+
+.unenroll-btn {
+	background-color: red !important;
+	color: white !important;
+	font-weight: bold !important;
+}

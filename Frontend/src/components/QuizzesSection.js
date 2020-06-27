@@ -6,7 +6,7 @@ import {
 	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
 	isWidthUp, withWidth, IconButton, Tooltip, Snackbar, DialogTitle
 } from "@material-ui/core";
-import { Add, Check, Info } from '@material-ui/icons';
+import { Add, Check, Info, Block } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -85,7 +85,6 @@ function QuizzesSection(props) {
 					"auth-token": token,
 				}
 			}).then(res => {
-				console.log(res);
 				setCurrQuiz(res.data.result);
 				setInfoLoading(false);
 			})
@@ -141,6 +140,28 @@ function QuizzesSection(props) {
 				setSnackBar(true);
 			})
 		} catch (error) {
+			console.log(error);
+			setErrorSnack(true);
+		}
+	}
+
+	const handleUnenroll = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/quiz/unenroll";
+
+		let data = {
+			"quizId": currQuiz._id
+		}
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token,
+				}
+			}).then((res) => {
+				setRefresh(true);
+			})
+		} catch(error) {
 			console.log(error);
 			setErrorSnack(true);
 		}
@@ -287,7 +308,7 @@ function QuizzesSection(props) {
 				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%', maxHeight:'40%' } }}
 					style={{ width: '100%' }}>
-					<DialogTitle style={{textAlign: 'center'}}>Quiz Info</DialogTitle>
+					<DialogTitle style={{textAlign: 'center', fontWeight: 'bold'}}>Quiz Info</DialogTitle>
 					
 					{/* From the profile section */}
 					{infoLoading? <Loading /> :
@@ -295,13 +316,16 @@ function QuizzesSection(props) {
 							<Typography variant="h6" className="profile-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
 							<Typography variant="h6" className="profile-param">Date: <span className="profile-data">{new Date(currQuiz.quizDate).toDateString()}</span></Typography>
 							<Typography variant="h6" className="profile-param">Time: <span className="profile-data">{new Date(currQuiz.quizDate).toLocaleTimeString()}</span></Typography>
+							<Button className="unenroll-btn m-top" onClick={handleUnenroll}>
+								<Block style={{color: 'white'}}/>Unenroll
+							</Button>
 						</div>
 					}
 				</Dialog>
-				<Snackbar open={snackbar} autoHideDuration={1000} onClose={() => setSnackBar(false)}>
+				<Snackbar open={snackbar} autoHideDuration={2000} onClose={() => setSnackBar(false)}>
 					<Alert variant="filled" severity="success" onClose={() => setSnackBar(false)}>Successfully Enrolled!</Alert>
 				</Snackbar>
-				<Snackbar open={errorSnack} autoHideDuration={1000} onClose={() => setErrorSnack(false)}>
+				<Snackbar open={errorSnack} autoHideDuration={2000} onClose={() => setErrorSnack(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setErrorSnack(false)}>There was some error. Please try again!</Alert>
 				</Snackbar>
 			</div>
