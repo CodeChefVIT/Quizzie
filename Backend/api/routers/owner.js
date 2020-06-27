@@ -11,7 +11,7 @@ const User = require("../models/user");
 const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const Owner = require("../models/owner");
-const Question = require('../models/question')
+const Question = require("../models/question");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthOwner = require("../middleware/checkAuthOwner");
@@ -184,19 +184,18 @@ router.delete(
 				)
 					.then(async (result3) => {
 						await Question.deleteMany({ quizId: req.params.quizId })
-							.then(async(result4) => {
-								await Quiz.deleteOne({_id:req.params.quizId})
-								.then((result5)=>{								
-									res.status(200).json({
-									message: "Successfully deleted",
-								});
-							})
-								.catch((err)=>{
-									res.status(400).json({
-										message:'Unexpected Error'
+							.then(async (result4) => {
+								await Quiz.deleteOne({ _id: req.params.quizId })
+									.then((result5) => {
+										res.status(200).json({
+											message: "Successfully deleted",
+										});
 									})
-								})
-
+									.catch((err) => {
+										res.status(400).json({
+											message: "Unexpected Error",
+										});
+									});
 							})
 							.catch((err) => {
 								res.status(400).json({
@@ -266,59 +265,62 @@ router.delete(
 	async (req, res, next) => {
 		await Admin.findById(req.params.adminId)
 			.exec()
-			.then(async(result) => {
-                const numQuizzes = result.quizzes.length
-                for(i=0;i<numQuizzes;i++){
-					const currentQuiz = result.quizzes[i].quizId
+			.then(async (result) => {
+				const numQuizzes = result.quizzes.length;
+				for (i = 0; i < numQuizzes; i++) {
+					const currentQuiz = result.quizzes[i].quizId;
 					await Quiz.findById(currentQuiz)
-					.exec()
-					.then(async(result1)=>{
-						const numOfUsers = result1.usersEnrolled.length
-						for(j=0;j<numOfUsers;j++){
-							const currUser = result1.usersEnrolled[j].userId
-							await User.updateOne({_id:currUser},
-												{ $pull: { quizzesEnrolled: { quizId: currentQuiz } } }
-												).then(async(result3)=>{
-													await Question.deleteMany({quizId:currentQuiz})
-													.then(async(result4)=>{
-														await Quiz.deleteOne({_id:currentQuiz}).then(async(result5)=>{
-														})
-													})
-													.catch(async(err)=>{
-														await res.status(400).json({
-															message:"some error occurred"
-														})
-													})
-												}).catch(async(err)=>{
-													await res.status(400).json({
-														message:"Unexpected Erro"
-													})
-												})
-						}
-					})
-					.catch(async(err)=>{
-						await res.status(400).json({
-							message:'Unexpected Err'
+						.exec()
+						.then(async (result1) => {
+							const numOfUsers = result1.usersEnrolled.length;
+							for (j = 0; j < numOfUsers; j++) {
+								const currUser = result1.usersEnrolled[j].userId;
+								await User.updateOne(
+									{ _id: currUser },
+									{ $pull: { quizzesEnrolled: { quizId: currentQuiz } } }
+								)
+									.then(async (result3) => {
+										await Question.deleteMany({ quizId: currentQuiz })
+											.then(async (result4) => {
+												await Quiz.deleteOne({
+													_id: currentQuiz,
+												}).then(async (result5) => {});
+											})
+											.catch(async (err) => {
+												await res.status(400).json({
+													message: "some error occurred",
+												});
+											});
+									})
+									.catch(async (err) => {
+										await res.status(400).json({
+											message: "Unexpected Erro",
+										});
+									});
+							}
 						})
-					})
+						.catch(async (err) => {
+							await res.status(400).json({
+								message: "Unexpected Err",
+							});
+						});
 				}
-				await Admin.deleteOne({_id:req.params.adminId})
-				.then(async(result6)=>{
-					await res.status(200).json({
-						message:'Successfully Deleted'
+				await Admin.deleteOne({ _id: req.params.adminId })
+					.then(async (result6) => {
+						await res.status(200).json({
+							message: "Successfully Deleted",
+						});
 					})
-				})
-				.catch(async(err)=>{
-					await res.status(400).json({
-						message:'Some error'
-					})
-				})
-				
-            })
-			.catch(async(err)=>{
+					.catch(async (err) => {
+						await res.status(400).json({
+							message: "Some error",
+						});
+					});
+			})
+			.catch(async (err) => {
 				await res.status(400).json({
-					message:'Unexpected Erroor'
-				})
+					message: "Unexpected Erroor",
+				});
 			});
 	}
 );
