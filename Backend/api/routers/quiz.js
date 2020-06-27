@@ -12,12 +12,21 @@ const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const User = require("../models/user");
 const Question = require("../models/question");
+const redis = require('redis');
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
+const REDIS_PORT = process.env.REDIS_PORT||6379;
+
+
+const client = redis.createClient(REDIS_PORT);
+
 const router = express.Router();
+
+
+
 
 router.use(cookieParser());
 router.use(
@@ -291,6 +300,8 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 		.then(async (result) => {
 			await User.findById(req.user.userId)
 				.then(async (result2) => {
+
+
 					var flag = 0;
 					var numQuiz = result2.quizzesStarted.length;
 					var numEnrolled = result2.quizzesEnrolled.length;
@@ -312,6 +323,8 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 							message: "You are not enrolled in this quiz",
 						});
 					}
+					// var clientId = questions+req.user.userId
+					client.setex(req.user.userId,3600,JSON.stringify(result))
 					var quizId = req.body.quizId;
 					req.session.questions = result;
 					await User.updateOne(
@@ -319,9 +332,13 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 						{ $push: { quizzesStarted: { quizId } } }
 					)
 						.exec()
-						.then((result1) => {
-							res.status(200).json({
+						.then(async(result1) => {
+
+							
+							await res.status(200).json({
 								message: "Quiz started for " + req.user.name,
+								result
+
 							});
 						})
 						.catch((err) => {
@@ -358,5 +375,27 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 			})
 		});
 });
+
+router.post('/check',checkAuth,checkAuthUser,async(req,res,next)=>{
+	const que_data = req.body.questions;
+	var responses = []
+	client.get(req.user.userId,(err,data)=>{
+		if(err){
+			return res.status(400).json({
+				message:'Error in cachin'
+			})
+			
+		}
+		dataQues = JSON.parse(data)
+		if(data!=null){
+			return res.status(200).json({
+				dataQues
+			})
+		}
+		else{
+			console.log("Couldn't find questions in cache")
+		}
+	})
+})
 
 module.exports = router;
