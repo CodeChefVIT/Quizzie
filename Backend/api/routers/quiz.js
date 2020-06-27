@@ -291,43 +291,49 @@ router.get("/checkAdmin", checkAuth, checkAuthAdmin, async (req, res, next) => {
 
 router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 	await User.findById(req.user.userId)
-		.then(async(result) => {
-			var numQuiz = result.quizzesEnrolled.length
-			var flag =0
-			for(i=0;i<numQuiz;i++){
-				if(result.quizzesEnrolled[i].quizId==req.body.quizId){
-					var currentUser = req.user.userId
-
+		.then(async (result) => {
+			var numQuiz = result.quizzesEnrolled.length;
+			var flag = 0;
+			for (i = 0; i < numQuiz; i++) {
+				if (result.quizzesEnrolled[i].quizId == req.body.quizId) {
+					flag =1
+					var currentUser = req.user.userId;
 
 					await User.updateOne(
 						{ _id: currentUser },
 						{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
 					)
-					.then((result)=>{
-						return res.status(200).json({
-							message:"Successfully un-enrolled"
+						.then((result) => {
+							Quiz.updateOne({ _id: req.body.quizId },{$pull:{usersEnrolled:{userId:req.user.userId}}})
+								.then((result3) => {							
+									return res.status(200).json({
+									message: "Successfully un-enrolled",
+								});
+							})
+								.catch((err) => {
+									return res.status(400).json({
+										message:'Some error Occurred'
+									})
+								});
+
 						})
-					})
-					.catch((err)=>{
-						return res.status(400).json({
-							message:'Error'
-						})
-					})
+						.catch((err) => {
+							return res.status(400).json({
+								message: "Error",
+							});
+						});
 				}
 			}
-
-			
-
+			if(flag ===0){			
 				await res.status(401).json({
-					message:'You are not a part of this quiz'
-				})
-			
+				message: "You are not a part of this quiz",
+			});}
 
 		})
-		.catch(async(err) => {
+		.catch(async (err) => {
 			await res.status(400).json({
-				message:"Error"
-			})
+				message: "Error",
+			});
 		});
 });
 
