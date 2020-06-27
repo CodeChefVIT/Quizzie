@@ -18,7 +18,7 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
-const REDIS_PORT = process.env.REDIS_PORT||6379;
+const REDIS_PORT = process.env.REDISTOGO_URL||6379;
 
 
 const client = redis.createClient(REDIS_PORT);
