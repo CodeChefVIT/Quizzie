@@ -41,15 +41,17 @@
 }
 
 .root1 {
-	display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
     overflow: hidden;
 }
 
 .grid-list {
 	flex-wrap: nowrap;
     transform: translateZ(0);
+}
+
+.enrolled-list {
+	margin-bottom: 5% !important;
 }
 
 .quiz-code-field {

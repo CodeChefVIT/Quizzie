@@ -19,6 +19,8 @@ function Dashboard() {
 	const [profile, setProfile] = useState(null);
 	const [loading, setLoading] = useState(true);
 
+	const [refresh, setRefresh] = useState(false);
+
 	const {isLoggedIn} = useContext(InfoContext);
 
 	const handleTabChange = (e, newVal) => {
@@ -26,6 +28,7 @@ function Dashboard() {
 	}
 
 	const getProfile = async () => {
+		setLoading(true);
 		let url = "https://quizzie-api.herokuapp.com/general/checkUser";
 
 		let token = localStorage.getItem("authToken");
@@ -65,9 +68,8 @@ function Dashboard() {
 				}
 			}).then(res => {
 				setProfile(res.data.result1);
+				setLoading(false);
 			})
-
-			setLoading(false);
 		} catch(error) {
 			console.log(error);
 			localStorage.clear();
@@ -84,6 +86,13 @@ function Dashboard() {
 			getProfile();
 		}
 	}, [])
+
+	useEffect(() => {
+		if(refresh === true) {
+			getProfile();
+			setRefresh(false);
+		}
+	}, [refresh])
 
 	if(redirect) {
 		return (
@@ -114,7 +123,7 @@ function Dashboard() {
 						</Tabs>
 					</AppBar>
 					<TabPanel value={tab} index={0}>
-						<QuizzesSection type={userType}/>
+						<QuizzesSection type={userType} profile={profile} refresh={setRefresh}/>
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
 						<HistorySection profile={profile} type={userType}/>
@@ -134,7 +143,7 @@ function TabPanel(props) {
 			role="tabpanel"
 			hidden={props.value !== props.index}
 			id={`simple-tabpanel-${props.index}`}
-			  aria-labelledby={`simple-tab-${props.index}`}
+			aria-labelledby={`simple-tab-${props.index}`}
 		>
 			<div>{props.children}</div>
 		</div>
