@@ -58,6 +58,9 @@ function EditQuiz(props) {
 	}
 
 	const handleQuestionSubmit = async () => {
+		//TODO: Handle Validation
+
+
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/add`;
 
