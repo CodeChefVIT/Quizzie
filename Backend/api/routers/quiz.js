@@ -12,21 +12,17 @@ const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const User = require("../models/user");
 const Question = require("../models/question");
-const redis = require('redis');
+const redis = require("redis");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
-const REDIS_PORT = process.env.REDISTOGO_URL||6379;
-
+const REDIS_PORT = process.env.REDISTOGO_URL || 6379 || process.env.REDIS_URL;
 
 const client = redis.createClient(REDIS_PORT);
 
 const router = express.Router();
-
-
-
 
 router.use(cookieParser());
 router.use(
@@ -293,6 +289,48 @@ router.get("/checkAdmin", checkAuth, checkAuthAdmin, async (req, res, next) => {
 		});
 });
 
+router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
+	await User.findById(req.user.userId)
+		.then(async(result) => {
+			var numQuiz = result.quizzesEnrolled.length
+			var flag =0
+			for(i=0;i<numQuiz;i++){
+				if(result.quizzesEnrolled[i].quizId==req.body.quizId){
+					var currentUser = req.user.userId
+
+
+					await User.updateOne(
+						{ _id: currentUser },
+						{ $pull: { quizzesEnrolled: { quizId: req.params.quizId } } }
+					)
+					.then((result)=>{
+						return res.status(200).json({
+							message:"Successfully un-enrolled"
+						})
+					})
+					.catch((err)=>{
+						return res.status(400).json({
+							message:'Error'
+						})
+					})
+				}
+			}
+
+			
+
+				await res.status(401).json({
+					message:'You are not a part of this quiz'
+				})
+			
+
+		})
+		.catch(async(err) => {
+			await res.status(400).json({
+				message:"Error"
+			})
+		});
+});
+
 router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 	await Question.find({ quizId: req.body.quizId })
 		.select("-__v")
@@ -300,8 +338,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 		.then(async (result) => {
 			await User.findById(req.user.userId)
 				.then(async (result2) => {
-
-
 					var flag = 0;
 					var numQuiz = result2.quizzesStarted.length;
 					var numEnrolled = result2.quizzesEnrolled.length;
@@ -324,7 +360,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 						});
 					}
 					// var clientId = questions+req.user.userId
-					client.setex(req.user.userId,3600,JSON.stringify(result))
+					client.setex(req.user.userId, 3600, JSON.stringify(result));
 					var quizId = req.body.quizId;
 					req.session.questions = result;
 					await User.updateOne(
@@ -332,20 +368,19 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 						{ $push: { quizzesStarted: { quizId } } }
 					)
 						.exec()
-						.then(async(result1) => {
-							var data = []
-							for(i=0;i<result.length;i++){
-								object ={
-									quizId:result[i].quizId,
-									description:result[i].description,
-									options:result[i].options
-								}
-								data.push(object)
+						.then(async (result1) => {
+							var data = [];
+							for (i = 0; i < result.length; i++) {
+								object = {
+									quizId: result[i].quizId,
+									description: result[i].description,
+									options: result[i].options,
+								};
+								data.push(object);
 							}
 							await res.status(200).json({
 								message: "Quiz started for " + req.user.name,
-								data
-								
+								data,
 							});
 						})
 						.catch((err) => {
@@ -373,36 +408,35 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 		.exec()
 		.then((result) => {
 			res.status(200).json({
-				result
-			})
+				result,
+			});
 		})
-		.catch((err)=>{
+		.catch((err) => {
 			res.status(400).json({
-				message:"some error occurred"
-			})
+				message: "some error occurred",
+			});
 		});
 });
 
-router.post('/check',checkAuth,checkAuthUser,async(req,res,next)=>{
+router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
-	var responses = []
-	client.get(req.user.userId,(err,data)=>{
-		if(err){
+	var responses = [];
+	client.get(req.user.userId, (err, data) => {
+		if (err) {
 			return res.status(400).json({
-				message:'Error in cachin'
-			})
-			
+				message: "Error in cachin",
+			});
 		}
-		dataQues = JSON.parse(data)
-		if(data!=null){
+		dataQues = JSON.parse(data);
+		c;
+		if (data != null) {
 			return res.status(200).json({
-				dataQues
-			})
+				dataQues,
+			});
+		} else {
+			console.log("Couldn't find questions in cache");
 		}
-		else{
-			console.log("Couldn't find questions in cache")
-		}
-	})
-})
+	});
+});
 
 module.exports = router;
