@@ -301,7 +301,7 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 
 					await User.updateOne(
 						{ _id: currentUser },
-						{ $pull: { quizzesEnrolled: { quizId: req.params.quizId } } }
+						{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
 					)
 					.then((result)=>{
 						return res.status(200).json({
