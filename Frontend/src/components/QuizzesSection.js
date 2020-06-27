@@ -4,12 +4,13 @@ import axios from "axios";
 import QuizLoading from './QuizLoading';
 import {
 	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
-	isWidthUp, withWidth, IconButton, Tooltip, Snackbar
+	isWidthUp, withWidth, IconButton, Tooltip, Snackbar, DialogTitle
 } from "@material-ui/core";
 import { Add, Check, Info } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
+import Loading from "../pages/Loading";
 
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
@@ -26,6 +27,10 @@ function QuizzesSection(props) {
 	const [enrollQuizId, setEnrollQuizId] = useState("");
 	const [snackbar, setSnackBar] = useState(false);
 	const [errorSnack, setErrorSnack] = useState(false);
+
+	const [infoModal, setInfoModal] = useState(false);
+	const [infoLoading, setInfoLoading] = useState(false);
+	const [currQuiz, setCurrQuiz] = useState({});
 
 	const setRefresh = props.refresh;
 
@@ -44,6 +49,9 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
+
+		setInfoModal(false);
+		setCurrQuiz({});
 	}
 
 	const onJoinClick = () => {
@@ -58,6 +66,35 @@ function QuizzesSection(props) {
 		setEnrollQuiz(quiz.quizName);
 		setEnrollQuizId(quiz._id);
 		setEnrollModal(true);
+	}
+
+	const handleInfoButton = (quiz) => {
+		setInfoModal(true);
+		getQuizInfo(quiz.quizId._id);
+	}
+
+	const getQuizInfo = async (id) => {
+		setInfoLoading(true);
+
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/${id}`;
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token,
+				}
+			}).then(res => {
+				console.log(res);
+				setCurrQuiz(res.data.result);
+				setInfoLoading(false);
+			})
+		} catch(error) {
+			console.log(error);
+			onCloseHandle();
+			setInfoLoading(false);
+		}
+
 	}
 
 	const handleJoinSubmit = async () => {
@@ -173,7 +210,7 @@ function QuizzesSection(props) {
 												title={quiz.quizId.quizName}
 												actionIcon={
 													<Tooltip title="Info">
-														<IconButton aria-label={`info ${quiz.quizName}`}>
+														<IconButton aria-label={`info ${quiz.quizId.quizName}`} onClick={() => handleInfoButton(quiz)}>
 															<Info className="enroll-icon" />
 														</IconButton>
 													</Tooltip>
@@ -246,6 +283,20 @@ function QuizzesSection(props) {
 							</div>
 						}
 					</div>
+				</Dialog>
+				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%', maxHeight:'40%' } }}
+					style={{ width: '100%' }}>
+					<DialogTitle style={{textAlign: 'center'}}>Quiz Info</DialogTitle>
+					
+					{/* From the profile section */}
+					{infoLoading? <Loading /> :
+						<div className="modal-info">
+							<Typography variant="h6" className="profile-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
+							<Typography variant="h6" className="profile-param">Date: <span className="profile-data">{new Date(currQuiz.quizDate).toDateString()}</span></Typography>
+							<Typography variant="h6" className="profile-param">Time: <span className="profile-data">{new Date(currQuiz.quizDate).toLocaleTimeString()}</span></Typography>
+						</div>
+					}
 				</Dialog>
 				<Snackbar open={snackbar} autoHideDuration={1000} onClose={() => setSnackBar(false)}>
 					<Alert variant="filled" severity="success" onClose={() => setSnackBar(false)}>Successfully Enrolled!</Alert>
