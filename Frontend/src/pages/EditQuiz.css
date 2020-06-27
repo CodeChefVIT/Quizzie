@@ -87,4 +87,38 @@
 	background-color: green !important;
 	color: white !important;
 	font-weight: bold !important;
+	font-size: 0.7rem !important;
+}
+
+.new-question-form {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	padding: 3% 5% !important;
+}
+
+.new-ques-input {
+	width: 100% !important;
+	margin-bottom: 3% !important;
+}
+
+.correct-answer-select .MuiInputBase-input {
+	color: black !important;
+}
+
+.add-question-submit {
+	background-color: green !important;
+	color: white !important;
+	font-weight: bold !important;
+	letter-spacing: 2px !important;
+
+	margin-top: 5% !important;
+}
+
+@media screen and (max-width: 598px) {
+	.add-question-submit {
+		font-size: 0.8rem !important;
+	}
 }
