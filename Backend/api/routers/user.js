@@ -172,8 +172,7 @@ router.get(
 			.exec()
 			.then((result) => {
 				res.status(200).json({
-
-					result:result.quizzesGiven,
+					result: result.quizzesGiven,
 				});
 			})
 			.catch((err) => {
@@ -205,5 +204,56 @@ router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 			});
 		});
 });
+
+router.patch(
+	"/changePassword",
+	checkAuth,
+	checkAuthUser,
+	async (req, res, next) => {
+		await User.findOne({ _id: req.user.userId })
+			.then(async(result) => {
+				bcrypt.compare(req.body.password,result.password, (err, result1) => {
+					if (err) {
+						return res.status(500).json({
+							message: "Auth failed",
+						});
+					}
+					if(result1){
+						bcrypt.hash(req.body.newPassword, 10, (err, hash) => {
+							if(err){
+								res.status(400).json(({
+									err
+								}))
+							}
+
+							User.updateOne({_id:req.user.userId},{$set:{password:hash}}).then((result)=>{
+								res.status(200).json({
+									message:'Password changed'
+								})
+							}).catch((err)=>{
+								res.status(400).json({
+									message:'error'
+								})
+							})
+
+						})
+						
+
+					}
+					else{
+						return res.status(401).json({
+							message: "Auth failed",
+						});
+					}
+
+				})
+			})
+			.catch((err) => {
+				res.status(400).json({
+					err
+				})
+			});
+	}
+);
 
 module.exports = router;
