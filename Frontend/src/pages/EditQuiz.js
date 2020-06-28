@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
-import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from "@material-ui/core";
-import { Create, ExpandMore } from "@material-ui/icons";
+import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItem, ListItemText, ListItemIcon } from "@material-ui/core";
+import { Create, ExpandMore, Adjust } from "@material-ui/icons";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
@@ -162,15 +162,23 @@ function EditQuiz(props) {
 						: 
 						<div className="questions-list-display">
 							{quizQuestions.map((question) => (
-								<ExpansionPanel elevation={3}>
+								<ExpansionPanel elevation={3} className="expansion">
 									<ExpansionPanelSummary
+										className="question-summary"
 										expandIcon={<ExpandMore />}
 										aria-controls="question-content"
 									>
 										<Typography>{question.description}</Typography>
 									</ExpansionPanelSummary>
 									<ExpansionPanelDetails>
-										{JSON.stringify(question.options)}
+										<List component="nav" className="options-display">
+											{question.options.map((option) => (
+												<ListItem button>
+													<ListItemIcon><Adjust style={{color: 'black'}}/></ListItemIcon>
+													<ListItemText primary={option.text} />
+												</ListItem>
+											))}
+										</List>
 									</ExpansionPanelDetails>
 								</ExpansionPanel>
 							))}
