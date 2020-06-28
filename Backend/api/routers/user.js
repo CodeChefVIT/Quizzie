@@ -13,13 +13,11 @@ const Quiz = require("../models/quiz");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 
-
-
 const router = express.Router();
 
 ////Signup
 router.post("/signup", async (req, res, next) => {
-	console.log('signup')
+	console.log("signup");
 	User.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -34,7 +32,7 @@ router.post("/signup", async (req, res, next) => {
 							error: err,
 						});
 					} else {
-						console.log('ashf')
+						console.log("ashf");
 						const user = new User({
 							_id: new mongoose.Types.ObjectId(),
 							email: req.body.email,
@@ -71,15 +69,9 @@ router.post("/signup", async (req, res, next) => {
 		});
 });
 
-
-
 //Auth with google
 
-
-
 router.get("/logout", async (req, res, next) => {});
-
-
 
 ////Login
 router.post("/login", async (req, res, next) => {
@@ -112,7 +104,6 @@ router.post("/login", async (req, res, next) => {
 						}
 					);
 
-				
 					return res.status(200).json({
 						message: "Auth successful",
 						userDetails: {
@@ -137,25 +128,22 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
-router.get('/google',(req,res,next)=>{
-	res.send('Welcome you are logged in as '+req.user)
-})
+router.get("/google", (req, res, next) => {
+	res.send("Welcome you are logged in as " + req.user);
+});
 
-
-
-router.get('/hello',(req,res,next)=>{
-	res.send('HELLO')
-})
-
+router.get("/hello", (req, res, next) => {
+	res.send("HELLO");
+});
 
 ////Get Profile
 
 router.get("/", checkAuthUser, checkAuth, async (req, res, next) => {
 	await User.findById(req.user.userId)
 		.populate({
-			path: "quizzesEnrolled quizzesGiven",
+			path: "quizzesEnrolled",
 
-			populate: { path: "quizId" },
+			populate: { path: "quizId", populate: { path: "adminId" } },
 		})
 		.exec()
 		.then(async (result1) => {
@@ -169,6 +157,32 @@ router.get("/", checkAuthUser, checkAuth, async (req, res, next) => {
 			});
 		});
 });
+
+router.get(
+	"/quizzesGiven",
+	checkAuth,
+	checkAuthUser,
+	async (req, res, next) => {
+		await User.findById(req.user.userId)
+			.populate({
+				path: "quizzesGiven",
+
+				populate: { path: "quizId", populate: { path: "adminId" } },
+			})
+			.exec()
+			.then((result) => {
+				res.status(200).json({
+
+					result:result.quizzesGiven,
+				});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					err,
+				});
+			});
+	}
+);
 
 //Update user profile
 router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
