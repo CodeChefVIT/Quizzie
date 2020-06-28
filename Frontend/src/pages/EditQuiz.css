@@ -128,3 +128,8 @@
 	margin-top: 2% !important;
 	padding-bottom: 5% !important;
 }
+
+.question-label {
+	display: flex !important;
+	align-items: center !important;
+}

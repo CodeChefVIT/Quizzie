@@ -31,11 +31,13 @@ function EditQuiz(props) {
 	const [correctOptionError, setCorrectOptionError] = useState(false);
 
 	const [update, setUpdate] = useState(false);
+	const [updateId, setUpdateId] = useState(null);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
 		if(update) {
 			setUpdate(false);
+			setUpdateId(null);
 			clearModal();
 		}
 	}
@@ -72,18 +74,58 @@ function EditQuiz(props) {
 		setOption3Error(false);
 		setOption4("");
 		setOption4Error(false);
+		setCorrectOption(-1);
 		setCorrectOptionError(false);
 	}
 
 	const handleQuestionEditBtn = (question) => {
 		setUpdate(true);
+		setUpdateId(question._id);
 		setNewQuestion(question.description);
 		setOption1(question.options[0].text);
 		setOption2(question.options[1].text);
 		setOption3(question.options[2].text);
 		setOption4(question.options[3].text);
-
+		setCorrectOption(question.correctAnswer);
 		setQuestionModal(true);
+	}
+
+	const handleQuestionUpdate = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
+
+		let data = [
+			{"propName": "description", "value": newQuestion},
+			{"propName": "options", "value": [
+				{
+					"text":option1
+				},
+				{
+					"text":option2
+				},
+				{
+					"text":option3
+				},
+				{
+					"text":option4
+				}
+			]},
+			{"propName": "correctAnswer", "value": correctOption}
+		]
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				onCloseHandle();
+				getQuizDetails();
+			})
+		}catch(error) {
+			console.log(error);
+		}
 	}
 
 	const validate = () => {
@@ -200,7 +242,7 @@ function EditQuiz(props) {
 			<Container className="edit-quiz-page">
 				<Typography variant="h3" className="dash-head p-top edit-quiz-head">Edit Quiz</Typography>
 				<div className="edit-btn-bar">
-					<Button variant="filled" className="edit-details-btn">
+					<Button className="edit-details-btn">
 						<Create className="edit-icon"/>Edit Details
 					</Button>
 				</div>
@@ -217,7 +259,7 @@ function EditQuiz(props) {
 					<Typography variant="h4" className="quiz-questions-head">Questions</Typography>
 					<div className="quiz-questions-display">
 						<div className="add-question-bar">
-							<Button variant="filled" className="add-question-btn" onClick={() => setQuestionModal(true)}>Add a question</Button>
+							<Button className="add-question-btn" onClick={() => setQuestionModal(true)}>Add a question</Button>
 						</div>
 						{quizQuestions.length === 0? <p style={{ textAlign: 'center' }}>No questions added yet!</p>
 						: 
@@ -228,20 +270,21 @@ function EditQuiz(props) {
 										className="question-summary"
 										expandIcon={<ExpandMore />}
 										aria-controls="question-content"
+										aria-label="Expand"
 									>
 										<FormControlLabel
 											aria-label="Edit"
 											control={<IconButton><Create /></IconButton>}
-											label={question.description} 
+											// label={question.description} 
 											onClick={() => handleQuestionEditBtn(question)}/>
-										{/* <Typography>{question.description}</Typography> */}
+										<Typography className="question-label">{question.description}</Typography>
 									</ExpansionPanelSummary>
 									<ExpansionPanelDetails>
 										<List component="nav" className="options-display">
 											{question.options.map((option) => (
-												<ListItem button>
-													<ListItemIcon><Adjust style={{color: 'black'}}/></ListItemIcon>
-													<ListItemText primary={option.text} />
+												<ListItem button key={option._id}>
+													<ListItemIcon><Adjust style={{color: question.correctAnswer === option.text?'green':'black'}}/></ListItemIcon>
+													<ListItemText style={{color: question.correctAnswer === option.text?'green':'black'}} primary={option.text} />
 												</ListItem>
 											))}
 										</List>
@@ -327,9 +370,9 @@ function EditQuiz(props) {
 							{option4.trim().length !== 0? <MenuItem value={option4}>{option4}</MenuItem> :null }
 						</Select>
 						{!update? 
-							<Button variant="filled" className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
+							<Button className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
 						:
-						<Button variant="filled" className="add-question-submit">Update Question</Button>}
+						<Button className="add-question-submit" onClick={handleQuestionUpdate}>Update Question</Button>}
 					</div>
 				</Dialog>
 			</Container>
