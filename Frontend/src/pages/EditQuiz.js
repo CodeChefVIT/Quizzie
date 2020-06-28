@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
-import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem } from "@material-ui/core";
-import { Create } from "@material-ui/icons";
+import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from "@material-ui/core";
+import { Create, ExpandMore } from "@material-ui/icons";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
@@ -159,7 +159,23 @@ function EditQuiz(props) {
 							<Button variant="filled" className="add-question-btn" onClick={() => setQuestionModal(true)}>Add a question</Button>
 						</div>
 						{quizQuestions.length === 0? <p style={{ textAlign: 'center' }}>No questions added yet!</p>
-						: null}
+						: 
+						<div className="questions-list-display">
+							{quizQuestions.map((question) => (
+								<ExpansionPanel elevation={3}>
+									<ExpansionPanelSummary
+										expandIcon={<ExpandMore />}
+										aria-controls="question-content"
+									>
+										<Typography>{question.description}</Typography>
+									</ExpansionPanelSummary>
+									<ExpansionPanelDetails>
+										{JSON.stringify(question.options)}
+									</ExpansionPanelDetails>
+								</ExpansionPanel>
+							))}
+						</div>	
+						}
 					</div>
 				</div>
 				<Dialog open={questionModal} onClose={onCloseHandle} aria-labelledby="add-question-modal"

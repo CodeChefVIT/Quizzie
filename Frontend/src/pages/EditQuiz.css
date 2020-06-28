@@ -122,3 +122,8 @@
 		font-size: 0.8rem !important;
 	}
 }
+
+.questions-list-display {
+	margin-top: 2% !important;
+	padding-bottom: 5% !important;
+}
