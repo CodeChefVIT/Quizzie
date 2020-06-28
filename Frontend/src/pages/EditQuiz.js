@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
-import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItem, ListItemText, ListItemIcon } from "@material-ui/core";
+import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton } from "@material-ui/core";
 import { Create, ExpandMore, Adjust } from "@material-ui/icons";
 import axios from "axios";
 import Loading from "./Loading";
@@ -27,11 +27,17 @@ function EditQuiz(props) {
 	const [option3Error, setOption3Error] = useState(false);
 	const [option4, setOption4] = useState("");
 	const [option4Error, setOption4Error] = useState(false);
-	const [correctOption, setCorrectOption] = useState("nonono");
+	const [correctOption, setCorrectOption] = useState(-1);
 	const [correctOptionError, setCorrectOptionError] = useState(false);
+
+	const [update, setUpdate] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
+		if(update) {
+			setUpdate(false);
+			clearModal();
+		}
 	}
 
 	const onQuestionChange = (event) => {
@@ -69,35 +75,52 @@ function EditQuiz(props) {
 		setCorrectOptionError(false);
 	}
 
-	const handleQuestionSubmit = async () => {
-		//TODO: Handle Validation
+	const handleQuestionEditBtn = (question) => {
+		setUpdate(true);
+		setNewQuestion(question.description);
+		setOption1(question.options[0].text);
+		setOption2(question.options[1].text);
+		setOption3(question.options[2].text);
+		setOption4(question.options[3].text);
+
+		setQuestionModal(true);
+	}
+
+	const validate = () => {
 		if(newQuestion.trim().length === 0) {
 			setNewQuestionError(true);
-			return;
+			return false;
 		}
 
 		if(option1.trim().length === 0) {
 			setOption1Error(true);
-			return;
+			return false;
 		}
 		if(option2.trim().length === 0) {
 			setOption2Error(true);
-			return;
+			return false;
 		}
 		if(option3.trim().length === 0) {
 			setOption3Error(true);
-			return;
+			return false;
 		}
 		if(option4.trim().length === 0) {
 			setOption4Error(true);
-			return;
+			return false;
 		}
 
-		if(correctOption === "nonono") {
+		if(correctOption === -1) {
 			setCorrectOptionError(true);
-			return;
+			return false;
 		}
 
+		return true;
+	}
+
+	const handleQuestionSubmit = async () => {
+		//TODO: Handle Validation
+
+		if(!validate()) return;
 
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/add`;
@@ -206,7 +229,12 @@ function EditQuiz(props) {
 										expandIcon={<ExpandMore />}
 										aria-controls="question-content"
 									>
-										<Typography>{question.description}</Typography>
+										<FormControlLabel
+											aria-label="Edit"
+											control={<IconButton><Create /></IconButton>}
+											label={question.description} 
+											onClick={() => handleQuestionEditBtn(question)}/>
+										{/* <Typography>{question.description}</Typography> */}
 									</ExpansionPanelSummary>
 									<ExpansionPanelDetails>
 										<List component="nav" className="options-display">
@@ -292,13 +320,16 @@ function EditQuiz(props) {
 							value={correctOption}
 							onChange={handleCorrectOption} 
 						>
-							<MenuItem value="nonono">None</MenuItem>
+							<MenuItem value={-1}>None</MenuItem>
 							{option1.trim().length !== 0? <MenuItem value={option1}>{option1}</MenuItem> :null }
 							{option2.trim().length !== 0? <MenuItem value={option2}>{option2}</MenuItem> :null } 
 							{option3.trim().length !== 0? <MenuItem value={option3}>{option3}</MenuItem> :null }
 							{option4.trim().length !== 0? <MenuItem value={option4}>{option4}</MenuItem> :null }
 						</Select>
-						<Button variant="filled" className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
+						{!update? 
+							<Button variant="filled" className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
+						:
+						<Button variant="filled" className="add-question-submit">Update Question</Button>}
 					</div>
 				</Dialog>
 			</Container>
