@@ -14,6 +14,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import CreateQuiz from './pages/CreateQuiz';
 import EditQuiz from './pages/EditQuiz';
+import UpdateQuizDetails from './pages/updateQuizDetails';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -59,6 +60,7 @@ function App() {
 						<CreateQuiz />
 					</Route>
 					<Route exact path="/editQuiz/:id" component={EditQuiz} />
+					<Route exact path="/updateQuizDetails/:id" component={UpdateQuizDetails} />
 					<Route exact path="/register/:type" component={RegisterPage} />
 					<Route exact path="/admin">
 						<Admin />

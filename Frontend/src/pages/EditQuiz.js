@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
-import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton } from "@material-ui/core";
+import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, 
+	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, 
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton } from "@material-ui/core";
 import { Create, ExpandMore, Adjust } from "@material-ui/icons";
+import {Link} from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
@@ -242,7 +245,7 @@ function EditQuiz(props) {
 			<Container className="edit-quiz-page">
 				<Typography variant="h3" className="dash-head p-top edit-quiz-head">Edit Quiz</Typography>
 				<div className="edit-btn-bar">
-					<Button className="edit-details-btn">
+					<Button className="edit-details-btn" component={Link} to={`/updateQuizDetails/${quizId}`}>
 						<Create className="edit-icon"/>Edit Details
 					</Button>
 				</div>
@@ -250,6 +253,7 @@ function EditQuiz(props) {
 					<Typography variant="h6" className="quiz-detail-param">Name: <span className="quiz-detail-text">{quizDetails.quizName}</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Date: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toDateString()}</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Time: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toLocaleTimeString()}</span></Typography>
+					<Typography variant="h6" className="quiz-detail-param">Duration: <span className="quiz-detail-text">{quizDetails.quizDuration} minutes</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Type: <span className="quiz-detail-text">{quizDetails.quizType}</span></Typography>
 					{quizDetails.quizType === "private" ?
 						<Typography variant="h6" className="quiz-detail-param">Quiz Code: <span className="quiz-detail-text">{quizDetails.quizCode}</span></Typography>
