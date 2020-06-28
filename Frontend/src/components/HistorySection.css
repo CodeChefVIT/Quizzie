@@ -1,5 +1,4 @@
 .history-section {
 	padding: 5% !important;
-	display: flex;
-	justify-content: center;
+	text-align: center !important;
 }
