@@ -296,7 +296,7 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 			var flag = 0;
 			for (i = 0; i < numQuiz; i++) {
 				if (result.quizzesEnrolled[i].quizId == req.body.quizId) {
-					flag =1
+					flag = 1;
 					var currentUser = req.user.userId;
 
 					await User.updateOne(
@@ -304,18 +304,20 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 						{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
 					)
 						.then((result) => {
-							Quiz.updateOne({ _id: req.body.quizId },{$pull:{usersEnrolled:{userId:req.user.userId}}})
-								.then((result3) => {							
+							Quiz.updateOne(
+								{ _id: req.body.quizId },
+								{ $pull: { usersEnrolled: { userId: req.user.userId } } }
+							)
+								.then((result3) => {
 									return res.status(200).json({
-									message: "Successfully un-enrolled",
-								});
-							})
+										message: "Successfully un-enrolled",
+									});
+								})
 								.catch((err) => {
 									return res.status(400).json({
-										message:'Some error Occurred'
-									})
+										message: "Some error Occurred",
+									});
 								});
-
 						})
 						.catch((err) => {
 							return res.status(400).json({
@@ -324,11 +326,11 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 						});
 				}
 			}
-			if(flag ===0){			
+			if (flag === 0) {
 				await res.status(401).json({
-				message: "You are not a part of this quiz",
-			});}
-
+					message: "You are not a part of this quiz",
+				});
+			}
 		})
 		.catch(async (err) => {
 			await res.status(400).json({

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
-const cookieParser = require('cookie-parser')
+const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
 const Quiz = require("../models/quiz");
@@ -16,18 +16,18 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
-const  session = require('express-session')
-
-
+const session = require("express-session");
 
 const router = express.Router();
 
-router.use(cookieParser())
-router.use(session({secret:'mySecret',resave:false,saveUninitialized:false}))
+router.use(cookieParser());
+router.use(
+	session({ secret: "mySecret", resave: false, saveUninitialized: false })
+);
 
 router.get("/all/:quizId", checkAuth, async (req, res, next) => {
 	await Question.find({ quizId: req.params.quizId })
-		.select('-correctAnswer')
+		.select("-correctAnswer")
 		.then(async (result) => {
 			res.status(200).json({
 				result,
@@ -98,17 +98,16 @@ router.patch(
 router.delete("/:questionId", async (req, res, next) => {
 	await Question.deleteOne({ _id: req.params.questionId })
 		.exec()
-		.then((result)=>{
+		.then((result) => {
 			res.status(200).json({
-				message:'Deleted'
-			})
+				message: "Deleted",
+			});
 		})
-		.catch((err)=>{
+		.catch((err) => {
 			res.status(400).json({
-				message:"Couldn't delete"
-			})
+				message: "Couldn't delete",
+			});
 		});
 });
-
 
 module.exports = router;
