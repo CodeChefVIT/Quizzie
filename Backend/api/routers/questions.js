@@ -27,7 +27,6 @@ router.use(
 
 router.get("/all/:quizId", checkAuth, async (req, res, next) => {
 	await Question.find({ quizId: req.params.quizId })
-		.select("-correctAnswer")
 		.then(async (result) => {
 			res.status(200).json({
 				result,
