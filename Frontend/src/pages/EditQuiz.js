@@ -17,12 +17,18 @@ function EditQuiz(props) {
 
 	const [questionModal, setQuestionModal] = useState(false);
 	const [newQuestion, setNewQuestion] = useState("");
+	const [newQuestionError, setNewQuestionError] = useState(false);
 
 	const [option1, setOption1] = useState("");
+	const [option1Error, setOption1Error] = useState(false);
 	const [option2, setOption2] = useState("");
+	const [option2Error, setOption2Error] = useState(false);
 	const [option3, setOption3] = useState("");
+	const [option3Error, setOption3Error] = useState(false);
 	const [option4, setOption4] = useState("");
+	const [option4Error, setOption4Error] = useState(false);
 	const [correctOption, setCorrectOption] = useState("nonono");
+	const [correctOptionError, setCorrectOptionError] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -51,14 +57,46 @@ function EditQuiz(props) {
 
 	const clearModal = () => {
 		setNewQuestion("");
+		setNewQuestionError(false);
 		setOption1("");
+		setOption1Error(false);
 		setOption2("");
+		setOption2Error(false);
 		setOption3("");
+		setOption3Error(false);
 		setOption4("");
+		setOption4Error(false);
+		setCorrectOptionError(false);
 	}
 
 	const handleQuestionSubmit = async () => {
 		//TODO: Handle Validation
+		if(newQuestion.trim().length === 0) {
+			setNewQuestionError(true);
+			return;
+		}
+
+		if(option1.trim().length === 0) {
+			setOption1Error(true);
+			return;
+		}
+		if(option2.trim().length === 0) {
+			setOption2Error(true);
+			return;
+		}
+		if(option3.trim().length === 0) {
+			setOption3Error(true);
+			return;
+		}
+		if(option4.trim().length === 0) {
+			setOption4Error(true);
+			return;
+		}
+
+		if(correctOption === "nonono") {
+			setCorrectOptionError(true);
+			return;
+		}
 
 
 		let token = localStorage.getItem("authToken");
@@ -192,6 +230,8 @@ function EditQuiz(props) {
 					<Typography variant="h6" style={{textAlign: 'center', margin: '2% 5%'}}>New Question</Typography>
 					<div className="new-question-form">
 						<TextInput
+							error={newQuestionError}
+							helperText={newQuestionError? "This cannot be empty": null}
 							className="new-ques-input"
 							variant="outlined"
 							label="Question Text"
@@ -201,6 +241,8 @@ function EditQuiz(props) {
 						<Grid container spacing={1}>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option1Error}
+								helperText={option1Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 1"
@@ -209,6 +251,8 @@ function EditQuiz(props) {
 							</Grid>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option2Error}
+								helperText={option2Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 2"
@@ -219,6 +263,8 @@ function EditQuiz(props) {
 						<Grid container spacing={1}>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option3Error}
+								helperText={option3Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 3"
@@ -227,6 +273,8 @@ function EditQuiz(props) {
 							</Grid>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option4Error}
+								helperText={option4Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 4"
@@ -237,6 +285,7 @@ function EditQuiz(props) {
 						<hr style={{width: '100%', marginBottom: '3%'}}/>
 						<InputLabel id="correct-option">Correct Option</InputLabel>
 						<Select
+							error={correctOptionError}
 							className="correct-answer-select"
 							style={{width: '50%'}}
 							labelId="correct-option"
