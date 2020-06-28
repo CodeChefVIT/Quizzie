@@ -73,6 +73,10 @@
 		font-size: 0.8rem !important;
 	}
 
+	.info-param {
+		font-size: 0.8rem !important;
+	}
+
 } 
 
 .enroll-icon {
@@ -80,5 +84,13 @@
 }
 
 .m-top {
+	margin-top: 5% !important;
+}
+
+.unenroll-btn {
+	background-color: red !important;
+	color: white !important;
+	font-weight: bold !important;
+
 	margin-top: 5% !important;
 }

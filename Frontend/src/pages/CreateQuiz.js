@@ -40,7 +40,7 @@ function CreateQuiz() {
 
 		let data = {
 			"quizName": quizName,
-			"quizDate": quizDate.toDateString(),
+			"quizDate": quizDate.toString(),
 			"quizTime": quizDate.toTimeString(),
 			"quizDuration": duration,
 			"quizType": type

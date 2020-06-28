@@ -1,0 +1,129 @@
+.edit-quiz-page {
+	background-color: white !important;
+	padding: 0 5% !important;
+
+	min-height: calc(100vh - 64px);
+}
+
+.edit-quiz-head {
+	color: #2980b9;
+	border-bottom: #2980b9 2px solid;
+}
+
+@media screen and (max-width: 600px) {
+	.edit-quiz-page{
+		min-height: calc(100vh - 56px);
+	}
+}
+
+.p-top {
+	padding-top: 3% !important;
+}
+
+.edit-btn-bar {
+	display: flex;
+	justify-content: flex-end;
+
+	margin-top: 3% !important;
+}
+
+.edit-details-btn {
+	background-color: #2980b9 !important;
+	color: white !important;
+	font-size: 0.7rem !important;
+	font-weight: bold !important;
+
+	padding-left: 10px !important;
+}
+
+.edit-icon {
+	width: 20px !important;
+	padding-right: 5px !important;
+}
+
+.quiz-details-sec {
+	margin-top: 5% !important;
+}
+
+.quiz-detail-param {
+	font-family: "Monsterrat", sans-serif;
+	font-weight: bold !important;
+
+	color: #35a1e9 !important;
+	letter-spacing: 2px !important;
+}
+
+.quiz-detail-text {
+	color: black !important;
+}
+
+.quiz-questions-sec {
+	margin: 0 5% !important;
+	margin-top: 7% !important;
+
+}
+
+.quiz-questions-head {
+	text-align: center;
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+	color: #35a1e9 !important;
+	border-bottom: #35a1e9 2px solid;
+	margin-bottom: 3% !important;
+}
+
+@media screen and (max-width: 500px) {
+	.quiz-questions-head {
+		font-size: 1.2rem !important;
+	}
+}
+
+.add-question-bar {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.add-question-btn {
+	background-color: green !important;
+	color: white !important;
+	font-weight: bold !important;
+	font-size: 0.7rem !important;
+}
+
+.new-question-form {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	padding: 3% 5% !important;
+}
+
+.new-ques-input {
+	width: 100% !important;
+	margin-bottom: 3% !important;
+}
+
+.correct-answer-select .MuiInputBase-input {
+	color: black !important;
+}
+
+.add-question-submit {
+	background-color: green !important;
+	color: white !important;
+	font-weight: bold !important;
+	letter-spacing: 2px !important;
+
+	margin-top: 5% !important;
+}
+
+@media screen and (max-width: 598px) {
+	.add-question-submit {
+		font-size: 0.8rem !important;
+	}
+}
+
+.questions-list-display {
+	margin-top: 2% !important;
+	padding-bottom: 5% !important;
+}
