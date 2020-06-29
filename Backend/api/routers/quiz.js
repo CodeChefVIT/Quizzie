@@ -456,35 +456,70 @@ router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
 				await User.updateOne(
 					{ _id: currentUser },
 					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
-				).then((result3)=>{
-
-				}).catch((err)=>{
-					res.status(400).json({
-						message:"some error occurred"
-					})
-				})
+				)
+					.then((result3) => {})
+					.catch((err) => {
+						res.status(400).json({
+							message: "some error occurred",
+						});
+					});
 			}
-			await Question.deleteMany({quizId:req.body.quizId}).then(async(result4)=>{
-				await Quiz.deleteOne({_id:req.body.quizId}).then((result5)=>{
-					res.status(200).json({
-						message:'Deleted successfully'
-					})
-				}).catch((err)=>{
+			await Question.deleteMany({ quizId: req.body.quizId })
+				.then(async (result4) => {
+					await Quiz.deleteOne({ _id: req.body.quizId })
+						.then((result5) => {
+							res.status(200).json({
+								message: "Deleted successfully",
+							});
+						})
+						.catch((err) => {
+							res.status(400).json({
+								message: "Some error",
+							});
+						});
+				})
+				.catch((err) => {
 					res.status(400).json({
-						message:'Some error'
-					})
-				})
-			}).catch((err)=>{
-				res.status(400).json({
-					message:'Errorr'
-				})
-			})
+						message: "Errorr",
+					});
+				});
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message:'Error'
-			})
+				message: "Error",
+			});
 		});
 });
+
+router.patch(
+	"/removeUser",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.updateOne(
+			{ _id: req.body.quizId },
+			{ $pull: { usersEnrolled: { userId: req.body.userId } } }
+		)
+			.then(async (result) => {
+				await User.updateOne(
+					{ _id: req.body.userId },
+					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+				).then((result)=>{
+					res.status(200).json({
+						message:'User removed successfully'
+					})
+				}).catch((err)=>{
+					res.status(400).json({
+						message:'Some error occurred'
+					})
+				})
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message:'Some error'
+				})
+			});
+	}
+);
 
 module.exports = router;
