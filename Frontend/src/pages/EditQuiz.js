@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
 import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, 
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, 
-	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton } from "@material-ui/core";
-import { Create, ExpandMore, Adjust } from "@material-ui/icons";
-import {Link} from "react-router-dom";
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle } from "@material-ui/core";
+import { Create, ExpandMore, Adjust, Delete } from "@material-ui/icons";
+import {Link, Redirect} from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
@@ -35,6 +35,8 @@ function EditQuiz(props) {
 
 	const [update, setUpdate] = useState(false);
 	const [updateId, setUpdateId] = useState(null);
+
+	const [deleteModal, setDeleteModal] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -91,6 +93,35 @@ function EditQuiz(props) {
 		setOption4(question.options[3].text);
 		setCorrectOption(question.correctAnswer);
 		setQuestionModal(true);
+	}
+
+	const handleDeleteBtn = () => {
+		setDeleteModal(true);
+	}
+
+	const handleDelete = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/delete`;
+
+		let data = {
+			"quizId": quizId
+		}
+
+		console.log(data);
+
+		try {
+			await axios.delete(url, {
+				headers: {
+					"auth-token": token
+				},
+				data: data
+			}).then(res => {
+				console.log(res);
+				setRedirect(true);
+			})
+		} catch(error) {
+			console.log(error);
+		}
 	}
 
 	const handleQuestionUpdate = async () => {
@@ -239,6 +270,10 @@ function EditQuiz(props) {
 		return (
 			<Loading />
 		)
+	} else if(redirect) {
+		return (
+			<Redirect to="/dashboard" />
+		)
 	}
 	else {
 		return (
@@ -247,6 +282,9 @@ function EditQuiz(props) {
 				<div className="edit-btn-bar">
 					<Button className="edit-details-btn" component={Link} to={`/updateQuizDetails/${quizId}`}>
 						<Create className="edit-icon"/>Edit Details
+					</Button>
+					<Button className="edit-details-btn delete-btn" onClick={handleDeleteBtn}>
+						<Delete className="edit-icon"/>Delete Quiz
 					</Button>
 				</div>
 				<div className="quiz-details-sec">
@@ -269,7 +307,7 @@ function EditQuiz(props) {
 						: 
 						<div className="questions-list-display">
 							{quizQuestions.map((question) => (
-								<ExpansionPanel elevation={3} className="expansion">
+								<ExpansionPanel elevation={3} className="expansion" key={question._id}>
 									<ExpansionPanelSummary
 										className="question-summary"
 										expandIcon={<ExpandMore />}
@@ -379,6 +417,14 @@ function EditQuiz(props) {
 						<Button className="add-question-submit" onClick={handleQuestionUpdate}>Update Question</Button>}
 					</div>
 				</Dialog>
+				<Dialog open={deleteModal} onClose={() => setDeleteModal(false)} aria-labelledby="delete-quiz-modal"
+				PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
+				<DialogTitle>Are you sure you want to delete this quiz?</DialogTitle>
+				<div className="btn-div">
+					<Button className="logout-btn m-right bg-red" onClick={handleDelete}>Yes</Button>
+					<Button className="cancel-btn m-left" onClick={() => setDeleteModal(false)}>No</Button>
+				</div>
+			</Dialog>
 			</Container>
 		)
 	}

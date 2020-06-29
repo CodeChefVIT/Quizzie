@@ -42,6 +42,11 @@
 	padding-right: 5px !important;
 }
 
+.delete-btn {
+	background-color: red !important;
+	margin-left: 2% !important;
+}
+
 .quiz-details-sec {
 	margin-top: 5% !important;
 }
@@ -132,4 +137,8 @@
 .question-label {
 	display: flex !important;
 	align-items: center !important;
+}
+
+.bg-red {
+	background-color: red !important;
 }
