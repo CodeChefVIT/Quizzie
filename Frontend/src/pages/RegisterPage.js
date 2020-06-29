@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './RegisterPage.css';
-import { Container, Typography, Button } from "@material-ui/core";
+import { Container, Typography, Button, InputAdornment, IconButton } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
 import {Redirect, Link} from "react-router-dom";
 import TextInput from "../components/TextInput";
 import * as EmailValidator from "email-validator";
 import axios from 'axios';
 import Loading from "./Loading";
+import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 function RegisterPage(props) {
 	const [name, changeName] = useState("");
@@ -24,6 +25,7 @@ function RegisterPage(props) {
 	const [password, changePassword] = useState("");
 	const [passwordError, setPasswordError] = useState("");
 	const [passwordChanged, setPasswordChanged] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 
 	const [redirect, setRedirect] = useState(false);
 
@@ -55,6 +57,10 @@ function RegisterPage(props) {
 	const handlePasswordChange = (event) => {
 		setPasswordChanged(true);
 		changePassword(event.target.value);
+	}
+
+	const togglePasswordVisibility = () => {
+		setShowPassword(!showPassword);
 	}
 
 	const keyPress = (event) => {
@@ -202,13 +208,26 @@ function RegisterPage(props) {
 						error={passwordChanged? (passwordError.length === 0? false: true): false}
 						helperText={passwordChanged? (passwordError.length === 0? null: passwordError): null}
 						id="password"
-						type="password"
+						type={showPassword? "text": "password"}
 						label="Password"
 						className="form-input"
 						variant="outlined"
 						value={password}
 						onChange={handlePasswordChange}
-						onKeyPress={keyPress}></TextInput>
+						onKeyPress={keyPress}
+						InputProps = {{
+							endAdornment: (
+								<InputAdornment position="end">
+									<IconButton
+										aria-label="show password"
+										onClick={togglePasswordVisibility}
+										edge="end"
+									>
+										{showPassword? <Visibility />: <VisibilityOff />}
+									</IconButton>
+								</InputAdornment>
+							)
+						}}></TextInput>
 				</form>
 				<Button className="login-btn signup-btn" onClick={handleSubmit}>Sign Up</Button>
 				{/* <Link to="/registerOrganiser" className="link register-link">Are you an Organiser? Go to the organiser signup!</Link> */}
