@@ -447,4 +447,44 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	});
 });
 
+router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
+	await Quiz.findById(req.body.quizId)
+		.then(async (result) => {
+			var numUsers = result.usersEnrolled.length;
+			for (i = 0; i < numUsers; i++) {
+				var currentUser = result.usersEnrolled[i].userId;
+				await User.updateOne(
+					{ _id: currentUser },
+					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+				).then((result3)=>{
+
+				}).catch((err)=>{
+					res.status(400).json({
+						message:"some error occurred"
+					})
+				})
+			}
+			await Question.deleteMany({quizId:req.body.quizId}).then(async(result4)=>{
+				await Quiz.deleteOne({_id:req.body.quizId}).then((result5)=>{
+					res.status(200).json({
+						message:'Deleted successfully'
+					})
+				}).catch((err)=>{
+					res.status(400).json({
+						message:'Some error'
+					})
+				})
+			}).catch((err)=>{
+				res.status(400).json({
+					message:'Errorr'
+				})
+			})
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message:'Error'
+			})
+		});
+});
+
 module.exports = router;
