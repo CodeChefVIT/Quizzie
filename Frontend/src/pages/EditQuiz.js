@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import './EditQuiz.css';
-import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from "@material-ui/core";
-import { Create, ExpandMore } from "@material-ui/icons";
+import { Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem, 
+	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, 
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton } from "@material-ui/core";
+import { Create, ExpandMore, Adjust } from "@material-ui/icons";
+import {Link} from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
@@ -17,15 +20,29 @@ function EditQuiz(props) {
 
 	const [questionModal, setQuestionModal] = useState(false);
 	const [newQuestion, setNewQuestion] = useState("");
+	const [newQuestionError, setNewQuestionError] = useState(false);
 
 	const [option1, setOption1] = useState("");
+	const [option1Error, setOption1Error] = useState(false);
 	const [option2, setOption2] = useState("");
+	const [option2Error, setOption2Error] = useState(false);
 	const [option3, setOption3] = useState("");
+	const [option3Error, setOption3Error] = useState(false);
 	const [option4, setOption4] = useState("");
-	const [correctOption, setCorrectOption] = useState("nonono");
+	const [option4Error, setOption4Error] = useState(false);
+	const [correctOption, setCorrectOption] = useState(-1);
+	const [correctOptionError, setCorrectOptionError] = useState(false);
+
+	const [update, setUpdate] = useState(false);
+	const [updateId, setUpdateId] = useState(null);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
+		if(update) {
+			setUpdate(false);
+			setUpdateId(null);
+			clearModal();
+		}
 	}
 
 	const onQuestionChange = (event) => {
@@ -51,15 +68,104 @@ function EditQuiz(props) {
 
 	const clearModal = () => {
 		setNewQuestion("");
+		setNewQuestionError(false);
 		setOption1("");
+		setOption1Error(false);
 		setOption2("");
+		setOption2Error(false);
 		setOption3("");
+		setOption3Error(false);
 		setOption4("");
+		setOption4Error(false);
+		setCorrectOption(-1);
+		setCorrectOptionError(false);
+	}
+
+	const handleQuestionEditBtn = (question) => {
+		setUpdate(true);
+		setUpdateId(question._id);
+		setNewQuestion(question.description);
+		setOption1(question.options[0].text);
+		setOption2(question.options[1].text);
+		setOption3(question.options[2].text);
+		setOption4(question.options[3].text);
+		setCorrectOption(question.correctAnswer);
+		setQuestionModal(true);
+	}
+
+	const handleQuestionUpdate = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
+
+		let data = [
+			{"propName": "description", "value": newQuestion},
+			{"propName": "options", "value": [
+				{
+					"text":option1
+				},
+				{
+					"text":option2
+				},
+				{
+					"text":option3
+				},
+				{
+					"text":option4
+				}
+			]},
+			{"propName": "correctAnswer", "value": correctOption}
+		]
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				onCloseHandle();
+				getQuizDetails();
+			})
+		}catch(error) {
+			console.log(error);
+		}
+	}
+
+	const validate = () => {
+		if(newQuestion.trim().length === 0) {
+			setNewQuestionError(true);
+			return false;
+		}
+
+		if(option1.trim().length === 0) {
+			setOption1Error(true);
+			return false;
+		}
+		if(option2.trim().length === 0) {
+			setOption2Error(true);
+			return false;
+		}
+		if(option3.trim().length === 0) {
+			setOption3Error(true);
+			return false;
+		}
+		if(option4.trim().length === 0) {
+			setOption4Error(true);
+			return false;
+		}
+
+		if(correctOption === -1) {
+			setCorrectOptionError(true);
+			return false;
+		}
+
+		return true;
 	}
 
 	const handleQuestionSubmit = async () => {
 		//TODO: Handle Validation
 
+		if(!validate()) return;
 
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/add`;
@@ -139,7 +245,7 @@ function EditQuiz(props) {
 			<Container className="edit-quiz-page">
 				<Typography variant="h3" className="dash-head p-top edit-quiz-head">Edit Quiz</Typography>
 				<div className="edit-btn-bar">
-					<Button variant="filled" className="edit-details-btn">
+					<Button className="edit-details-btn" component={Link} to={`/updateQuizDetails/${quizId}`}>
 						<Create className="edit-icon"/>Edit Details
 					</Button>
 				</div>
@@ -147,6 +253,7 @@ function EditQuiz(props) {
 					<Typography variant="h6" className="quiz-detail-param">Name: <span className="quiz-detail-text">{quizDetails.quizName}</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Date: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toDateString()}</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Time: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toLocaleTimeString()}</span></Typography>
+					<Typography variant="h6" className="quiz-detail-param">Duration: <span className="quiz-detail-text">{quizDetails.quizDuration} minutes</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Type: <span className="quiz-detail-text">{quizDetails.quizType}</span></Typography>
 					{quizDetails.quizType === "private" ?
 						<Typography variant="h6" className="quiz-detail-param">Quiz Code: <span className="quiz-detail-text">{quizDetails.quizCode}</span></Typography>
@@ -156,21 +263,35 @@ function EditQuiz(props) {
 					<Typography variant="h4" className="quiz-questions-head">Questions</Typography>
 					<div className="quiz-questions-display">
 						<div className="add-question-bar">
-							<Button variant="filled" className="add-question-btn" onClick={() => setQuestionModal(true)}>Add a question</Button>
+							<Button className="add-question-btn" onClick={() => setQuestionModal(true)}>Add a question</Button>
 						</div>
 						{quizQuestions.length === 0? <p style={{ textAlign: 'center' }}>No questions added yet!</p>
 						: 
 						<div className="questions-list-display">
 							{quizQuestions.map((question) => (
-								<ExpansionPanel elevation={3}>
+								<ExpansionPanel elevation={3} className="expansion">
 									<ExpansionPanelSummary
+										className="question-summary"
 										expandIcon={<ExpandMore />}
 										aria-controls="question-content"
+										aria-label="Expand"
 									>
-										<Typography>{question.description}</Typography>
+										<FormControlLabel
+											aria-label="Edit"
+											control={<IconButton><Create /></IconButton>}
+											// label={question.description} 
+											onClick={() => handleQuestionEditBtn(question)}/>
+										<Typography className="question-label">{question.description}</Typography>
 									</ExpansionPanelSummary>
 									<ExpansionPanelDetails>
-										{JSON.stringify(question.options)}
+										<List component="nav" className="options-display">
+											{question.options.map((option) => (
+												<ListItem button key={option._id}>
+													<ListItemIcon><Adjust style={{color: question.correctAnswer === option.text?'green':'black'}}/></ListItemIcon>
+													<ListItemText style={{color: question.correctAnswer === option.text?'green':'black'}} primary={option.text} />
+												</ListItem>
+											))}
+										</List>
 									</ExpansionPanelDetails>
 								</ExpansionPanel>
 							))}
@@ -184,6 +305,8 @@ function EditQuiz(props) {
 					<Typography variant="h6" style={{textAlign: 'center', margin: '2% 5%'}}>New Question</Typography>
 					<div className="new-question-form">
 						<TextInput
+							error={newQuestionError}
+							helperText={newQuestionError? "This cannot be empty": null}
 							className="new-ques-input"
 							variant="outlined"
 							label="Question Text"
@@ -193,6 +316,8 @@ function EditQuiz(props) {
 						<Grid container spacing={1}>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option1Error}
+								helperText={option1Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 1"
@@ -201,6 +326,8 @@ function EditQuiz(props) {
 							</Grid>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option2Error}
+								helperText={option2Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 2"
@@ -211,6 +338,8 @@ function EditQuiz(props) {
 						<Grid container spacing={1}>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option3Error}
+								helperText={option3Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 3"
@@ -219,6 +348,8 @@ function EditQuiz(props) {
 							</Grid>
 							<Grid item xs={12} sm={6}>
 							<TextInput
+								error={option4Error}
+								helperText={option4Error? "This cannot be empty": null}
 								className="new-ques-input"
 								variant="outlined"
 								label="Option 4"
@@ -229,19 +360,23 @@ function EditQuiz(props) {
 						<hr style={{width: '100%', marginBottom: '3%'}}/>
 						<InputLabel id="correct-option">Correct Option</InputLabel>
 						<Select
+							error={correctOptionError}
 							className="correct-answer-select"
 							style={{width: '50%'}}
 							labelId="correct-option"
 							value={correctOption}
 							onChange={handleCorrectOption} 
 						>
-							<MenuItem value="nonono">None</MenuItem>
+							<MenuItem value={-1}>None</MenuItem>
 							{option1.trim().length !== 0? <MenuItem value={option1}>{option1}</MenuItem> :null }
 							{option2.trim().length !== 0? <MenuItem value={option2}>{option2}</MenuItem> :null } 
 							{option3.trim().length !== 0? <MenuItem value={option3}>{option3}</MenuItem> :null }
 							{option4.trim().length !== 0? <MenuItem value={option4}>{option4}</MenuItem> :null }
 						</Select>
-						<Button variant="filled" className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
+						{!update? 
+							<Button className="add-question-submit" onClick={handleQuestionSubmit}>Add Question</Button>
+						:
+						<Button className="add-question-submit" onClick={handleQuestionUpdate}>Update Question</Button>}
 					</div>
 				</Dialog>
 			</Container>
