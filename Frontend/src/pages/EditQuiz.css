@@ -139,6 +139,10 @@
 	align-items: center !important;
 }
 
-.bg-red {
+.bg-red-btn {
 	background-color: red !important;
+}
+
+.bg-red-btn:hover {
+	background-color: rgb(192, 0, 0) !important;
 }

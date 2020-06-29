@@ -421,7 +421,7 @@ function EditQuiz(props) {
 				PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
 				<DialogTitle>Are you sure you want to delete this quiz?</DialogTitle>
 				<div className="btn-div">
-					<Button className="logout-btn m-right bg-red" onClick={handleDelete}>Yes</Button>
+					<Button className="logout-btn m-right bg-red-btn" onClick={handleDelete}>Yes</Button>
 					<Button className="cancel-btn m-left" onClick={() => setDeleteModal(false)}>No</Button>
 				</div>
 			</Dialog>

@@ -41,7 +41,8 @@ function HistorySection(props) {
 	}
 
 	useEffect(() => {
-		getQuizzes();
+		if(userType === "admin") getQuizzes();
+		else setLoading(false);
 	}, [])
 
 	if(loading) {
