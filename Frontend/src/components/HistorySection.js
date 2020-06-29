@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './HistorySection.css';
 import { GridList, GridListTile, GridListTileBar, Tooltip, IconButton, isWidthUp, withWidth } from "@material-ui/core";
-import { Check, Create } from "@material-ui/icons";
+import { Check, Create, Settings } from "@material-ui/icons";
 import axios from "axios";
 import QuizLoading from "./QuizLoading";
 import { Link } from "react-router-dom";
@@ -64,10 +64,10 @@ function HistorySection(props) {
 							title={quiz.quizName}
 							subtitle={`By: You`}
 							actionIcon={
-								<Tooltip title="Edit">
+								<Tooltip title="Settings">
 									<IconButton aria-label={`edit ${quiz.quizName}`} 
 										component={Link} to={`/editQuiz/${quiz._id}`}>
-										<Create className="enroll-icon" />
+										<Settings className="enroll-icon" />
 									</IconButton>
 								</Tooltip>
 							}
