@@ -3,6 +3,7 @@
 	padding: 0 5% !important;
 
 	min-height: calc(100vh - 64px);
+	width: 100% !important;
 }
 
 .edit-quiz-head {
@@ -126,4 +127,9 @@
 .questions-list-display {
 	margin-top: 2% !important;
 	padding-bottom: 5% !important;
+}
+
+.question-label {
+	display: flex !important;
+	align-items: center !important;
 }
