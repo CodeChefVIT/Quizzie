@@ -25,6 +25,21 @@ router.use(
 	session({ secret: "mySecret", resave: false, saveUninitialized: false })
 );
 
+router.delete("/:questionId", async (req, res, next) => {
+	await Question.deleteOne({ _id: req.params.questionId })
+		.exec()
+		.then((result) => {
+			res.status(200).json({
+				message: "Deleted",
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Couldn't delete",
+			});
+		});
+});
+
 router.get("/all/:quizId", checkAuth, async (req, res, next) => {
 	await Question.find({ quizId: req.params.quizId })
 		.then(async (result) => {
@@ -94,19 +109,6 @@ router.patch(
 	}
 );
 
-router.delete("/:questionId", async (req, res, next) => {
-	await Question.deleteOne({ _id: req.params.questionId })
-		.exec()
-		.then((result) => {
-			res.status(200).json({
-				message: "Deleted",
-			});
-		})
-		.catch((err) => {
-			res.status(400).json({
-				message: "Couldn't delete",
-			});
-		});
-});
+
 
 module.exports = router;
