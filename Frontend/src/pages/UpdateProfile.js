@@ -13,7 +13,9 @@ import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 function UpdateProfile(props) {
 	const [name, setName] = useState("");
+	const [nameError, setNameError] = useState(false);
 	const [phoneNumber, setPhoneNumber] = useState("");
+	const [numberError, setNumberError] = useState(false);
 
 	const [loading, setLoading] = useState(true);
 	const [type, setType] = useState(props.match.params.type);
@@ -41,6 +43,19 @@ function UpdateProfile(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/${type}/updateProfile`;
 
+		if(name.trim().length === 0) {
+			setNameError(true);
+			setLoading(false);
+			return;
+		} else setNameError(false);
+
+		if(phoneNumber.length !== 10) {
+			console.log(phoneNumber.length);
+			setNumberError(true);
+			setLoading(false);
+			return;
+		} else setNumberError(false);
+
 		let data = [
 			{"propName": "name", "value": name},
 			{"propName": "mobileNumber", "value": phoneNumber}
@@ -57,6 +72,7 @@ function UpdateProfile(props) {
 		} catch(error) {
 			console.log(error);
 			setError(true);
+			setLoading(false);
 		}
 	}
 
@@ -71,7 +87,7 @@ function UpdateProfile(props) {
 				}
 			}).then(res => {
 				setName(res.data.result1.name);
-				setPhoneNumber(res.data.result1.mobileNumber);
+				setPhoneNumber(res.data.result1.mobileNumber.toString());
 				setLoading(false);
 			})
 		} catch(error) {
@@ -95,11 +111,11 @@ function UpdateProfile(props) {
 		<Container className="login-page">
 			<div className="login-form">
 				<Typography variant="h3" color="primary" className="login-head">Update Profile</Typography><br />
-				{/* {didLogin === false? <Alert severity="error">{errorText}</Alert>: null} */}
+				{error === true? <Alert severity="error">There was some error! Please try again...</Alert>: null}
 				<form className="form">
 					<TextInput
-						// error={emailChanged? (emailError.length === 0? false: true): false}
-						// helperText={emailChanged? (emailError.length === 0? null: emailError): null}
+						error={nameError}
+						helperText={nameError? "Name cannot be empty": null}
 						id="name"
 						label="Name"
 						type="text"
@@ -110,8 +126,8 @@ function UpdateProfile(props) {
 						onKeyPress={keyPress}></TextInput>
 					<br />
 					<TextInput
-						// error={passwordChanged? (passwordError.length === 0? false: true): false}
-						// helperText={passwordChanged? (passwordError.length === 0? null: passwordError): null}
+						error={numberError}
+						helperText={numberError? "Invalid Phone Number": null}
 						id="phone-number"
 						type="text"
 						label="Phone Number"
