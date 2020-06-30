@@ -23,3 +23,20 @@
 		font-size: 1.1rem !important;
 	}
 }
+
+.profile-btn {
+	background-color: #2980b9 !important;
+	color: white !important;
+	font-weight: bold !important;
+	font-family: "Montserrat", sans-serif !important;
+}
+
+.update-prof-btn {
+	margin-right: 3% !important;
+}
+
+@media screen and (max-width: 400px) {
+	.profile-btn {
+		font-size: 0.7rem !important;
+	}
+}

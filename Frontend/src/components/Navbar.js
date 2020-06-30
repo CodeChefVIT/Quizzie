@@ -41,7 +41,7 @@ function Navbar() {
 		} else {
 			setNavLoggedIn(isLoggedIn);
 			setNavName(name);
-		}	
+		}
 	})
 
 	return (

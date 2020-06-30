@@ -1,7 +1,7 @@
 /* Copy of createQuiz page */
 import React, { useState, useEffect } from "react";
 import './CreateQuiz.css';
-import { Container, Typography, Grid, Slider, InputLabel, Select, MenuItem, Button } from "@material-ui/core";
+import { Container, Typography, Grid, Slider, InputLabel, Select, MenuItem, Button, Tooltip } from "@material-ui/core";
 import TextInput from "../components/TextInput";
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -45,7 +45,6 @@ function UpdateQuizDetails(props) {
 			{"propName": "quizDate", "value": quizDate.toString()},
 			{"propName": "quizTime", "value": quizDate.toTimeString()},
 			{"propName": "quizDuration", "value": duration},
-			{"propName": "quizType", "value": type},
 		]
 
 		try {
@@ -150,15 +149,18 @@ function UpdateQuizDetails(props) {
 							className="time-slider"
 							value={duration}
 							onChange={handleTimeChange}/>
-						<p>Select quiz type: </p>
-						<Select
-							value={type}
-							onChange={onTypeChange}
-							className="type-select"
-						>
-							<MenuItem value="public">Public</MenuItem>
-							<MenuItem value="private">Private</MenuItem>
-						</Select>
+						<p style={{color: "#777"}}>Select quiz type: </p>
+						<Tooltip title="Cannot change quiz type">
+							<Select
+								disabled
+								value={type}
+								onChange={onTypeChange}
+								className="type-select"
+							>
+								<MenuItem value="public">Public</MenuItem>
+								<MenuItem value="private">Private</MenuItem>
+							</Select>
+						</Tooltip>
 	
 						<Button className="login-btn create-btn" onClick={handleSubmit}>Update Quiz</Button>
 					</div>
