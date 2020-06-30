@@ -97,6 +97,15 @@ function UpdateProfile(props) {
 		getDetails();
 	}, [])
 
+	useEffect(() => {
+		let token = localStorage.getItem("authToken");
+		if(token === null) {
+			setLoading(false);
+			setRedirect(true);
+			return;
+		}
+	}, [])
+
 	if(redirect) {
 		return (
 			<Redirect to="/dashboard" />

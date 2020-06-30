@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './CreateQuiz.css';
 import { Container, Typography, Grid, Slider, InputLabel, Select, MenuItem, Button } from "@material-ui/core";
 import TextInput from "../components/TextInput";
@@ -60,6 +60,16 @@ function CreateQuiz() {
 			setLoading(false);
 		}
 	}
+
+	useEffect(() => {
+		let token = localStorage.getItem("authToken");
+		if(token === null) {
+			setLoading(false);
+			setRedirect(true);
+			return;
+		}
+	}, [])
+
 	if(loading) {
 		return (
 			<Loading />
