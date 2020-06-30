@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './LoginPage.css';
-import { Container, Typography, Button, InputAdornment, IconButton } from "@material-ui/core";
+import { Container, Typography, Button } from "@material-ui/core";
 import {Alert} from "@material-ui/lab";
-import {Link, Redirect} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import TextInput from "../components/TextInput";
-import * as EmailValidator from 'email-validator';
-import InfoContext from '../context/InfoContext';
 import axios from "axios";
 import Loading from "./Loading";
-import { Visibility, VisibilityOff } from '@material-ui/icons';
 
 
 function UpdateProfile(props) {
@@ -34,7 +31,7 @@ function UpdateProfile(props) {
 
 	const keyPress = (event) => {
 		if (event.key === "Enter") {
-			// handleSubmit();
+			handleSubmit();
 		}
 	}
 
@@ -49,7 +46,7 @@ function UpdateProfile(props) {
 			return;
 		} else setNameError(false);
 
-		if(phoneNumber.length !== 10) {
+		if(phoneNumber.trim().length !== 10) {
 			console.log(phoneNumber.length);
 			setNumberError(true);
 			setLoading(false);
@@ -67,7 +64,9 @@ function UpdateProfile(props) {
 					"auth-token": token
 				}
 			}).then(res => {
+				localStorage.setItem("name", name);
 				setRedirect(true);
+				window.location.reload(true);
 			})
 		} catch(error) {
 			console.log(error);
