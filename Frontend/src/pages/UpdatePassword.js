@@ -11,8 +11,15 @@ import Loading from "./Loading";
 
 function UpdateProfile(props) {
 	const [oldPass, setOldPass] = useState("");
+	const [oldPassError, setOldPassError] = useState(false);
+
 	const [newPass, setNewPass] = useState("");
+	const [newPassError, setNewPassError] = useState(false);
+
 	const [confirmPass, setConfirmPass] = useState("");
+	const [confirmPassError, setConfirmPassError] = useState(false);
+	const [confirmPassErrorText, setConfirmPassErrorText] = useState("");
+
 
 	const [loading, setLoading] = useState(false);
 	const [type, setType] = useState(props.match.params.type);
@@ -36,10 +43,59 @@ function UpdateProfile(props) {
 		}
 	}
 
+	const validate = () => {
+		let errors = false;
+
+		if(oldPass.trim().length === 0) {
+			setOldPassError(true);
+			errors = true;
+		} else setOldPassError(false);
+
+		if(newPass.trim().length === 0) {
+			setNewPassError(true);
+			errors = true;
+		} else setNewPassError(false);
+
+		if(confirmPass.trim().length === 0) {
+			setConfirmPassError(true);
+			setConfirmPassErrorText("This cannot be empty");
+			errors = true;
+		} else if(confirmPass !== newPass) {
+			setConfirmPassErrorText("Does not match password");
+			setConfirmPassError(true);
+			errors = true;
+		} else setConfirmPassError(false);
+
+
+		return !errors;
+	}
+
 	const handleSubmit = async () => {
-		// setLoading(true);
 		let token = localStorage.getItem("authToken");
-		let url = `https://quizzie-api.herokuapp.com/${type}/updateProfile`;
+		let url = `https://quizzie-api.herokuapp.com/${type}/changePassword`;
+
+		if(!validate()) return;
+
+		setLoading(true);
+
+		let data = {
+			"password": oldPass,
+			"newPassword": newPass
+		}
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setRedirect(true);
+			})
+		} catch(error) {
+			console.log(error);
+			setError(true);
+			setLoading(false);
+		}
 	}
 
 	if(redirect) {
@@ -56,8 +112,8 @@ function UpdateProfile(props) {
 				{error === true? <Alert severity="error">There was some error! Please try again...</Alert>: null}
 				<form className="form">
 					<TextInput
-						// error={}
-						// helperText={nameError? "Name cannot be empty": null}
+						error={oldPassError}
+						helperText={oldPassError? "This cannot be empty": null}
 						id="old-pass"
 						label="Old Password"
 						type="password"
@@ -66,8 +122,8 @@ function UpdateProfile(props) {
 						value={oldPass}
 						onChange={handleOldPassChange}></TextInput>
 					<TextInput
-						// error={nameError}
-						// helperText={nameError? "Name cannot be empty": null}
+						error={newPassError}
+						helperText={newPassError? "This cannot be empty": null}
 						id="new-pass"
 						label="New Password"
 						type="password"
@@ -77,8 +133,8 @@ function UpdateProfile(props) {
 						onChange={handleNewPassChange}></TextInput>
 					<br />
 					<TextInput
-						// error={numberError}
-						// helperText={numberError? "Invalid Phone Number": null}
+						error={confirmPassError}
+						helperText={confirmPassError? confirmPassErrorText: null}
 						id="confirm-pass"
 						type="password"
 						label="Confirm Password"

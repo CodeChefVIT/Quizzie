@@ -36,22 +36,20 @@ function UpdateProfile(props) {
 	}
 
 	const handleSubmit = async () => {
-		setLoading(true);
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/${type}/updateProfile`;
 
 		if(name.trim().length === 0) {
 			setNameError(true);
-			setLoading(false);
 			return;
 		} else setNameError(false);
 
 		if(phoneNumber.trim().length !== 10) {
-			console.log(phoneNumber.length);
 			setNumberError(true);
-			setLoading(false);
 			return;
 		} else setNumberError(false);
+
+		setLoading(true);
 
 		let data = [
 			{"propName": "name", "value": name},
