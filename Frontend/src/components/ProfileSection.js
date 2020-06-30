@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import './ProfileSection.css';
-import { Typography } from "@material-ui/core";
+import { Typography, Button } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 function ProfileSection(props) {
 	const [userType, setUserType] = useState(props.type);
@@ -17,6 +18,10 @@ function ProfileSection(props) {
 					<Typography variant="h6" className="profile-param">Quizzes Completed: <span className="profile-data">{profile.quizzesGiven.length}</span></Typography>
 				</div>
 			: <Typography variant="h6" className="profile-param">Quizzes Created: <span className="profile-data">{profile.quizzes.length}</span></Typography> }
+			<div className="m-top">
+				<Button className="profile-btn update-prof-btn" component={Link} to={`/updateProfile/${userType}`}>Update Profile</Button>
+				<Button className="profile-btn" component={Link} to={`/updatePassword/${userType}`}>Update Password</Button>
+			</div>
 		</div>
 	)
 }

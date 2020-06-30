@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import './HistorySection.css';
 import { GridList, GridListTile, GridListTileBar, Tooltip, IconButton, isWidthUp, withWidth } from "@material-ui/core";
-import { Check, Create } from "@material-ui/icons";
+import { Check, Create, Settings } from "@material-ui/icons";
 import axios from "axios";
 import QuizLoading from "./QuizLoading";
 import { Link } from "react-router-dom";
@@ -31,7 +31,7 @@ function HistorySection(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				setQuizzes(res.result);
+				setQuizzes(res.data.result);
 				setLoading(false);
 			})
 		} catch(error) {
@@ -41,7 +41,8 @@ function HistorySection(props) {
 	}
 
 	useEffect(() => {
-		getQuizzes();
+		if(userType === "admin") getQuizzes();
+		else setLoading(false);
 	}, [])
 
 	if(loading) {
@@ -52,21 +53,21 @@ function HistorySection(props) {
 	else if(userType === "admin") {
 		return (
 			<div className="history-section">
-				{profile.quizzes.length === 0? 
+				{quizzes.length === 0? 
 					<p>You have not created any quizzes yet!</p>
 				:
 				<GridList cols={getCols()} className="grid-list">
-				{profile.quizzes.map((quiz) => (
+				{quizzes.map((quiz) => (
 					<GridListTile key={quiz._id} className="quiz-tile">
 						<img src="../CC LOGO-01.svg" />
 						<GridListTileBar
-							title={quiz.quizId.quizName}
+							title={quiz.quizName}
 							subtitle={`By: You`}
 							actionIcon={
-								<Tooltip title="Edit">
-									<IconButton aria-label={`edit ${quiz.quizId.quizName}`} 
-										component={Link} to={`/editQuiz/${quiz.quizId._id}`}>
-										<Create className="enroll-icon" />
+								<Tooltip title="Settings">
+									<IconButton aria-label={`edit ${quiz.quizName}`} 
+										component={Link} to={`/editQuiz/${quiz._id}`}>
+										<Settings className="enroll-icon" />
 									</IconButton>
 								</Tooltip>
 							}
