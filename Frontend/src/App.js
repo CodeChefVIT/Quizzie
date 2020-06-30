@@ -15,6 +15,7 @@ import Dashboard from './pages/Dashboard';
 import CreateQuiz from './pages/CreateQuiz';
 import EditQuiz from './pages/EditQuiz';
 import UpdateQuizDetails from './pages/updateQuizDetails';
+import UpdateProfile from './pages/UpdateProfile';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -56,6 +57,7 @@ function App() {
 					<Route exact path="/dashboard">
 						<Dashboard />
 					</Route>
+					<Route exact path="/updateProfile/:type" component={UpdateProfile} />
 					<Route exact path="/createQuiz">
 						<CreateQuiz />
 					</Route>

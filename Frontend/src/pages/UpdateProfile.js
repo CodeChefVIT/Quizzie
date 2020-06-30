@@ -15,6 +15,12 @@ function UpdateProfile(props) {
 	const [name, setName] = useState("");
 	const [phoneNumber, setPhoneNumber] = useState("");
 
+	const [loading, setLoading] = useState(true);
+	const [type, setType] = useState(props.match.params.type);
+
+	const [redirect, setRedirect] = useState(false);
+	const [error, setError] = useState(false);
+
 	const handleNameChange = (event) => {
 		setName(event.target.value);
 	}
@@ -26,20 +32,70 @@ function UpdateProfile(props) {
 
 	const keyPress = (event) => {
 		if (event.key === "Enter") {
-			handleSubmit();
+			// handleSubmit();
 		}
 	}
 
-	if(redirect === true){
-		return <Redirect to='/' />
+	const handleSubmit = async () => {
+		setLoading(true);
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/${type}/updateProfile`;
+
+		let data = [
+			{"propName": "name", "value": name},
+			{"propName": "mobileNumber", "value": phoneNumber}
+		]
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setRedirect(true);
+			})
+		} catch(error) {
+			console.log(error);
+			setError(true);
+		}
 	}
+
+	const getDetails = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/${type}`;
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setName(res.data.result1.name);
+				setPhoneNumber(res.data.result1.mobileNumber);
+				setLoading(false);
+			})
+		} catch(error) {
+			console.log(error);
+			setRedirect(true);
+		}
+	}
+
+	useEffect(() => {
+		getDetails();
+	}, [])
+
+	if(redirect) {
+		return (
+			<Redirect to="/dashboard" />
+		)
+	} 
 	return (
-		isLoading? <Loading />
+		loading? <Loading />
 		:
 		<Container className="login-page">
 			<div className="login-form">
 				<Typography variant="h3" color="primary" className="login-head">Update Profile</Typography><br />
-				{didLogin === false? <Alert severity="error">{errorText}</Alert>: null}
+				{/* {didLogin === false? <Alert severity="error">{errorText}</Alert>: null} */}
 				<form className="form">
 					<TextInput
 						// error={emailChanged? (emailError.length === 0? false: true): false}
