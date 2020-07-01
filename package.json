@@ -1,0 +1,41 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"scripts": {
+		"start": "node app.js",
+		"dev": "nodemon app.js"
+	},
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"aws-sdk": "^2.701.0",
+		"bcrypt": "^5.0.0",
+		"bcryptjs": "^2.4.3",
+		"body-parser": "^1.19.0",
+		"cookie-parser": "^1.4.5",
+		"cookie-session": "^1.4.0",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"express-session": "^1.17.1",
+		"hash": "^0.2.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.9.19",
+		"mongoose-deep-populate": "^3.2.0",
+		"multer": "^1.4.2",
+		"multer-s3": "^2.9.0",
+		"nodemailer": "^6.4.10",
+		"passport": "^0.4.1",
+		"passport-google-oauth20": "^2.0.0",
+		"passport-google-plus-token": "^2.1.0",
+		"passport-jwt": "^4.0.0",
+		"redis": "^3.0.2",
+		"shortid": "^2.2.15"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.4",
+		"node-pre-gyp": "0.12.0"
+	}
+}
