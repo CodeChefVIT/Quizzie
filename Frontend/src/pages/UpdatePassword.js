@@ -74,6 +74,11 @@ function UpdateProfile(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/${type}/changePassword`;
 
+		if(token === null) {
+			setRedirect(true);
+			return;
+		}
+
 		if(!validate()) return;
 
 		setLoading(true);
@@ -97,6 +102,14 @@ function UpdateProfile(props) {
 			setLoading(false);
 		}
 	}
+
+	useEffect(() => {
+		let token = localStorage.getItem("authToken");
+		if(token === null) {
+			setRedirect(true);
+			return;
+		}
+	}, [])
 
 	if(redirect) {
 		return (
