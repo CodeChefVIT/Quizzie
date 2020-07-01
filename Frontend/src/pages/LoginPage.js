@@ -88,7 +88,7 @@ function LoginPage(props) {
 
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let lType = "user";
+			let lType = type;
 
 			if(type === "organizer") lType = "admin";
 
@@ -133,6 +133,12 @@ function LoginPage(props) {
 		setLoading(false);
 	}
 
+	useEffect(() => {
+		if (type !== "user" && type !== "organizer" && type !== "owner") {
+			setRedirect(true);
+		}
+	}, [type])
+
 	if(redirect === true){
 		return <Redirect to='/' />
 	}
@@ -141,7 +147,7 @@ function LoginPage(props) {
 		:
 		<Container className="login-page">
 			<div className="login-form">
-				<Typography variant="h3" color="primary" className="login-head">{type==="user"?"Login Now": "Organizer Login"}</Typography><br />
+				<Typography variant="h3" color="primary" className="login-head">{type==="user"?"Login Now": (type === "organizer"? "Organizer Login": "Owner Login")}</Typography><br />
 				{didLogin === false? <Alert severity="error">{errorText}</Alert>: null}
 				<form className="form">
 					<TextInput

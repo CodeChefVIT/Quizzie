@@ -219,7 +219,6 @@ function RegisterPage(props) {
 	}
 
 	useEffect(() => {
-		console.log(type);
 		if (type !== "user" && type !== "organizer" && type !== "owner") {
 			setRedirectMain(true);
 		}
