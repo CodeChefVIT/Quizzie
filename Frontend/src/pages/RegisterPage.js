@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './RegisterPage.css';
 import { Container, Typography, Button, InputAdornment, IconButton } from "@material-ui/core";
-import {Alert} from "@material-ui/lab";
-import {Redirect, Link} from "react-router-dom";
+import { Alert } from "@material-ui/lab";
+import { Redirect, Link } from "react-router-dom";
 import TextInput from "../components/TextInput";
 import * as EmailValidator from "email-validator";
 import axios from 'axios';
@@ -31,6 +31,10 @@ function RegisterPage(props) {
 	const [passwordChanged, setPasswordChanged] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
+	const [code, setCode] = useState("");
+	const [codeError, setCodeError] = useState("");
+	const [codeChanged, setCodeChanged] = useState(false);
+
 	const [redirect, setRedirect] = useState(false);
 	const [redirectMain, setRedirectMain] = useState(false);
 
@@ -42,13 +46,13 @@ function RegisterPage(props) {
 
 	const type = props.match.params.type;
 
-	const emptyText = (type) =>  `${type} cannot be empty`;
+	const emptyText = (type) => `${type} cannot be empty`;
 
 	const handleNameChange = (event) => {
 		setNameChanged(true);
 		changeName(event.target.value);
 	}
-	
+
 	const handlePhoneChange = (event) => {
 		setPhoneNumberChanged(true);
 		setPhoneNumber(event.target.value);
@@ -69,6 +73,11 @@ function RegisterPage(props) {
 		changePassword(event.target.value);
 	}
 
+	const handleCodeChange = (event) => {
+		setCodeChanged(true);
+		setCode(event.target.value);
+	}
+
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	}
@@ -80,24 +89,27 @@ function RegisterPage(props) {
 	}
 
 	useEffect(() => {
-		if(name.length === 0) setNameError(emptyText("Name"));
+		if (name.length === 0) setNameError(emptyText("Name"));
 		else setNameError("");
 
-		if(email.length === 0) setEmailError(emptyText("Email"));
+		if (email.length === 0) setEmailError(emptyText("Email"));
 		else setEmailError("");
 
-		if(password.length === 0) setPasswordError(emptyText("Password"));
+		if (password.length === 0) setPasswordError(emptyText("Password"));
 		else setPasswordError("");
-		
-		if(phoneNumber.length === 0) setPhoneNumberError(emptyText("Phone Number"));
+
+		if (phoneNumber.length === 0) setPhoneNumberError(emptyText("Phone Number"));
 		else setPhoneNumberError("");
 
-		if(type === "owner") {
-			if(boardPosition.length === 0) setBoardPositionError(emptyText("Board Position"));
+		if (type === "owner") {
+			if (boardPosition.length === 0) setBoardPositionError(emptyText("Board Position"));
 			else setBoardPositionError("");
+			
+			if (code.length === 0) setCodeError(emptyText("Secret Code"));
+			else setCodeError("");
 		}
 
-	}, [name, email, password, phoneNumber, boardPosition]);
+	}, [name, email, password, phoneNumber, boardPosition, code]);
 
 	const handleSubmit = async (event) => {
 		// event.preventDefault();
@@ -105,63 +117,73 @@ function RegisterPage(props) {
 		setPasswordChanged(true);
 		setEmailChanged(true);
 		setPhoneNumberChanged(true);
-		setBoardPositionChanged(true);
+
+		if(type === "owner") {
+			setBoardPositionChanged(true);
+			setCodeChanged(true);
+		}
 
 		let errors = false;
 
-		if(name.trim().length === 0) {
+		if (name.trim().length === 0) {
 			setEmailError(emptyText("Name"));
 			errors = true;
 		}
 
-		if(email.trim().length === 0) {
+		if (email.trim().length === 0) {
 			setEmailError(emptyText("Email"));
 			errors = true;
-		} else if(!EmailValidator.validate(email)) {
+		} else if (!EmailValidator.validate(email)) {
 			setEmailError("Invalid email address!");
 			errors = true;
 		}
-		if(password.trim().length === 0) {
+		if (password.trim().length === 0) {
 			setPasswordError(emptyText("Password"));
 			errors = true;
-		} else if(password.length < 8) {
+		} else if (password.length < 8) {
 			setPasswordError("Minimum length of password must be 8.");
 			errors = true;
 		}
 
-		if(type === "owner") {
-			if(boardPosition.trim().length === 0) {
+		if (type === "owner") {
+			if (boardPosition.trim().length === 0) {
 				setBoardPositionError(emptyText("Board Position"));
+				errors = true;
+			}
+
+			if(code.trim().length === 0) {
+				setCodeError(emptyText("Secret Code"));
 				errors = true;
 			}
 		}
 
-		if(phoneNumber.trim().length === 0) {
+		if (phoneNumber.trim().length === 0) {
 			setPhoneNumberError(emptyText("Phone Number"));
 			errors = true;
-		} else if(phoneNumber.length !== 10) {
+		} else if (phoneNumber.length !== 10) {
 			setPhoneNumberError("Invalid phone number");
 			errors = true;
 		}
 
 
-		if(!errors && emailError.length === 0 && passwordError.length === 0) {
+		if (!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
 			let sType = type;
 
-			if(type === "organizer") sType = "admin";
+			if (type === "organizer") sType = "admin";
 
 			let url = `https://quizzie-api.herokuapp.com/${sType}/signup`;
 
 			let data = null;
 
-			if(type === "owner") {
+			if (type === "owner") {
 				data = {
 					name: name,
 					email: email,
 					password: password,
 					mobileNumber: phoneNumber,
 					boardPosition: boardPosition,
+					signupCode: code
 				}
 			} else {
 				data = {
@@ -171,7 +193,8 @@ function RegisterPage(props) {
 					mobileNumber: phoneNumber,
 				}
 			}
-			
+
+			console.log(data);
 
 			let response = null;
 			try {
@@ -179,120 +202,132 @@ function RegisterPage(props) {
 					response = res;
 				});
 
-				if(response.status === 201) {
+				if (response.status === 201) {
 					setSignedUp(true);
 					setRedirect(true);
-				} 
-			} catch(error) {
+				}
+			} catch (error) {
 				console.log(error);
 				setPasswordChanged(false);
 				changePassword("");
 				setPasswordChanged(false);
 				setErrorText("There was some error!");
 				setError(true);
-			}	
+			}
 		}
 		setLoading(false);
 	}
 
 	useEffect(() => {
 		console.log(type);
-		if(type !== "user" && type !== "organizer" && type !== "owner") {
+		if (type !== "user" && type !== "organizer" && type !== "owner") {
 			setRedirectMain(true);
 		}
 	}, [type])
 
-	if(redirect === true){
-		let to = (type === "user"? "user": "organizer");
+	if (redirect === true) {
+		let to = (type === "user" ? "user" : (type === "organizer"? "organizer": "owner"));
 		return <Redirect to={`/login/${to}`} />
-	} else if(redirectMain) {
+	} else if (redirectMain) {
 		return <Redirect to="/" />
 	}
 	return (
-		isLoading? <Loading />
-		:
-		<Container className="login-page">
-			<div className="login-form">
-				<Typography variant="h3" color="primary" className="login-head signup-text">{type === "user"? "Join the force!" : "Organizer Sign Up"}</Typography><br />
-				{signedUp === true? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert>: null}
-				{error === true? <Alert severity="warning" color="warning">{errorText}</Alert>: null}
-				<form className="form">
-					<TextInput
-						error={nameChanged? (nameError.length === 0? false: true): false}
-						helperText={nameChanged? (nameError.length === 0? null: nameError): null}
-						id="name"
-						label="Name"
-						type="text"
-						className="form-input"
-						variant="outlined"
-						value={name}
-						onChange={handleNameChange}
-						onKeyPress={keyPress}></TextInput>
-					<TextInput
-						error={phoneNumberChanged? (phoneNumberError.length === 0? false: true): false}
-						helperText={phoneNumberChanged? (phoneNumberError.length === 0? null: phoneNumberError): null}
-						id="phone-number"
-						label="Phone Number"
-						type="text"
-						className="form-input"
-						variant="outlined"
-						value={phoneNumber}
-						onChange={handlePhoneChange}
-						onKeyPress={keyPress}></TextInput>
-					{type === "owner"?
+		isLoading ? <Loading />
+			:
+			<Container className="login-page">
+				<div className="login-form">
+					<Typography variant="h3" color="primary" className="login-head signup-text">{type === "user" ? "Join the force!" : (type === "organizer"? "Organizer Sign Up": "Owner Signup")}</Typography><br />
+					{signedUp === true ? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert> : null}
+					{error === true ? <Alert severity="warning" color="warning">{errorText}</Alert> : null}
+					<form className="form">
 						<TextInput
-							error={boardPositionChanged? (boardPositionError.length === 0? false: true): false}
-							helperText={boardPositionChanged? (boardPositionError.length === 0? null: boardPositionError): null}
-							id="phone-number"
-							label="Board Position"
+							error={nameChanged ? (nameError.length === 0 ? false : true) : false}
+							helperText={nameChanged ? (nameError.length === 0 ? null : nameError) : null}
+							id="name"
+							label="Name"
 							type="text"
 							className="form-input"
 							variant="outlined"
-							value={boardPosition}
-							onChange={handleBoardPositionChange}
+							value={name}
+							onChange={handleNameChange}
 							onKeyPress={keyPress}></TextInput>
-					:null}
-					<TextInput
-						error={emailChanged? (emailError.length === 0? false: true): false}
-						helperText={emailChanged? (emailError.length === 0? null: emailError): null}
-						id="email"
-						label="Email"
-						type="email"
-						className="form-input"
-						variant="outlined"
-						value={email}
-						onChange={handleEmailChange}
-						onKeyPress={keyPress}></TextInput>
-					<TextInput
-						error={passwordChanged? (passwordError.length === 0? false: true): false}
-						helperText={passwordChanged? (passwordError.length === 0? null: passwordError): null}
-						id="password"
-						type={showPassword? "text": "password"}
-						label="Password"
-						className="form-input"
-						variant="outlined"
-						value={password}
-						onChange={handlePasswordChange}
-						onKeyPress={keyPress}
-						InputProps = {{
-							endAdornment: (
-								<InputAdornment position="end">
-									<IconButton
-										aria-label="show password"
-										onClick={togglePasswordVisibility}
-										edge="end"
-									>
-										{showPassword? <Visibility />: <VisibilityOff />}
-									</IconButton>
-								</InputAdornment>
-							)
-						}}></TextInput>
-					
-				</form>
-				<Button className="login-btn signup-btn" onClick={handleSubmit}>Sign Up</Button>
-				{/* <Link to="/registerOrganiser" className="link register-link">Are you an Organiser? Go to the organiser signup!</Link> */}
-			</div>
-		</Container>
+						<TextInput
+							error={phoneNumberChanged ? (phoneNumberError.length === 0 ? false : true) : false}
+							helperText={phoneNumberChanged ? (phoneNumberError.length === 0 ? null : phoneNumberError) : null}
+							id="phone-number"
+							label="Phone Number"
+							type="text"
+							className="form-input"
+							variant="outlined"
+							value={phoneNumber}
+							onChange={handlePhoneChange}
+							onKeyPress={keyPress}></TextInput>
+						{type === "owner" ?
+							<TextInput
+								error={boardPositionChanged ? (boardPositionError.length === 0 ? false : true) : false}
+								helperText={boardPositionChanged ? (boardPositionError.length === 0 ? null : boardPositionError) : null}
+								id="board-position"
+								label="Board Position"
+								type="text"
+								className="form-input"
+								variant="outlined"
+								value={boardPosition}
+								onChange={handleBoardPositionChange}
+								onKeyPress={keyPress}></TextInput>
+							: null}
+						<TextInput
+							error={emailChanged ? (emailError.length === 0 ? false : true) : false}
+							helperText={emailChanged ? (emailError.length === 0 ? null : emailError) : null}
+							id="email"
+							label="Email"
+							type="email"
+							className="form-input"
+							variant="outlined"
+							value={email}
+							onChange={handleEmailChange}
+							onKeyPress={keyPress}></TextInput>
+						<TextInput
+							error={passwordChanged ? (passwordError.length === 0 ? false : true) : false}
+							helperText={passwordChanged ? (passwordError.length === 0 ? null : passwordError) : null}
+							id="password"
+							type={showPassword ? "text" : "password"}
+							label="Password"
+							className="form-input"
+							variant="outlined"
+							value={password}
+							onChange={handlePasswordChange}
+							onKeyPress={keyPress}
+							InputProps={{
+								endAdornment: (
+									<InputAdornment position="end">
+										<IconButton
+											aria-label="show password"
+											onClick={togglePasswordVisibility}
+											edge="end"
+										>
+											{showPassword ? <Visibility /> : <VisibilityOff />}
+										</IconButton>
+									</InputAdornment>
+								)
+							}}></TextInput>
+						{type === "owner" ?
+							<TextInput
+								error={codeChanged ? (codeError.length === 0 ? false : true) : false}
+								helperText={codeChanged ? (codeError.length === 0 ? null : codeError) : null}
+								id="owner-code"
+								label="Secret Code"
+								type="text"
+								className="form-input"
+								variant="outlined"
+								value={code}
+								onChange={handleCodeChange}
+								onKeyPress={keyPress}></TextInput>
+							: null}
+					</form>
+					<Button className="login-btn signup-btn" onClick={handleSubmit}>Sign Up</Button>
+					{/* <Link to="/registerOrganiser" className="link register-link">Are you an Organiser? Go to the organiser signup!</Link> */}
+				</div>
+			</Container>
 	)
 }
 
