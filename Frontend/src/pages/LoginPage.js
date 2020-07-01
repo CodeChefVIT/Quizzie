@@ -24,6 +24,7 @@ function LoginPage(props) {
 	const [didLogin, setDidLogin] = useState(null);
 	const [errorText, setErrorText] = useState("Error Logging In! Try again....");
 	const [redirect, setRedirect] = useState(false);
+	const [ownerRedirect, setOwnerRedirect] = useState(false);
 
 	const type = props.match.params.type;
 	const type1 = type === "user" ? "user" : "organizer";
@@ -113,8 +114,13 @@ function LoginPage(props) {
 					localStorage.setItem('userLoggedIn', true);
 					localStorage.setItem('name', response.data.userDetails.name);
 					localStorage.setItem("authToken", response.data.token);
-
-					setRedirect(true);
+					
+					if(type === "owner") {
+						setOwnerRedirect(true);
+						//TODO: Redirect dashboard shit
+					} else {
+						setRedirect(true);
+					}
 				} 
 			} catch(error) {
 				console.log(error);
@@ -141,7 +147,10 @@ function LoginPage(props) {
 
 	if(redirect === true){
 		return <Redirect to='/' />
+	} else if(ownerRedirect) {
+		return <Redirect to="/coronilOP" />
 	}
+
 	return (
 		isLoading? <Loading />
 		:
