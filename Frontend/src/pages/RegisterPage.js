@@ -18,6 +18,10 @@ function RegisterPage(props) {
 	const [phoneNumberError, setPhoneNumberError] = useState("");
 	const [phoneNumberChanged, setPhoneNumberChanged] = useState(false);
 
+	const [boardPosition, setBoardPosition] = useState("");
+	const [boardPositionError, setBoardPositionError] = useState("");
+	const [boardPositionChanged, setBoardPositionChanged] = useState(false);
+
 	const [email, changeEmail] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [emailChanged, setEmailChanged] = useState(false);
@@ -28,6 +32,7 @@ function RegisterPage(props) {
 	const [showPassword, setShowPassword] = useState(false);
 
 	const [redirect, setRedirect] = useState(false);
+	const [redirectMain, setRedirectMain] = useState(false);
 
 	const [signedUp, setSignedUp] = useState(false);
 	const [existEmail, setExistEmail] = useState(false);
@@ -47,6 +52,11 @@ function RegisterPage(props) {
 	const handlePhoneChange = (event) => {
 		setPhoneNumberChanged(true);
 		setPhoneNumber(event.target.value);
+	}
+
+	const handleBoardPositionChange = (event) => {
+		setBoardPositionChanged(true);
+		setBoardPosition(event.target.value);
 	}
 
 	const handleEmailChange = (event) => {
@@ -82,7 +92,12 @@ function RegisterPage(props) {
 		if(phoneNumber.length === 0) setPhoneNumberError(emptyText("Phone Number"));
 		else setPhoneNumberError("");
 
-	}, [name, email, password, phoneNumber]);
+		if(type === "owner") {
+			if(boardPosition.length === 0) setBoardPositionError(emptyText("Board Position"));
+			else setBoardPositionError("");
+		}
+
+	}, [name, email, password, phoneNumber, boardPosition]);
 
 	const handleSubmit = async (event) => {
 		// event.preventDefault();
@@ -90,22 +105,23 @@ function RegisterPage(props) {
 		setPasswordChanged(true);
 		setEmailChanged(true);
 		setPhoneNumberChanged(true);
+		setBoardPositionChanged(true);
 
 		let errors = false;
 
-		if(name === "") {
+		if(name.trim().length === 0) {
 			setEmailError(emptyText("Name"));
 			errors = true;
 		}
 
-		if(email === "") {
+		if(email.trim().length === 0) {
 			setEmailError(emptyText("Email"));
 			errors = true;
 		} else if(!EmailValidator.validate(email)) {
 			setEmailError("Invalid email address!");
 			errors = true;
 		}
-		if(password === "") {
+		if(password.trim().length === 0) {
 			setPasswordError(emptyText("Password"));
 			errors = true;
 		} else if(password.length < 8) {
@@ -113,7 +129,14 @@ function RegisterPage(props) {
 			errors = true;
 		}
 
-		if(phoneNumber === "") {
+		if(type === "owner") {
+			if(boardPosition.trim().length === 0) {
+				setBoardPositionError(emptyText("Board Position"));
+				errors = true;
+			}
+		}
+
+		if(phoneNumber.trim().length === 0) {
 			setPhoneNumberError(emptyText("Phone Number"));
 			errors = true;
 		} else if(phoneNumber.length !== 10) {
@@ -121,20 +144,34 @@ function RegisterPage(props) {
 			errors = true;
 		}
 
+
 		if(!errors && emailError.length === 0 && passwordError.length === 0) {
 			setLoading(true);
-			let sType = "user";
+			let sType = type;
 
 			if(type === "organizer") sType = "admin";
 
 			let url = `https://quizzie-api.herokuapp.com/${sType}/signup`;
-			
-			let data = {
-				name: name,
-				email: email,
-				password: password,
-				mobileNumber: phoneNumber,
+
+			let data = null;
+
+			if(type === "owner") {
+				data = {
+					name: name,
+					email: email,
+					password: password,
+					mobileNumber: phoneNumber,
+					boardPosition: boardPosition,
+				}
+			} else {
+				data = {
+					name: name,
+					email: email,
+					password: password,
+					mobileNumber: phoneNumber,
+				}
 			}
+			
 
 			let response = null;
 			try {
@@ -157,9 +194,19 @@ function RegisterPage(props) {
 		}
 		setLoading(false);
 	}
+
+	useEffect(() => {
+		console.log(type);
+		if(type !== "user" && type !== "organizer" && type !== "owner") {
+			setRedirectMain(true);
+		}
+	}, [type])
+
 	if(redirect === true){
 		let to = (type === "user"? "user": "organizer");
 		return <Redirect to={`/login/${to}`} />
+	} else if(redirectMain) {
+		return <Redirect to="/" />
 	}
 	return (
 		isLoading? <Loading />
@@ -192,6 +239,19 @@ function RegisterPage(props) {
 						value={phoneNumber}
 						onChange={handlePhoneChange}
 						onKeyPress={keyPress}></TextInput>
+					{type === "owner"?
+						<TextInput
+							error={boardPositionChanged? (boardPositionError.length === 0? false: true): false}
+							helperText={boardPositionChanged? (boardPositionError.length === 0? null: boardPositionError): null}
+							id="phone-number"
+							label="Board Position"
+							type="text"
+							className="form-input"
+							variant="outlined"
+							value={boardPosition}
+							onChange={handleBoardPositionChange}
+							onKeyPress={keyPress}></TextInput>
+					:null}
 					<TextInput
 						error={emailChanged? (emailError.length === 0? false: true): false}
 						helperText={emailChanged? (emailError.length === 0? null: emailError): null}
@@ -203,7 +263,6 @@ function RegisterPage(props) {
 						value={email}
 						onChange={handleEmailChange}
 						onKeyPress={keyPress}></TextInput>
-					<br />
 					<TextInput
 						error={passwordChanged? (passwordError.length === 0? false: true): false}
 						helperText={passwordChanged? (passwordError.length === 0? null: passwordError): null}
@@ -228,6 +287,7 @@ function RegisterPage(props) {
 								</InputAdornment>
 							)
 						}}></TextInput>
+					
 				</form>
 				<Button className="login-btn signup-btn" onClick={handleSubmit}>Sign Up</Button>
 				{/* <Link to="/registerOrganiser" className="link register-link">Are you an Organiser? Go to the organiser signup!</Link> */}
