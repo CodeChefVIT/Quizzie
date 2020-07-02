@@ -14,6 +14,7 @@ import QuizzesSection from "../components/QuizzesSection";
 function Dashboard() {
 	const [tab, setTab] = useState(0);
 	const [redirect, setRedirect] = useState(false);
+	const [redirectOwner, setRedirectOwner] = useState(false);
 
 	const [userType, setUserType] = useState(null);
 	const [profile, setProfile] = useState(null);
@@ -46,11 +47,15 @@ function Dashboard() {
 					"auth-token": token,
 				}
 			}).then(res => {
-				let type = res.data.result[0].userType;
+				let type = res.data.result.userType;
 				if(type === "User")
 					uType = "user";
 				else if(type === "Admin")
 					uType = "admin";
+				else if(type === "Owner")
+					setRedirectOwner(true);
+				
+				if(type === "Owner") return;
 				setUserType(uType);
 			})
 		} catch(error) {
@@ -98,6 +103,8 @@ function Dashboard() {
 		return (
 			<Redirect to="/" />
 		)
+	} else if(redirectOwner) {
+		return <Redirect to="/coronilOP" />
 	} else if(loading) {
 		return (
 			<Loading />
