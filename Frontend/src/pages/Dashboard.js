@@ -53,9 +53,10 @@ function Dashboard() {
 				else if(type === "Admin")
 					uType = "admin";
 				else if(type === "Owner")
+					uType = "owner";
 					setRedirectOwner(true);
 				
-				if(type === "Owner") return;
+				
 				setUserType(uType);
 			})
 		} catch(error) {
@@ -64,6 +65,8 @@ function Dashboard() {
 			setRedirect(true);
 			return;
 		}
+
+		if(uType === "owner") return;
 
 		url = `https://quizzie-api.herokuapp.com/${uType}/`;
 		try {

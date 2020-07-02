@@ -298,7 +298,6 @@ function EditQuiz(props) {
 
 	useEffect(() => {
 		let token = localStorage.getItem("authToken");
-		console.log(token);
 		if (token === null) {
 			setLoading(false);
 			setRedirect(true);
