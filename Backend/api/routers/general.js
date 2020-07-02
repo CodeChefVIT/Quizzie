@@ -62,33 +62,7 @@ router.get("/checkUser", checkAuth, async (req, res) => {
 				});
 			});
 	}
-	// User.find({ _id: req.user.userId })
-	// 	.exec()
-	// 	.then(async (result) => {
-	// 		if (result.length >= 1) {
-	// 			res.status(200).json({
-	// 				result,
-	// 			});
-	// 		} else{
-	// 			Admin.find({ _id: req.user.userId })
-	// 				.exec()
-	// 				.then(async (result) => {
-	// 					res.status(200).json({
-	// 						result,
-	// 					});
-	// 				})
-	// 				.catch((err) => {
-	// 					res.status(400).json({
-	// 						error: err,
-	// 					});
-	// 				});
-	// 		}
-	// 	})
-	// 	.catch((err) => {
-	// 		res.status(400).json({
-	// 			error: "err",
-	// 		});
-	// 	});
+
 });
 
 module.exports = router;
