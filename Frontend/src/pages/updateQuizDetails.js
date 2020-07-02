@@ -90,6 +90,15 @@ function UpdateQuizDetails(props) {
 		getQuizDetails();
 	}, [])
 
+	useEffect(() => {
+		let token = localStorage.getItem("authToken");
+		if(token === null) {
+			setLoading(false);
+			setRedirect(true);
+			return;
+		}
+	}, [])
+
 
 	if(loading) {
 		return (

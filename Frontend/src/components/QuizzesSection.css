@@ -92,5 +92,9 @@
 	color: white !important;
 	font-weight: bold !important;
 
-	margin-top: 5% !important;
+	margin-top: 3% !important;
+}
+
+.no-p-top {
+	padding-top: 0 !important;
 }

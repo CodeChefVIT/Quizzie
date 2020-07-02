@@ -17,6 +17,7 @@ import EditQuiz from './pages/EditQuiz';
 import UpdateQuizDetails from './pages/updateQuizDetails';
 import UpdateProfile from './pages/UpdateProfile';
 import UpdatePassword from './pages/UpdatePassword';
+import OwnerDashboard from './pages/OwnerDashboard';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -58,6 +59,7 @@ function App() {
 					<Route exact path="/dashboard">
 						<Dashboard />
 					</Route>
+					<Route exact path="/coronilOP" component={OwnerDashboard} />
 					<Route exact path="/updateProfile/:type" component={UpdateProfile} />
 					<Route exact path="/updatePassword/:type" component={UpdatePassword} />
 					<Route exact path="/createQuiz">
