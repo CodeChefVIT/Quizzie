@@ -359,13 +359,13 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 						}
 					}
 
-					// for (i = 0; i < numQuiz; i++) {
-					// 	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-					// 		return res.status(401).json({
-					// 			message: "Quiz already started",
-					// 		});
-					// 	}
-					// }
+					for (i = 0; i < numQuiz; i++) {
+						if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+							return res.status(401).json({
+								message: "Quiz already started",
+							});
+						}
+					}
 					if (flag === 0) {
 						return res.status(400).json({
 							message: "You are not enrolled in this quiz",
@@ -432,7 +432,9 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
+	var quizId = req.body.quizId;
 	var responses = [];
+	var score = 0;
 	client.get(req.user.userId, (err, data) => {
 		if (err) {
 			return res.status(400).json({
@@ -441,9 +443,38 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 		}
 		dataQues = JSON.parse(data);
 		if (data != null) {
-			return res.status(200).json({
-				dataQues,
-			});
+			for (i = 0; i < dataQues.length; i++) {
+				if (que_data[i].selectedOption == dataQues[i].correctAnswer) {
+					score += 1;
+				}
+				var object = {
+					description: dataQues[i].description,
+					selected: que_data[i].selectedOption,
+					correctAnswer: dataQues[i].correctAnswer,
+				};
+				responses.push[object];
+			}
+			User.updateOne(
+				{ _id: req.user.userId },
+				{ $push: { quizzesGiven: { quizId, marks: score, responses } } }
+			).then(async(result)=>{
+				await User.findById(req.user.userId).then((result1)=>{
+					res.status(200).json({
+						message:'Updated',
+						quizId,
+						marks:score,
+						responses
+					})
+				}).catch((err)=>{
+					res.status(400).json({
+						message:'Error'
+					})
+				})
+			}).catch((err)=>{
+				res.status(400).json({
+					message:'Couldnt update'
+				})
+			})
 		} else {
 			console.log("Couldn't find questions in cache");
 		}
@@ -507,20 +538,22 @@ router.patch(
 				await User.updateOne(
 					{ _id: req.body.userId },
 					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
-				).then((result)=>{
-					res.status(200).json({
-						message:'User removed successfully'
+				)
+					.then((result) => {
+						res.status(200).json({
+							message: "User removed successfully",
+						});
 					})
-				}).catch((err)=>{
-					res.status(400).json({
-						message:'Some error occurred'
-					})
-				})
+					.catch((err) => {
+						res.status(400).json({
+							message: "Some error occurred",
+						});
+					});
 			})
 			.catch((err) => {
 				res.status(400).json({
-					message:'Some error'
-				})
+					message: "Some error",
+				});
 			});
 	}
 );
