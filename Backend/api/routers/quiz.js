@@ -346,6 +346,10 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 		.then(async (result) => {
 			await User.findById(req.user.userId)
 				.then(async (result2) => {
+					for (let i = result.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1));
+						[result[i], result[j]] = [result[j], result[i]];
+					}
 					var flag = 0;
 					var numQuiz = result2.quizzesStarted.length;
 					var numEnrolled = result2.quizzesEnrolled.length;
@@ -355,13 +359,13 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 						}
 					}
 
-					for (i = 0; i < numQuiz; i++) {
-						if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-							return res.status(401).json({
-								message: "Quiz already started",
-							});
-						}
-					}
+					// for (i = 0; i < numQuiz; i++) {
+					// 	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+					// 		return res.status(401).json({
+					// 			message: "Quiz already started",
+					// 		});
+					// 	}
+					// }
 					if (flag === 0) {
 						return res.status(400).json({
 							message: "You are not enrolled in this quiz",
@@ -436,7 +440,6 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		}
 		dataQues = JSON.parse(data);
-		c;
 		if (data != null) {
 			return res.status(200).json({
 				dataQues,
