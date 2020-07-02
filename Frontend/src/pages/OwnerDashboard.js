@@ -12,9 +12,7 @@ import '../components/ProfileSection';
 function OwnerDashboard() {
 	const [tab, setTab] = useState(0);
 	const [redirect, setRedirect] = useState(false);
-	const [redirectOwner, setRedirectOwner] = useState(false);
-
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	const [refresh, setRefresh] = useState(false);
 
@@ -24,19 +22,36 @@ function OwnerDashboard() {
 		setTab(newVal);
 	}
 
-	useEffect(() => {
-		if(!isLoggedIn) {
-			setRedirect(true);
-			return;
+	const validate = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/general/checkUser";
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				if(res.data.result.userType !== "Owner") {
+					setRedirect(true);
+					return;
+				} else {
+					setLoading(false);
+				}
+			}) 
+		} catch(error) {
+			console.log(error);
 		}
+	}
+
+	useEffect(() => {
+		validate();
 	}, [])
 
-	// useEffect(() => {
-	// 	if(refresh === true) {
-	// 		getProfile();
-	// 		setRefresh(false);
-	// 	}
-	// }, [refresh])
+	useEffect(() => {
+		if(refresh === true) {
+		}
+	}, [refresh])
 
 	if(redirect) {
 		return (
@@ -67,7 +82,7 @@ function OwnerDashboard() {
 						</Tabs>
 					</AppBar>
 					<TabPanel value={tab} index={0}>
-						
+						<AllQuizzes />
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
 						
@@ -93,6 +108,39 @@ function TabPanel(props) {
 			aria-labelledby={`simple-tab-${props.index}`}
 		>
 			<div>{props.children}</div>
+		</div>
+	)
+}
+
+function AllQuizzes(props) {
+	const [quizzes, setQuizzes] = useState([]);
+
+	const getAllQuizzes = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/owner/allQuizzes";
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setQuizzes(res.data.result);
+			})
+		} catch(error) {
+			console.log(error);
+		}
+	}
+
+	useEffect(() => {
+		getAllQuizzes();
+	})
+
+	return (
+		<div className="owner-quizzes s">
+			{quizzes.map(quiz => (
+				<h5>{quiz.quizName}</h5>
+			))}
 		</div>
 	)
 }

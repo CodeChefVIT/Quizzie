@@ -52,9 +52,10 @@ function Dashboard() {
 					uType = "user";
 				else if(type === "Admin")
 					uType = "admin";
-				else if(type === "Owner")
+				else if(type === "Owner") {
 					uType = "owner";
 					setRedirectOwner(true);
+				}
 				
 				
 				setUserType(uType);
