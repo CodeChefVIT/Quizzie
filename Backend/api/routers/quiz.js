@@ -458,17 +458,11 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 				{ _id: req.user.userId },
 				{ $push: { quizzesGiven: { quizId, marks: score, responses } } }
 			).then(async(result)=>{
-				await User.findById(req.user.userId).then((result1)=>{
-					res.status(200).json({
-						message:'Updated',
-						quizId,
-						marks:score,
-						responses
-					})
-				}).catch((err)=>{
-					res.status(400).json({
-						message:'Error'
-					})
+				res.status(200).json({
+					message:'Updated',
+					quizId,
+					marks:score,
+					responses
 				})
 			}).catch((err)=>{
 				res.status(400).json({
