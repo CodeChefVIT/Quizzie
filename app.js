@@ -41,6 +41,8 @@ mongoose.Promise = global.Promise;
 
 // console.log(jj)
 
+console.log(Date.now())
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

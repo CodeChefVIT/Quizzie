@@ -24,6 +24,10 @@ const QuizSchema = new mongoose.Schema({
 	quizDuration: {
 		type: String,
 	},
+	quizStatus:{
+		type:Number,
+		default:0
+	}
 });
 
 module.exports = mongoose.model("Quiz", QuizSchema);
