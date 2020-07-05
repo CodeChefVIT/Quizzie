@@ -31,6 +31,16 @@ mongoose
 	.catch((err) => console.log(err));
 
 mongoose.Promise = global.Promise;
+// const jj = Date.parse('10 July 2020 00:00:00 GMT')
+// console.log(jj)
+// const jg =Date.now()
+
+// console.log(jg)
+
+// var date = new Date(jj)
+
+// console.log(jj)
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

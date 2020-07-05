@@ -48,8 +48,7 @@ router.post(
 				_id: new mongoose.Types.ObjectId(),
 				quizName: req.body.quizName,
 				adminId: req.user.userId,
-				quizDate: req.body.quizDate,
-				quizTime: req.body.quizTime,
+				scheduledFor: req.body.scheduledFor,
 				quizDuration: req.body.quizDuration,
 				quizType: req.body.quizType.toLowerCase(),
 				quizCode: shortid.generate(),
@@ -82,6 +81,7 @@ router.post(
 				adminId: req.user.userId,
 				quizDate: req.body.quizDate,
 				quizTime: req.body.quizTime,
+				scheduledFor: req.body.scheduledFor,
 				quizDuration: req.body.quizDuration,
 				quizType: req.body.quizType.toLowerCase(),
 			});
@@ -94,6 +94,8 @@ router.post(
 						{ $push: { quizzes: { quizId } } }
 					)
 						.then(async (result1) => {
+							const date = new Date(Number(result.scheduledFor))
+							console.log(date.toLocaleString())
 							res.status(201).json({
 								message: "created",
 								result,
