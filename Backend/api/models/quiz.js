@@ -19,15 +19,15 @@ const QuizSchema = new mongoose.Schema({
 			userId: { type: mongoose.Schema.Types.ObjectID, ref: "User" },
 		},
 	],
-	quizDate: {
-		type: Date,
-	},
-	quizTime: {
-		type: String,
-	},
+	scheduledFor: { type: String },
+	scheduledForString:{type:String},
 	quizDuration: {
 		type: String,
 	},
+	quizStatus:{
+		type:Number,
+		default:0
+	}
 });
 
 module.exports = mongoose.model("Quiz", QuizSchema);
