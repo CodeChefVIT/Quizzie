@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
+import './OwnerQuizzes.css';
 import { List, ListItem, ListItemText } from "@material-ui/core";
 
 function OwnerQuizzes(props) {
@@ -27,10 +28,10 @@ function OwnerQuizzes(props) {
 	})
 
 	return (
-		<div className="owner-quizzes s">
+		<div className="owner-quizzes">
 			{quizzes.map(quiz => (
-				<List aria-label="quiz display">
-					<ListItem button>
+				<List aria-label="quiz display" className="owner-quiz-list">
+					<ListItem button className="owner-quiz-item">
 						<ListItemText primary={quiz.quizName} />
 					</ListItem>
 				</List>
