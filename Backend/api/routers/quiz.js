@@ -526,6 +526,23 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 		});
 });
 
+router.patch('/finish',checkAuth,async(req,res)=>{
+	await Quiz.updateOne(
+		{ _id: req.body.quizId },
+		{ $set: { quizStatus: 2 } }
+	)
+	.then((result)=>{
+		res.status(200).json({
+			message:'Updated Quiz Status'
+		})
+	})
+	.catch((err)=>{
+		res.status(400).json({
+			error:err.toString()
+		})
+	})
+})
+
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
