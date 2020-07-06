@@ -40,12 +40,12 @@ function CreateQuiz() {
 
 		let data = {
 			"quizName": quizName,
-			"quizDate": quizDate.toString(),
-			"quizTime": quizDate.toTimeString(),
+			"scheduledFor": quizDate.getTime(),
 			"quizDuration": duration,
 			"quizType": type
 		}
-
+		
+		console.log(data);
 		try {
 			await axios.post(url, data, {
 				headers: {
@@ -108,6 +108,9 @@ function CreateQuiz() {
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<KeyboardTimePicker
+										ampm={true}
+										format="hh:mm:ss aa"
+										views={["hours", "minutes", "seconds"]}
 										margin="normal"
 										label="Select Quiz Start Time"
 										value={quizDate}
