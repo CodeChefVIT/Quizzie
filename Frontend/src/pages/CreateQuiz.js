@@ -108,7 +108,8 @@ function CreateQuiz() {
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<KeyboardTimePicker
-										format="hh:mm:ss"
+										ampm={true}
+										format="hh:mm:ss aa"
 										views={["hours", "minutes", "seconds"]}
 										margin="normal"
 										label="Select Quiz Start Time"

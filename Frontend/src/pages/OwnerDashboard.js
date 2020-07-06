@@ -7,6 +7,7 @@ import { Redirect } from "react-router";
 import Loading from "./Loading";
 import axios from "axios";
 import '../components/ProfileSection';
+import OwnerQuizzes from "../components/OwnerQuizzes";
 
 
 function OwnerDashboard() {
@@ -82,7 +83,7 @@ function OwnerDashboard() {
 						</Tabs>
 					</AppBar>
 					<TabPanel value={tab} index={0}>
-						<AllQuizzes />
+						<OwnerQuizzes />
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
 						
@@ -108,39 +109,6 @@ function TabPanel(props) {
 			aria-labelledby={`simple-tab-${props.index}`}
 		>
 			<div>{props.children}</div>
-		</div>
-	)
-}
-
-function AllQuizzes(props) {
-	const [quizzes, setQuizzes] = useState([]);
-
-	const getAllQuizzes = async () => {
-		let token = localStorage.getItem("authToken");
-		let url = "https://quizzie-api.herokuapp.com/owner/allQuizzes";
-
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				setQuizzes(res.data.result);
-			})
-		} catch(error) {
-			console.log(error);
-		}
-	}
-
-	useEffect(() => {
-		getAllQuizzes();
-	})
-
-	return (
-		<div className="owner-quizzes s">
-			{quizzes.map(quiz => (
-				<h5>{quiz.quizName}</h5>
-			))}
 		</div>
 	)
 }
