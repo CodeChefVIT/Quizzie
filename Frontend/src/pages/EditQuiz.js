@@ -329,8 +329,8 @@ function EditQuiz(props) {
 				</div>
 				<div className="quiz-details-sec">
 					<Typography variant="h6" className="quiz-detail-param">Name: <span className="quiz-detail-text">{quizDetails.quizName}</span></Typography>
-					<Typography variant="h6" className="quiz-detail-param">Date: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toDateString()}</span></Typography>
-					<Typography variant="h6" className="quiz-detail-param">Time: <span className="quiz-detail-text">{new Date(quizDetails.quizDate).toLocaleTimeString()}</span></Typography>
+					<Typography variant="h6" className="quiz-detail-param">Date: <span className="quiz-detail-text">{new Date(Number(quizDetails.scheduledFor)).toDateString()}</span></Typography>
+					<Typography variant="h6" className="quiz-detail-param">Time: <span className="quiz-detail-text">{new Date(Number(quizDetails.scheduledFor)).toLocaleTimeString()}</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Duration: <span className="quiz-detail-text">{quizDetails.quizDuration} minutes</span></Typography>
 					<Typography variant="h6" className="quiz-detail-param">Type: <span className="quiz-detail-text">{quizDetails.quizType}</span></Typography>
 					{quizDetails.quizType === "private" ?

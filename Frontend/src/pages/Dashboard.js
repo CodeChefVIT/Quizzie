@@ -57,7 +57,6 @@ function Dashboard() {
 					setRedirectOwner(true);
 				}
 				
-				
 				setUserType(uType);
 			})
 		} catch(error) {
