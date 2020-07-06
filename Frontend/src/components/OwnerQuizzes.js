@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 import './OwnerQuizzes.css';
 import { List, ListItem, ListItemText } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 function OwnerQuizzes(props) {
 	const [quizzes, setQuizzes] = useState([]);
@@ -31,8 +32,8 @@ function OwnerQuizzes(props) {
 		<div className="owner-quizzes">
 			{quizzes.map(quiz => (
 				<List aria-label="quiz display" className="owner-quiz-list">
-					<ListItem button className="owner-quiz-item">
-						<ListItemText primary={quiz.quizName} />
+					<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`}>
+						<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
 					</ListItem>
 				</List>
 			))}
