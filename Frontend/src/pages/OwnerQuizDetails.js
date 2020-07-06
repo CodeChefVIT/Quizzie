@@ -17,6 +17,7 @@ function OwnerQuizDetails(props) {
 
 	const [loading, setLoading] = useState(true);
 	const [redirect, setRedirect] = useState(false);
+	const [redirectD, setRedirectD] = useState(false);
 
 	const [quizDetails, setQuizDetails] = useState({});
 	const [quizQuestions, setQuizQuestions] = useState([]);
@@ -25,6 +26,26 @@ function OwnerQuizDetails(props) {
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
+	}
+	
+	const validate = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/general/checkUser";
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				if(res.data.result.userType !== "Owner") {
+					setRedirectD(true);
+					return;
+				}
+			}) 
+		} catch(error) {
+			console.log(error);
+		}
 	}
 
 	const handleDelete = async () => {
@@ -85,6 +106,7 @@ function OwnerQuizDetails(props) {
 			setRedirect(true);
 			return;
 		}
+		validate();
 		getQuizDetails();
 	}, [])
 
@@ -96,6 +118,8 @@ function OwnerQuizDetails(props) {
 		return (
 			<Redirect to="/coronilOP" />
 		)
+	} else if(redirectD) {
+		return <Redirect to="/dashboard" />
 	}
 	else {
 		return (

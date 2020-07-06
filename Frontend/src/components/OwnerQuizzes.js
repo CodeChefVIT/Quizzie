@@ -30,13 +30,13 @@ function OwnerQuizzes(props) {
 
 	return (
 		<div className="owner-quizzes">
+			<List aria-label="quiz display" className="owner-quiz-list">
 			{quizzes.map(quiz => (
-				<List aria-label="quiz display" className="owner-quiz-list">
-					<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
-						<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
-					</ListItem>
-				</List>
+				<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
+					<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
+				</ListItem>
 			))}
+			</List>
 		</div>
 	)
 }

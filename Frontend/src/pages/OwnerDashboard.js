@@ -8,6 +8,7 @@ import Loading from "./Loading";
 import axios from "axios";
 import '../components/ProfileSection';
 import OwnerQuizzes from "../components/OwnerQuizzes";
+import OwnerUsers from "../components/OwnerUsers";
 
 
 function OwnerDashboard() {
@@ -86,7 +87,7 @@ function OwnerDashboard() {
 						<OwnerQuizzes />
 					</TabPanel>
 					<TabPanel value={tab} index={1}>
-						
+						<OwnerUsers />
 					</TabPanel>
 					<TabPanel value={tab} index={2}>
 						
