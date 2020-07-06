@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from "react";
 import axios from "axios";
 import './OwnerQuizzes.css';
-import { List, ListItem, ListItemText } from "@material-ui/core";
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from "@material-ui/core";
 import { Link } from "react-router-dom";
+import { ArrowForwardIos } from "@material-ui/icons";
 
 function OwnerQuizzes(props) {
 	const [quizzes, setQuizzes] = useState([]);
@@ -34,6 +35,11 @@ function OwnerQuizzes(props) {
 			{quizzes.map(quiz => (
 				<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
 					<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
+					<ListItemSecondaryAction>
+						<IconButton edge="end" aria-label="details">
+							<ArrowForwardIos />
+						</IconButton>
+					</ListItemSecondaryAction>
 				</ListItem>
 			))}
 			</List>

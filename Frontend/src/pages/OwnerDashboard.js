@@ -9,7 +9,7 @@ import axios from "axios";
 import '../components/ProfileSection';
 import OwnerQuizzes from "../components/OwnerQuizzes";
 import OwnerUsers from "../components/OwnerUsers";
-
+import OwnerOrganizers from "../components/OwnerOrganizers";
 
 function OwnerDashboard() {
 	const [tab, setTab] = useState(0);
@@ -90,7 +90,7 @@ function OwnerDashboard() {
 						<OwnerUsers />
 					</TabPanel>
 					<TabPanel value={tab} index={2}>
-						
+						<OwnerOrganizers />
 					</TabPanel>
 				</div>
 			</Container>
