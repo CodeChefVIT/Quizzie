@@ -32,7 +32,7 @@ function OwnerQuizzes(props) {
 		<div className="owner-quizzes">
 			{quizzes.map(quiz => (
 				<List aria-label="quiz display" className="owner-quiz-list">
-					<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`}>
+					<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
 						<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
 					</ListItem>
 				</List>

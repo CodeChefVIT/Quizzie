@@ -29,22 +29,14 @@ function OwnerQuizDetails(props) {
 
 	const handleDelete = async () => {
 		let token = localStorage.getItem("authToken");
-		let url = `https://quizzie-api.herokuapp.com/quiz/delete`;
-
-		let data = {
-			"quizId": quizId
-		}
-
-		console.log(data);
+		let url = `https://quizzie-api.herokuapp.com/owner/quiz/${quizId}`;
 
 		try {
 			await axios.delete(url, {
 				headers: {
 					"auth-token": token
 				},
-				data: data
 			}).then(res => {
-				console.log(res);
 				setRedirect(true);
 			})
 		} catch (error) {
@@ -110,8 +102,8 @@ function OwnerQuizDetails(props) {
 			<Container className="edit-quiz-page">
 				<Typography variant="h3" className="dash-head p-top edit-quiz-head">Quiz Details</Typography>
 				<div className="edit-btn-bar">
-					<Button className="edit-details-btn delete-btn">
-						<Delete className="edit-icon" onClick={handleDeleteBtn}/>Delete Quiz
+					<Button className="edit-details-btn delete-btn" onClick={handleDeleteBtn}>
+						<Delete className="edit-icon"/>Delete Quiz
 					</Button>
 				</div>
 				<div className="quiz-details-sec">

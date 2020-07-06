@@ -140,8 +140,6 @@ function EditQuiz(props) {
 			"quizId": quizId
 		}
 
-		console.log(data);
-
 		try {
 			await axios.delete(url, {
 				headers: {
@@ -149,7 +147,6 @@ function EditQuiz(props) {
 				},
 				data: data
 			}).then(res => {
-				console.log(res);
 				setRedirect(true);
 			})
 		} catch (error) {
