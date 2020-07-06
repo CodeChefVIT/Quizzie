@@ -324,8 +324,8 @@ function QuizzesSection(props) {
 					{infoLoading? <Loading /> :
 						<div className="modal-info no-p-top">
 							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
-							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(currQuiz.quizDate).toDateString()}</span></Typography>
-							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(currQuiz.quizDate).toLocaleTimeString()}</span></Typography>
+							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toDateString()}</span></Typography>
+							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toLocaleTimeString()}</span></Typography>
 							<Button className="unenroll-btn" onClick={handleUnenroll}>
 								<Block style={{color: 'white'}}/>Unenroll
 							</Button>
