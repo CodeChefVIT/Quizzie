@@ -344,170 +344,170 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.then(async (result0) => {
-		await Question.find({ quizId: req.body.quizId })
-		.select("-__v")
-		.exec()
-		.then(async (result) => {
-			console.log(result0);
-			if (result0.quizStatus == 0) {
-				if (Date.now() >= result0.scheduledFor) {
-					await User.findById(req.user.userId)
-						.then(async (result2) => {
-							for (let i = result.length - 1; i > 0; i--) {
-								const j = Math.floor(Math.random() * (i + 1));
-								[result[i], result[j]] = [result[j], result[i]];
-							}
-							var flag = 0;
-							var numQuiz = result2.quizzesStarted.length;
-							var numEnrolled = result2.quizzesEnrolled.length;
-							for (i = 0; i < numEnrolled; i++) {
-								if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-									flag = 1;
-								}
-							}
+			await Question.find({ quizId: req.body.quizId })
+				.select("-__v")
+				.exec()
+				.then(async (result) => {
+					console.log(result0);
+					if (result0.quizStatus == 0) {
+						if (Date.now() >= result0.scheduledFor) {
+							await User.findById(req.user.userId)
+								.then(async (result2) => {
+									for (let i = result.length - 1; i > 0; i--) {
+										const j = Math.floor(Math.random() * (i + 1));
+										[result[i], result[j]] = [result[j], result[i]];
+									}
+									var flag = 0;
+									var numQuiz = result2.quizzesStarted.length;
+									var numEnrolled = result2.quizzesEnrolled.length;
+									for (i = 0; i < numEnrolled; i++) {
+										if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+											flag = 1;
+										}
+									}
 
-							for (i = 0; i < numQuiz; i++) {
-								if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-									return res.status(401).json({
-										message: "Quiz already started",
-									});
-								}
-							}
-							if (flag === 0) {
-								return res.status(400).json({
-									message: "You are not enrolled in this quiz",
-								});
-							}
-							// var clientId = questions+req.user.userId
-							client.setex(req.user.userId, 3600, JSON.stringify(result));
-							var quizId = req.body.quizId;
-							req.session.questions = result;
-							await User.updateOne(
-								{ _id: req.user.userId },
-								{ $push: { quizzesStarted: { quizId } } }
-							)
-								.exec()
-								.then(async (result1) => {
-									await Quiz.updateOne(
-										{ _id: req.body.quizId },
-										{ $set: { quizStatus: 1 } }
-									)
-										.then(async (result1) => {
-											var data = [];
-											for (i = 0; i < result.length; i++) {
-												object = {
-													quizId: result[i].quizId,
-													description: result[i].description,
-													options: result[i].options,
-												};
-												data.push(object);
-											}
-											await res.status(200).json({
-												message: "Quiz started for " + req.user.name,
-												data,
+									for (i = 0; i < numQuiz; i++) {
+										if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+											return res.status(401).json({
+												message: "Quiz already started",
 											});
+										}
+									}
+									if (flag === 0) {
+										return res.status(400).json({
+											message: "You are not enrolled in this quiz",
+										});
+									}
+									// var clientId = questions+req.user.userId
+									client.setex(req.user.userId, 3600, JSON.stringify(result));
+									var quizId = req.body.quizId;
+									req.session.questions = result;
+									await User.updateOne(
+										{ _id: req.user.userId },
+										{ $push: { quizzesStarted: { quizId } } }
+									)
+										.exec()
+										.then(async (result1) => {
+											await Quiz.updateOne(
+												{ _id: req.body.quizId },
+												{ $set: { quizStatus: 1 } }
+											)
+												.then(async (result1) => {
+													var data = [];
+													for (i = 0; i < result.length; i++) {
+														object = {
+															quizId: result[i].quizId,
+															description: result[i].description,
+															options: result[i].options,
+														};
+														data.push(object);
+													}
+													await res.status(200).json({
+														message: "Quiz started for " + req.user.name,
+														data,
+													});
+												})
+												.catch(async (err) => {
+													await res.status(400).json({
+														err: err.toString(),
+													});
+												});
 										})
-										.catch(async(err) => {
+										.catch(async (err) => {
 											await res.status(400).json({
-												err: err.toString(),
+												message: "some error occurred",
 											});
 										});
 								})
-								.catch(async(err) => {
+								.catch(async (err) => {
 									await res.status(400).json({
-										message: "some error occurred",
+										message: err.toString(),
 									});
 								});
-						})
-						.catch(async(err) => {
-							await res.status(400).json({
-								message: "Some error Occurred",
-							});
+						}
+						return res.status(401).json({
+							message: "Quiz hasn't started yet",
 						});
-				}
-				return res.status(401).json({
-					message: "Quiz hasn't started yet",
-				});
-			} else if (result0.quizStatus == 1) {
-				await User.findById(req.user.userId)
-					.then(async (result2) => {
-						for (let i = result.length - 1; i > 0; i--) {
-							const j = Math.floor(Math.random() * (i + 1));
-							[result[i], result[j]] = [result[j], result[i]];
-						}
-						var flag = 0;
-						var numQuiz = result2.quizzesStarted.length;
-						var numEnrolled = result2.quizzesEnrolled.length;
-						for (i = 0; i < numEnrolled; i++) {
-							if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-								flag = 1;
-							}
-						}
-
-						for (i = 0; i < numQuiz; i++) {
-							if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-								return res.status(401).json({
-									message: "Quiz already started",
-								});
-							}
-						}
-						if (flag === 0) {
-							return res.status(400).json({
-								message: "You are not enrolled in this quiz",
-							});
-						}
-						// var clientId = questions+req.user.userId
-						client.setex(req.user.userId, 3600, JSON.stringify(result));
-						var quizId = req.body.quizId;
-						req.session.questions = result;
-						await User.updateOne(
-							{ _id: req.user.userId },
-							{ $push: { quizzesStarted: { quizId } } }
-						)
-							.exec()
-							.then(async (result1) => {
-								var data = [];
-								for (i = 0; i < result.length; i++) {
-									object = {
-										quizId: result[i].quizId,
-										description: result[i].description,
-										options: result[i].options,
-									};
-									data.push(object);
+					} else if (result0.quizStatus == 1) {
+						await User.findById(req.user.userId)
+							.then(async (result2) => {
+								for (let i = result.length - 1; i > 0; i--) {
+									const j = Math.floor(Math.random() * (i + 1));
+									[result[i], result[j]] = [result[j], result[i]];
 								}
-								await res.status(200).json({
-									message: "Quiz started for " + req.user.name,
-									data,
-								});
+								var flag = 0;
+								var numQuiz = result2.quizzesStarted.length;
+								var numEnrolled = result2.quizzesEnrolled.length;
+								for (i = 0; i < numEnrolled; i++) {
+									if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+										flag = 1;
+									}
+								}
+
+								for (i = 0; i < numQuiz; i++) {
+									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+										return res.status(401).json({
+											message: "Quiz already started",
+										});
+									}
+								}
+								if (flag === 0) {
+									return res.status(400).json({
+										message: "You are not enrolled in this quiz",
+									});
+								}
+								// var clientId = questions+req.user.userId
+								client.setex(req.user.userId, 3600, JSON.stringify(result));
+								var quizId = req.body.quizId;
+								req.session.questions = result;
+								await User.updateOne(
+									{ _id: req.user.userId },
+									{ $push: { quizzesStarted: { quizId } } }
+								)
+									.exec()
+									.then(async (result1) => {
+										var data = [];
+										for (i = 0; i < result.length; i++) {
+											object = {
+												quizId: result[i].quizId,
+												description: result[i].description,
+												options: result[i].options,
+											};
+											data.push(object);
+										}
+										await res.status(200).json({
+											message: "Quiz started for " + req.user.name,
+											data,
+										});
+									})
+									.catch(async (err) => {
+										await res.status(400).json({
+											message: "some error occurred",
+										});
+									});
 							})
-							.catch(async(err) => {
+							.catch(async (err) => {
 								await res.status(400).json({
-									message: "some error occurred",
+									message: "Some error Occurred",
 								});
 							});
-					})
-					.catch(async(err) => {
-						await res.status(400).json({
-							message: "Some error Occurred",
+					} else {
+						res.status(402).json({
+							message: "Quiz time elapsed",
 						});
+					}
+				})
+				.catch(async (err) => {
+					await res.status(400).json({
+						message: err.toString(),
 					});
-			} else {
-				res.status(402).json({
-					message: "Quiz time elapsed",
 				});
-			}
 		})
-		.catch(async(err) => {
+		.catch(async (err) => {
 			await res.status(400).json({
 				message: err.toString(),
 			});
-		});})
-		.catch(async(err) => {
-			await res.status(400).json({
-				message:err.toString()
-			})
 		});
-	
 });
 
 router.get("/:quizId", checkAuth, async (req, res, next) => {
@@ -531,6 +531,30 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	var quizId = req.body.quizId;
 	var responses = [];
 	var score = 0;
+	Quiz.findById(req.body.quizId)
+		.then(async(result9) => {
+			console.log(Date.now())
+			console.log(Number(result9.scheduledFor)+Number(Number(result9.quizDuration)*60*1000))
+			if(Date.now()>=Number(result9.scheduledFor)+Number(Number(result9.quizDuration)*60*1000)){
+				await Quiz.updateOne(
+					{ _id: req.body.quizId },
+					{ $set: { quizStatus: 2 } }
+				)
+				.then((result)=>{
+					console.log('updated quiz status')
+				})
+				.catch((err)=>{
+					res.status(400).json({
+						error:err.toString()
+					})
+				})
+			}
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message:err.toString()
+			})
+		});
 	client.get(req.user.userId, (err, data) => {
 		if (err) {
 			return res.status(400).json({
