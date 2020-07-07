@@ -446,7 +446,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 
 								for (i = 0; i < numQuiz; i++) {
 									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-										return res.status(401).json({
+										return res.status(405).json({
 											message: "Quiz already started",
 										});
 									}
