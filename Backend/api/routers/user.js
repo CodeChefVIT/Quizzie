@@ -211,47 +211,44 @@ router.patch(
 	checkAuthUser,
 	async (req, res, next) => {
 		await User.findOne({ _id: req.user.userId })
-			.then(async(result) => {
-				bcrypt.compare(req.body.password,result.password, (err, result1) => {
+			.then(async (result) => {
+				bcrypt.compare(req.body.password, result.password, (err, result1) => {
 					if (err) {
 						return res.status(500).json({
 							message: "Auth failed",
 						});
 					}
-					if(result1){
+					if (result1) {
 						bcrypt.hash(req.body.newPassword, 10, (err, hash) => {
-							if(err){
-								res.status(400).json(({
-									err
-								}))
+							if (err) {
+								res.status(400).json({
+									err,
+								});
 							}
 
-							User.updateOne({_id:req.user.userId},{$set:{password:hash}}).then((result)=>{
-								res.status(200).json({
-									message:'Password changed'
+							User.updateOne({ _id: req.user.userId }, { $set: { password: hash } })
+								.then((result) => {
+									res.status(200).json({
+										message: "Password changed",
+									});
 								})
-							}).catch((err)=>{
-								res.status(400).json({
-									message:'error'
-								})
-							})
-
-						})
-						
-
-					}
-					else{
+								.catch((err) => {
+									res.status(400).json({
+										message: "error",
+									});
+								});
+						});
+					} else {
 						return res.status(401).json({
 							message: "Auth failed",
 						});
 					}
-
-				})
+				});
 			})
 			.catch((err) => {
 				res.status(400).json({
-					err
-				})
+					err,
+				});
 			});
 	}
 );

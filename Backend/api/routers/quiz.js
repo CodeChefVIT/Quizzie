@@ -452,7 +452,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									}
 								}
 								if (flag === 0) {
-									return res.status(400).json({
+									return res.status(409).json({
 										message: "You are not enrolled in this quiz",
 									});
 								}
