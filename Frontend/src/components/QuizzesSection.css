@@ -77,7 +77,13 @@
 		font-size: 0.8rem !important;
 	}
 
-} 
+}
+
+.btn-set .MuiIconButton-root {
+	padding-right: 0 !important;
+	padding-left: 0 !important;
+
+}
 
 .enroll-icon {
 	color: white !important;
@@ -97,4 +103,37 @@
 
 .no-p-top {
 	padding-top: 0 !important;
+}
+
+.time-sec {
+	text-align: center !important;
+}
+
+.time-rem {
+	font-size: 1rem !important;
+	font-weight: bolder !important;
+	color: #2980b9 !important;
+	font-family: 'Courier New', Courier, monospace !important;
+}
+
+@media screen and (max-width: 900px) {
+	.time-rem {
+		font-size: 0.8rem !important;
+	}
+}
+@media screen and (max-width: 580px) {
+	.time-rem {
+		font-size: 0.65rem !important;
+	}
+}
+
+.m-top2 {
+	margin-top: 7% !important;
+}
+
+.start-div .logout-btn {
+	margin-bottom: 0 !important;
+}
+.start-div .cancel-btn {
+	margin-bottom: 0 !important;
 }

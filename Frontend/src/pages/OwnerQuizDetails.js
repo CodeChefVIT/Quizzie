@@ -4,13 +4,14 @@ import './EditQuiz.css';
 import {
 	Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem,
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
-	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle, Snackbar
 } from "@material-ui/core";
 import { Create, ExpandMore, Adjust, Delete } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
+import { Alert } from "@material-ui/lab";
 
 function OwnerQuizDetails(props) {
 	const quizId = props.match.params.id;
@@ -23,6 +24,7 @@ function OwnerQuizDetails(props) {
 	const [quizQuestions, setQuizQuestions] = useState([]);
 	
 	const [deleteModal, setDeleteModal] = useState(false);
+	const [deleteSnack, setDeleteSnack] = useState(false);
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
@@ -49,6 +51,7 @@ function OwnerQuizDetails(props) {
 	}
 
 	const handleDelete = async () => {
+		setDeleteSnack(true);
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/owner/quiz/${quizId}`;
 
@@ -180,6 +183,9 @@ function OwnerQuizDetails(props) {
 						<Button className="cancel-btn m-left" onClick={() => setDeleteModal(false)}>No</Button>
 					</div>
 				</Dialog>
+				<Snackbar open={deleteSnack} autoHideDuration={5000} onClose={() => setDeleteSnack(false)}>
+					<Alert variant="filled" severity="info" onClose={() => setDeleteSnack(false)}>Processing... Please Wait!</Alert>
+				</Snackbar>
 			</Container>
 		)
 	}

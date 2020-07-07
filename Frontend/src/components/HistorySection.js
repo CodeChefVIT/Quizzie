@@ -54,7 +54,7 @@ function HistorySection(props) {
 		return (
 			<div className="history-section">
 				{quizzes.length === 0? 
-					<p>You have not created any quizzes yet!</p>
+					<p style={{textAlign: 'center'}}>You have not created any quizzes yet!</p>
 				:
 				<GridList cols={getCols()} className="grid-list">
 				{quizzes.map((quiz) => (
@@ -83,7 +83,7 @@ function HistorySection(props) {
 		return (
 			<div className="history-section">
 				{profile.quizzesGiven.length === 0? 
-					<p>You have not given any quizzes yet!</p>
+					<p style={{textAlign: 'center'}}>You have not given any quizzes yet!</p>
 				: null}
 			</div>
 		)
