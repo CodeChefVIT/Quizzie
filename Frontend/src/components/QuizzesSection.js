@@ -11,6 +11,7 @@ import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
 import Loading from "../pages/Loading";
+import countdown from "countdown";
 
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
@@ -33,6 +34,7 @@ function QuizzesSection(props) {
 	const [infoModal, setInfoModal] = useState(false);
 	const [infoLoading, setInfoLoading] = useState(false);
 	const [currQuiz, setCurrQuiz] = useState({});
+	const [timeRemain, setTimeRemain] = useState("");
 
 	const setRefresh = props.refresh;
 
@@ -44,6 +46,14 @@ function QuizzesSection(props) {
 		return 2;
 	}
 
+	const getInfoWidth = () => {
+		if(isWidthUp('sm', props.width)) {
+			return '45%';
+		}
+
+		return '80%';
+	}
+
 	const onCloseHandle = () => {
 		setJoinModal(false);
 		setQuizCode("");
@@ -51,6 +61,7 @@ function QuizzesSection(props) {
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
+		setTimeRemain("");
 
 		setInfoModal(false);
 		setCurrQuiz({});
@@ -208,6 +219,14 @@ function QuizzesSection(props) {
 		}
 	}
 
+	useEffect(() => {
+		if(infoModal) {
+			setTimeout(() => {
+				setTimeRemain(countdown(new Date(), new Date(Number(currQuiz.scheduledFor))).toString());
+			}, 1000)
+		}
+	})
+
 
 	useEffect(() => {
 		getQuizzes();
@@ -316,7 +335,7 @@ function QuizzesSection(props) {
 					</div>
 				</Dialog>
 				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
-					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '40%', maxHeight:'40%' } }}
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: getInfoWidth(), maxHeight:'45%' } }}
 					style={{ width: '100%' }}>
 					<DialogTitle style={{textAlign: 'center', fontWeight: 'bold'}}>Quiz Info</DialogTitle>
 					
@@ -326,6 +345,7 @@ function QuizzesSection(props) {
 							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toDateString()}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toLocaleTimeString()}</span></Typography>
+							<Typography variant="h6" className="profile-param info-param"><span className="profile-data time-rem">{timeRemain}</span></Typography>
 							<Button className="unenroll-btn" onClick={handleUnenroll}>
 								<Block style={{color: 'white'}}/>Unenroll
 							</Button>

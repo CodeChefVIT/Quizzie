@@ -98,3 +98,19 @@
 .no-p-top {
 	padding-top: 0 !important;
 }
+
+.time-rem {
+	font-size: 1rem !important;
+	font-weight: bold !important;
+}
+
+@media screen and (max-width: 900px) {
+	.time-rem {
+		font-size: 0.8rem !important;
+	}
+}
+@media screen and (max-width: 580px) {
+	.time-rem {
+		font-size: 0.65rem !important;
+	}
+}
