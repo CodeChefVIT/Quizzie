@@ -41,6 +41,7 @@ function QuizzesSection(props) {
 	const [redirectId, setRedirectId] = useState("");
 
 	const [earlyError, setEarlyError] = useState(false);
+	const [givenSnack, setGivenSnack] = useState(false);
 
 	const setRefresh = props.refresh;
 
@@ -209,7 +210,7 @@ function QuizzesSection(props) {
 		let data = {
 			"quizId": enrollQuizId
 		}
-
+		
 		try {
 			await axios.patch(url, data, {
 				headers: {
@@ -220,12 +221,14 @@ function QuizzesSection(props) {
 				setQuizStarted(true);
 			})
 		} catch(error) {
+			setEnrollSnack(false);
 			if(error.response.status === 401) {
-				setEnrollSnack(false);
 				setEarlyError(true);
 			} else if(error.response.status === 402) {
 				console.log(error);
-			} 
+			} else if(error.response.status === 405) {
+				setGivenSnack(true);
+			}
 			console.log(error.message);
 		}
 	}
@@ -297,7 +300,7 @@ function QuizzesSection(props) {
 						{profile.quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
 							:
 							<div className="quiz-list root1">
-								<GridList cols={getCols()} className="grid-list">
+								<GridList cols={getCols()} className="grid-list btn-set">
 									{profile.quizzesEnrolled.map((quiz) => (
 										<GridListTile key={quiz._id} className="quiz-tile">
 											<img src="../CC LOGO-01.svg" />
@@ -431,6 +434,9 @@ function QuizzesSection(props) {
 				</Snackbar>
 				<Snackbar open={earlyError} autoHideDuration={5000} onClose={() => setEarlyError(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setEarlyError(false)}>The quiz has not yet started!</Alert>
+				</Snackbar>
+				<Snackbar open={givenSnack} autoHideDuration={5000} onClose={() => setGivenSnack(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setGivenSnack(false)}>Already given this quiz!</Alert>
 				</Snackbar>
 			</div>
 		)
