@@ -6,7 +6,7 @@ import {
 	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
 	isWidthUp, withWidth, IconButton, Tooltip, Snackbar, DialogTitle
 } from "@material-ui/core";
-import { Add, Check, Info, Block } from '@material-ui/icons';
+import { Add, Check, Info, Block, PlayCircleFilled } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -36,6 +36,8 @@ function QuizzesSection(props) {
 	const [currQuiz, setCurrQuiz] = useState({});
 	const [timeRemain, setTimeRemain] = useState("");
 
+	const [startModal, setStartModal] = useState(false);
+
 	const setRefresh = props.refresh;
 
 	const getCols = () => {
@@ -56,14 +58,15 @@ function QuizzesSection(props) {
 
 	const onCloseHandle = () => {
 		setJoinModal(false);
+		setInfoModal(false);
+		setStartModal(false);
+
 		setQuizCode("");
 		setQuizCodeError(false);
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
 		setTimeRemain("");
-
-		setInfoModal(false);
 		setCurrQuiz({});
 	}
 
@@ -84,6 +87,11 @@ function QuizzesSection(props) {
 	const handleInfoButton = (quiz) => {
 		setInfoModal(true);
 		getQuizInfo(quiz.quizId._id);
+	}
+
+	const handleStartButton = (quiz) => {
+		setEnrollQuiz(quiz.quizId.quizName);
+		setStartModal(true);
 	}
 
 	const getQuizInfo = async (id) => {
@@ -259,11 +267,18 @@ function QuizzesSection(props) {
 											<GridListTileBar
 												title={quiz.quizId.quizName}
 												actionIcon={
-													<Tooltip title="Info">
-														<IconButton aria-label={`info ${quiz.quizId.quizName}`} onClick={() => handleInfoButton(quiz)}>
-															<Info className="enroll-icon" />
-														</IconButton>
-													</Tooltip>
+													<div>
+														<Tooltip title="Start Quiz">
+															<IconButton aria-label={`start ${quiz.quizId.quizName}`} onClick={() => handleStartButton(quiz)}>
+																<PlayCircleFilled className="enroll-icon" />
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Info">
+															<IconButton aria-label={`info ${quiz.quizId.quizName}`} onClick={() => handleInfoButton(quiz)}>
+																<Info className="enroll-icon" />
+															</IconButton>
+														</Tooltip>
+													</div>
 												}
 											/>
 										</GridListTile>
@@ -334,6 +349,20 @@ function QuizzesSection(props) {
 						}
 					</div>
 				</Dialog>
+				<Dialog open={startModal} onClose={onCloseHandle} aria-labelledby="start-quiz-modal"
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%' } }}
+					style={{ width: '100%' }}>
+					<div className="modal-info">
+						<div>
+							<Typography variant="h6" className="type-head join-sub">{`Are you sure you want to start ${enrollQuizName}?`}</Typography>
+							<div className="btn-div m-top2 start-div">
+								{/* classes in Navbar.css */}
+								<Button className="logout-btn m-right">Yes</Button>
+								<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>
+							</div>
+						</div>
+					</div>
+				</Dialog>
 				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: getInfoWidth(), maxHeight:'45%' } }}
 					style={{ width: '100%' }}>
@@ -345,7 +374,9 @@ function QuizzesSection(props) {
 							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toDateString()}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toLocaleTimeString()}</span></Typography>
-							<Typography variant="h6" className="profile-param info-param"><span className="profile-data time-rem">{timeRemain}</span></Typography>
+							<div className="time-sec">
+								<Typography variant="h6" className="profile-param info-param"><span className="profile-data time-rem">{timeRemain}</span></Typography>
+							</div>
 							<Button className="unenroll-btn" onClick={handleUnenroll}>
 								<Block style={{color: 'white'}}/>Unenroll
 							</Button>
