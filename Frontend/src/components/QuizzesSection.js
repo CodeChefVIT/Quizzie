@@ -9,7 +9,7 @@ import {
 import { Add, Check, Info, Block, PlayCircleFilled } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Loading from "../pages/Loading";
 import countdown from "countdown";
 
@@ -37,6 +37,10 @@ function QuizzesSection(props) {
 	const [timeRemain, setTimeRemain] = useState("");
 
 	const [startModal, setStartModal] = useState(false);
+	const [quizStarted, setQuizStarted] = useState(false);
+	const [redirectId, setRedirectId] = useState("");
+
+	const [earlyError, setEarlyError] = useState(false);
 
 	const setRefresh = props.refresh;
 
@@ -91,6 +95,7 @@ function QuizzesSection(props) {
 
 	const handleStartButton = (quiz) => {
 		setEnrollQuiz(quiz.quizId.quizName);
+		setEnrollQuizId(quiz.quizId._id);
 		setStartModal(true);
 	}
 
@@ -196,6 +201,35 @@ function QuizzesSection(props) {
 		}
 	}
 
+	const handleQuizStart = async () => {
+		setEnrollSnack(true);
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/start`;
+		
+		let data = {
+			"quizId": enrollQuizId
+		}
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setRedirectId(data.quizId);
+				setQuizStarted(true);
+			})
+		} catch(error) {
+			if(error.response.status === 401) {
+				setEnrollSnack(false);
+				setEarlyError(true);
+			} else if(error.response.status === 402) {
+				console.log(error);
+			} 
+			console.log(error.message);
+		}
+	}
+
 	const getQuizzes = async () => {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
@@ -244,7 +278,10 @@ function QuizzesSection(props) {
 		return (
 			<QuizLoading />
 		)
-	} else {
+	} else if(quizStarted) {
+		return <Redirect to={`/quiz/${redirectId}`} />
+	}
+	else {
 		return (
 			<div className="quizzes-section">
 				<div className="quiz-btn-section">
@@ -357,7 +394,7 @@ function QuizzesSection(props) {
 							<Typography variant="h6" className="type-head join-sub">{`Are you sure you want to start ${enrollQuizName}?`}</Typography>
 							<div className="btn-div m-top2 start-div">
 								{/* classes in Navbar.css */}
-								<Button className="logout-btn m-right">Yes</Button>
+								<Button className="logout-btn m-right" onClick={handleQuizStart}>Yes</Button>
 								<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>
 							</div>
 						</div>
@@ -391,6 +428,9 @@ function QuizzesSection(props) {
 				</Snackbar>
 				<Snackbar open={enrollSnack} autoHideDuration={5000} onClose={() => setEnrollSnack(false)}>
 					<Alert variant="filled" severity="info" onClose={() => setErrorSnack(false)}>Processing... Please Wait!</Alert>
+				</Snackbar>
+				<Snackbar open={earlyError} autoHideDuration={5000} onClose={() => setEarlyError(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setEarlyError(false)}>The quiz has not yet started!</Alert>
 				</Snackbar>
 			</div>
 		)
