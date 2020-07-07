@@ -32,7 +32,7 @@ function OwnerUsers() {
 			<List aria-label="users-display" className="owner-quiz-list">
 				{organizers.map((user) => (
 					<ListItem button>
-						<ListItemText primary={`${user.email} : ${user.name}` } />
+						<ListItemText primary={user.email} secondary={user.name} />
 						<ListItemSecondaryAction>
 							<IconButton edge="end" aria-label="details">
 								<ArrowForwardIos />
