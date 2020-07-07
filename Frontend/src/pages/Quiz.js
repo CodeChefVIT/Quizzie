@@ -239,11 +239,6 @@ function Quiz() {
 		return (
 			<Redirect to="/" />
 		)
-	}
-	else if (testCompleted) {
-		return (
-			<Redirect to="/ccquiz" />
-		)
 	} else if(submitLoading) {
 		return (
 			<SubmitLoading />

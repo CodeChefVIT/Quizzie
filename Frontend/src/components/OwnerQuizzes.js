@@ -28,7 +28,7 @@ function OwnerQuizzes(props) {
 
 	useEffect(() => {
 		getAllQuizzes();
-	})
+	}, [])
 
 	return (
 		<div className="owner-quizzes">

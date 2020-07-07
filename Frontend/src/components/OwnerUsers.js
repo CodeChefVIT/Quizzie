@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import './OwnerQuizzes.css';
+import { List, ListItem, ListItemText, ListItemSecondaryAction, IconButton } from "@material-ui/core";
+import { ArrowForwardIos } from "@material-ui/icons";
+
 
 function OwnerUsers() {
 	const [users, setUsers] = useState([]);
@@ -26,9 +30,20 @@ function OwnerUsers() {
 	}, [])
 
 	return (
-		users.map((user) => (
-			<h5>{user.name}</h5>
-		))
+		<div className="owner-quizzes">
+			<List aria-label="users-display" className="owner-quiz-list">
+				{users.map((user) => (
+					<ListItem button>
+						<ListItemText primary={`${user.email} : ${user.name}` } />
+						<ListItemSecondaryAction>
+							<IconButton edge="end" aria-label="details">
+								<ArrowForwardIos />
+							</IconButton>
+					</ListItemSecondaryAction>
+					</ListItem>
+				))}
+			</List>
+		</div>
 	)
 
 }
