@@ -368,13 +368,13 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 
 									for (i = 0; i < numQuiz; i++) {
 										if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-											return res.status(401).json({
+											return res.status(405).json({
 												message: "Quiz already started",
 											});
 										}
 									}
 									if (flag === 0) {
-										return res.status(400).json({
+										return res.status(409).json({
 											message: "You are not enrolled in this quiz",
 										});
 									}
@@ -446,13 +446,13 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 
 								for (i = 0; i < numQuiz; i++) {
 									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-										return res.status(401).json({
+										return res.status(405).json({
 											message: "Quiz already started",
 										});
 									}
 								}
 								if (flag === 0) {
-									return res.status(400).json({
+									return res.status(409).json({
 										message: "You are not enrolled in this quiz",
 									});
 								}
@@ -536,7 +536,7 @@ router.patch('/finish',checkAuth,async(req,res)=>{
 			message:'Updated Quiz Status'
 		})
 	})
-	.catch((err)=>{
+	.catch((err)=>{   
 		res.status(400).json({
 			error:err.toString()
 		})

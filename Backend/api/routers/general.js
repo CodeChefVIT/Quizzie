@@ -19,7 +19,7 @@ const router = express.Router();
 router.get("/checkUser", checkAuth, async (req, res) => {
 	if (req.user.userType == "User") {
 		User.findById(req.user.userId)
-			.select('-password')
+			.select("-password")
 			.populate({ path: "quizzesEnrolled", populate: { path: "quizId" } })
 			.exec()
 			.then(async (result) => {
@@ -34,7 +34,7 @@ router.get("/checkUser", checkAuth, async (req, res) => {
 			});
 	} else if (req.user.userType == "Admin") {
 		Admin.findById(req.user.userId)
-			.select('-password')
+			.select("-password")
 			.populate({ path: "quizzes", populate: { path: "quizId" } })
 			.exec()
 			.then((result) => {
@@ -49,7 +49,7 @@ router.get("/checkUser", checkAuth, async (req, res) => {
 			});
 	} else {
 		Owner.findById(req.user.userId)
-			.select('-password')
+			.select("-password")
 			.exec()
 			.then((result) => {
 				res.status(200).json({
@@ -62,7 +62,6 @@ router.get("/checkUser", checkAuth, async (req, res) => {
 				});
 			});
 	}
-
 });
 
 module.exports = router;

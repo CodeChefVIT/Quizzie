@@ -96,10 +96,7 @@ router.patch(
 		for (const ops of req.body) {
 			updateOps[ops.propName] = ops.value;
 		}
-		await Question.updateOne(
-			{ _id: req.params.questionId },
-			{ $set: updateOps }
-		)
+		await Question.updateOne({ _id: req.params.questionId }, { $set: updateOps })
 			.exec()
 			.then((result) => {
 				res.status(200).json({
@@ -108,7 +105,5 @@ router.patch(
 			});
 	}
 );
-
-
 
 module.exports = router;

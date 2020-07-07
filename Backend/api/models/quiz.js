@@ -20,14 +20,14 @@ const QuizSchema = new mongoose.Schema({
 		},
 	],
 	scheduledFor: { type: String },
-	scheduledForString:{type:String},
+	scheduledForString: { type: String },
 	quizDuration: {
 		type: String,
 	},
-	quizStatus:{
-		type:Number,
-		default:0
-	}
+	quizStatus: {
+		type: Number,
+		default: 0,
+	},
 });
 
 module.exports = mongoose.model("Quiz", QuizSchema);

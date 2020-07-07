@@ -8,15 +8,13 @@ const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
 const Admin = require("../models/admin");
 const Quiz = require("../models/quiz");
-const User =require('../models/user')
+const User = require("../models/user");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
-
-
 
 //signup
 router.post("/signup", async (req, res, next) => {
@@ -69,8 +67,6 @@ router.post("/signup", async (req, res, next) => {
 			});
 		});
 });
-
-
 
 //login
 router.post("/login", async (req, res, next) => {
@@ -126,8 +122,6 @@ router.post("/login", async (req, res, next) => {
 		});
 });
 
-
-
 //Admin profile
 router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 	await Admin.findById(req.user.userId)
@@ -149,39 +143,31 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
-
-router.get('/hey',(req,res,next)=>{
-	res.send('he;llo')
-})
-
+router.get("/hey", (req, res, next) => {
+	res.send("he;llo");
+});
 
 ////Update admin profile
-router.patch(
-	"/updateProfile",
-	checkAuth,
-	checkAuthAdmin,
-	(req, res, next) => {
-	  const id = req.user.userId;
-	  const updateOps = {};
-	  var flag = 0;
-	  for (const ops of req.body) {
+router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
+	const id = req.user.userId;
+	const updateOps = {};
+	var flag = 0;
+	for (const ops of req.body) {
 		updateOps[ops.propName] = ops.value;
-	  }
-	  Admin.updateOne({ _id: id }, { $set: updateOps })
+	}
+	Admin.updateOne({ _id: id }, { $set: updateOps })
 		.exec()
 		.then((result) => {
-		  res.status(200).json({
-			message: "Profile updated",
-		  });
+			res.status(200).json({
+				message: "Profile updated",
+			});
 		})
 		.catch((err) => {
-		  res.status(500).json({
-			error: err,
-		  });
+			res.status(500).json({
+				error: err,
+			});
 		});
-	}
-  );
-
+});
 
 ///all quizzess created by the admin
 router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
@@ -196,40 +182,39 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 			res.status(200).json({
 				result,
 			});
-
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message: err
+				message: err,
 			});
 		});
 });
 
-
-
-
 ///Number of students enrolled in a particular quiz
-router.get('/studentsEnrolled/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
-	await Quiz.findById(req.params.quizId)
-	.populate({
-        path: "usersEnrolled",
+router.get(
+	"/studentsEnrolled/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.findById(req.params.quizId)
+			.populate({
+				path: "usersEnrolled",
 
-        populate: { path: "userId" },
-	  })
-	.exec()
-	.then(async(result1)=>{
-		res.status(200).json({
-			result1
-		})
-	})
-	.catch((err)=>{
-		res.status(400).json({
-			message:err
-		})
-	})
-	  
-})
-
+				populate: { path: "userId" },
+			})
+			.exec()
+			.then(async (result1) => {
+				res.status(200).json({
+					result1,
+				});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: err,
+				});
+			});
+	}
+);
 
 router.patch(
 	"/changePassword",
@@ -237,53 +222,48 @@ router.patch(
 	checkAuthAdmin,
 	async (req, res, next) => {
 		await Admin.findOne({ _id: req.user.userId })
-			.then(async(result) => {
-				bcrypt.compare(req.body.password,result.password, (err, result1) => {
+			.then(async (result) => {
+				bcrypt.compare(req.body.password, result.password, (err, result1) => {
 					if (err) {
 						return res.status(401).json({
 							message: "Auth failed",
 						});
 					}
-					if(result1){
+					if (result1) {
 						bcrypt.hash(req.body.newPassword, 10, (err, hash) => {
-							if(err){
-								res.status(400).json(({
-									err
-								}))
-							}
-							Admin.updateOne({_id:req.user.userId},{$set:{password:hash}}).then((result)=>{
-								res.status(200).json({
-									message:'Password changed'
-								})
-							}).catch((err)=>{
+							if (err) {
 								res.status(400).json({
-									message:'error'
+									err,
+								});
+							}
+							Admin.updateOne({ _id: req.user.userId }, { $set: { password: hash } })
+								.then((result) => {
+									res.status(200).json({
+										message: "Password changed",
+									});
 								})
-							})
-
-						})
-						
-
-					}
-					else{
+								.catch((err) => {
+									res.status(400).json({
+										message: "error",
+									});
+								});
+						});
+					} else {
 						return res.status(401).json({
 							message: "Auth failed",
 						});
 					}
-
-				})
+				});
 			})
 			.catch((err) => {
 				res.status(400).json({
-					err
-				})
+					err,
+				});
 			});
 	}
 );
 
-
-
-////Delete profile 
+////Delete profile
 // router.delete(
 // 	"/",
 // 	checkAuth,
@@ -338,7 +318,7 @@ router.patch(
 // 						message:'Some error'
 // 					})
 // 				})
-				
+
 //             })
 // 			.catch(async(err)=>{
 // 				await res.status(400).json({
