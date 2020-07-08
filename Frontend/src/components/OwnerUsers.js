@@ -33,7 +33,7 @@ function OwnerUsers() {
 		<div className="owner-quizzes">
 			<List aria-label="users-display" className="owner-quiz-list">
 				{users.map((user) => (
-					<ListItem button>
+					<ListItem button key={user._id}>
 						<ListItemText primary={user.email} secondary={user.name} />
 						<ListItemSecondaryAction>
 							<IconButton edge="end" aria-label="details">
