@@ -8,11 +8,10 @@ import { Redirect } from "react-router-dom";
 import InfoContext from "../context/InfoContext";
 import SubmitLoading from './SubmitLoading';
 import { usePageVisibility } from "react-page-visibility";
+import countdown from "countdown";
 
 function Quiz(props) {
 	const [currentStep, setStep] = useState(1);
-	const [min, setMin] = useState('10');
-	const [sec, setSec] = useState('00');
 
 	const [loading, setLoading] = useState(true);
 	const [allQuestions, setQuestions] = useState([]);
@@ -21,6 +20,7 @@ function Quiz(props) {
 
 	const [duration, setDuration] = useState(-1);
 	const [startTime, setStartTime] = useState(-1);
+	const [timeRemaining, setTimeRemaining] = useState(false);
 
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
@@ -36,12 +36,7 @@ function Quiz(props) {
 
 	const {setBlocked, closed} = useContext(InfoContext);
 
-	const [final, setFinal] = useState(600); //10 min === 600 seconds  Total time in seconds
-	let intervalId = null;
-	let seconds = 600;
-
 	const submitQuiz = async () => {
-		clearInterval(intervalId);
 		setTestCompleted(true);
 	}
 
@@ -102,32 +97,7 @@ function Quiz(props) {
 		return null;
 	}
 
-	const tick = () => {
-		let st = seconds;
-		let sr = seconds;
-		if (sr > 0) {
-			st--;
-		}
-		else {
-			timesUp();
-		}
-		seconds = st;
-		setFinal(st);
-		var m = Math.floor(st / 60);
-		var s = st - (m * 60);
-		if (m < 10) {
-			setMin("0" + m);
-		} else {
-			setMin(m);
-		}
-		if (s < 10) {
-			setSec("0" + s);
-		} else {
-			setSec(s);
-		}
-
-	}
-
+	
 	const handleOptionChange = (event) => {
 		setCurrentAns(event.target.value);
 
@@ -162,7 +132,6 @@ function Quiz(props) {
 		setAllAns(answerData);
 		
 		setLoading(false);
-		intervalId = setInterval(() => tick(), 1000);
 	}
 
 	useEffect(() => {
@@ -171,6 +140,13 @@ function Quiz(props) {
 			return;
 		}
 	}, [pageVisible])
+
+	useEffect(() => {
+		let endTime = Number(startTime) + (duration*60*1000);
+		setTimeout(() => {
+			setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
+		}, 1000)
+	});
 
 	useEffect(() => {
 		let token = localStorage.getItem('authToken');
@@ -187,10 +163,6 @@ function Quiz(props) {
 			setStartTime(props.location.state.start);
 			setQuestions(props.location.state.questions);
 			setupQuiz(props.location.state.questions);
-		}
-
-		return () => {
-			clearInterval(intervalId);
 		}
 	}, [])
 
@@ -213,9 +185,9 @@ function Quiz(props) {
 							<h2 style={{ padding: 0 }}>QUESTION {currentStep} OF {allQuestions.length}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
-							<p style={{margin: 0}}>Time Remaining <h2>{min}:{sec}</h2></p>
+							<p style={{margin: 0}}>Time Remaining <h2 className="rem-time-display">{timeRemaining}</h2></p>
 						</Grid>
-						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '5px solid #222', minHeight: '40vh' }}>
+						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '3px solid #222', minHeight: '30vh' }}>
 							<FormControl style={{ margin: 'auto', width: "100%" }} component="fieldset">
 								<FormLabel className="label" component="legend"><p className="question">{allQuestions[currentQuestion].text}</p></FormLabel>
 								<RadioGroup aria-label="correct-choice" value={currentAns} onChange={handleOptionChange}>
