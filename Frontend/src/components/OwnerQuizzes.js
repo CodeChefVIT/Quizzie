@@ -32,21 +32,25 @@ function OwnerQuizzes(props) {
 		getAllQuizzes();
 	}, [])
 
+	if(loading) {
+		return <QuizLoading />
+	}
+
 	return (
-		loading? <QuizLoading /> :
 		<div className="owner-quizzes">
-			<List aria-label="quiz display" className="owner-quiz-list">
-			{quizzes.map(quiz => (
-				<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
-					<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
-					<ListItemSecondaryAction>
-						<IconButton edge="end" aria-label="details" component={Link} to={`/ownerQuizDetails/${quiz._id}`}>
-							<ArrowForwardIos />
-						</IconButton>
-					</ListItemSecondaryAction>
-				</ListItem>
-			))}
-			</List>
+			{quizzes.length === 0? <p>No quizzes available now!</p>:
+				<List aria-label="quiz display" className="owner-quiz-list">
+				{quizzes.map(quiz => (
+					<ListItem button className="owner-quiz-item" component={Link} to={`/ownerQuizDetails/${quiz._id}`} key={quiz._id}>
+						<ListItemText primary={quiz.quizName} secondary={`By: ${quiz.adminId.name}`} />
+						<ListItemSecondaryAction>
+							<IconButton edge="end" aria-label="details" component={Link} to={`/ownerQuizDetails/${quiz._id}`}>
+								<ArrowForwardIos />
+							</IconButton>
+						</ListItemSecondaryAction>
+					</ListItem>
+				))}
+				</List> }
 		</div>
 	)
 }
