@@ -405,6 +405,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 													await res.status(200).json({
 														message: "Quiz started for " + req.user.name,
 														data,
+														duration:result0.quizDuration
 													});
 												})
 												.catch(async (err) => {
@@ -478,6 +479,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 										await res.status(200).json({
 											message: "Quiz started for " + req.user.name,
 											data,
+											duration:result0.quizDuration
 										});
 									})
 									.catch(async (err) => {
@@ -587,6 +589,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 				var object = {
 					description: dataQues[i].description,
 					selected: que_data[i].selectedOption,
+					quesId: que_data[i].quesId,
 					correctAnswer: dataQues[i].correctAnswer,
 				};
 				responses.push[object];
