@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
 	userType: { type: String, default: "User" },
 	email: {
 		type: String,
-		lowercase:true,
+		lowercase: true,
 		match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 	},
 	mobileNumber: {
@@ -28,10 +28,10 @@ const userSchema = mongoose.Schema({
 			responses: [],
 		},
 	],
-	quizzesStarted:[
+	quizzesStarted: [
 		{
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
-		}
+		},
 	],
 	quizzesEnrolled: [
 		{
