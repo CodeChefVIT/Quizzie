@@ -106,14 +106,14 @@ function Quiz(props) {
 	}
 
 	const nextButton = () => {
-		if (currentStep < 25) {
+		if (currentStep < allQuestions.length) {
 			return (
 				<button
 					className="quiz-btn next-button" onClick={_next}>
 					<p>Next</p>
 				</button>
 			)
-		} else if (currentStep === 25) {
+		} else if (currentStep === allQuestions.length) {
 			return (
 				<button
 					className="quiz-btn submit-button" onClick={handleSubmitBtn}>
@@ -159,54 +159,30 @@ function Quiz(props) {
 		setAllAns(newState);
 	}
 
-	const getQuestions = async () => {
-		let token = localStorage.getItem('authToken');
-		let url = `https://scholastic-quiz-app.herokuapp.com/questionsTwentyFive`;
-
+	const setupQuiz = (questions) => {
 		let questionsData = [];
 		let answerData = [];
 
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				if(res.status === 2010) {
-					setRedirect(true);
-					return;
-				}
-				else {
-					res.data["questions"].map((question) => {
-						let questionObj = {
-							q_id: question._id,
-							text: question.description,
-							options: question.alternatives,
-						}
-						questionsData.push(questionObj);
-	
-						let ansObj = {
-							q_id: question._id,
-							option: null,
-						}
-	
-						answerData.push(ansObj);
-					});
-				}
-			});
-
-			setQuestions(questionsData);
-			setAllAns(answerData);
-		} catch (error) {
-			if(error.response.status === 403) {
-				setRedirect(true);
-				setBlocked(true);
-				return;
-			} else {
-				console.log(error);
+		console.log(questions);
+		questions.map((question) => {
+			let questionObj = {
+				q_id: question._id,
+				text: question.description,
+				options: question.options,
 			}
-		}
+			questionsData.push(questionObj);
 
+			let ansObj = {
+				quesId: question._id,
+				selectedOption: null,
+			}
+
+			answerData.push(ansObj);
+		});
+
+		setQuestions(questionsData);
+		setAllAns(answerData);
+		
 		setLoading(false);
 		intervalId = setInterval(() => tick(), 1000);
 	}
@@ -230,7 +206,7 @@ function Quiz(props) {
 			return;
 		} else {
 			setQuestions(props.location.state.questions);
-			console.log(props.location.state.questions);
+			setupQuiz(props.location.state.questions);
 		}
 
 		return () => {
@@ -254,7 +230,7 @@ function Quiz(props) {
 				<div className="quiz-page">
 					<Grid container xs={12} spacing={5} className="quiz-container">
 						<Grid item xs={10} md={8} lg={7} className="q-count" >
-							<h2 style={{ padding: 0 }}>QUESTION {currentStep}</h2>
+							<h2 style={{ padding: 0 }}>QUESTION {currentStep} OF {allQuestions.length}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
 							<p style={{margin: 0}}>Time Remaining <h2>{min}:{sec}</h2></p>
@@ -283,7 +259,7 @@ function Quiz(props) {
 
 					<Dialog open={confirmModal} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
 						PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '10%' } }}>
-						<DialogTitle>Are you sure you want to submit the Hunger Games quiz and move on to the Competitive coding section?</DialogTitle>
+						<DialogTitle>Are you sure you want to submit the quiz?</DialogTitle>
 						<div className="btn-div">
 							<Button className="logout-btn m-right" onClick={handleSubmit}>Yes</Button>
 							<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>

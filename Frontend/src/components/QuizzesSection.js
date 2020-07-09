@@ -220,7 +220,9 @@ function QuizzesSection(props) {
 			}).then(res => {
 				setRedirectId(data.quizId);
 				setQuizQuestion(res.data.data);
-				setQuizStarted(true);
+				setTimeout(() => {
+					setQuizStarted(true);
+				}, 1000);
 			})
 		} catch(error) {
 			setEnrollSnack(false);
@@ -231,7 +233,6 @@ function QuizzesSection(props) {
 			} else if(error.response.status === 405) {
 				setGivenSnack(true);
 			}
-			console.log(error.message);
 		}
 	}
 
