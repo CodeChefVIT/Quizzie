@@ -8,16 +8,19 @@ import { Redirect } from "react-router-dom";
 import InfoContext from "../context/InfoContext";
 import SubmitLoading from './SubmitLoading';
 import { usePageVisibility } from "react-page-visibility";
+import countdown from "countdown";
 
 function Quiz(props) {
 	const [currentStep, setStep] = useState(1);
-	const [min, setMin] = useState('10');
-	const [sec, setSec] = useState('00');
 
 	const [loading, setLoading] = useState(true);
 	const [allQuestions, setQuestions] = useState([]);
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [currentAns, setCurrentAns] = useState(null);
+
+	const [duration, setDuration] = useState(-1);
+	const [startTime, setStartTime] = useState(-1);
+	const [timeRemaining, setTimeRemaining] = useState(false);
 
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
@@ -33,37 +36,7 @@ function Quiz(props) {
 
 	const {setBlocked, closed} = useContext(InfoContext);
 
-	const [final, setFinal] = useState(600); //10 min === 600 seconds  Total time in seconds
-	let intervalId = null;
-	let seconds = 600;
-
 	const submitQuiz = async () => {
-		clearInterval(intervalId);
-		setSubmitLoading(true);
-		let url = `https://scholastic-quiz-app.herokuapp.com/answer`;
-		let token = localStorage.getItem('authToken');
-		let time = seconds;
-		if (token === null) {
-			setRedirect(true);
-		}
-
-		let data = {
-			"questions": allChosenAns,
-			"timeLeft": final,
-		}
-
-		try {
-			await axios.put(url, data, {
-				headers: {
-					"auth-token": token,
-				}
-			}).then(res => {
-				setResultData(res);
-			});
-		} catch (error) {
-			console.log(error);
-		}
-		setSubmitLoading(false);
 		setTestCompleted(true);
 	}
 
@@ -106,14 +79,14 @@ function Quiz(props) {
 	}
 
 	const nextButton = () => {
-		if (currentStep < 25) {
+		if (currentStep < allQuestions.length) {
 			return (
 				<button
 					className="quiz-btn next-button" onClick={_next}>
 					<p>Next</p>
 				</button>
 			)
-		} else if (currentStep === 25) {
+		} else if (currentStep === allQuestions.length) {
 			return (
 				<button
 					className="quiz-btn submit-button" onClick={handleSubmitBtn}>
@@ -124,32 +97,7 @@ function Quiz(props) {
 		return null;
 	}
 
-	const tick = () => {
-		let st = seconds;
-		let sr = seconds;
-		if (sr > 0) {
-			st--;
-		}
-		else {
-			timesUp();
-		}
-		seconds = st;
-		setFinal(st);
-		var m = Math.floor(st / 60);
-		var s = st - (m * 60);
-		if (m < 10) {
-			setMin("0" + m);
-		} else {
-			setMin(m);
-		}
-		if (s < 10) {
-			setSec("0" + s);
-		} else {
-			setSec(s);
-		}
-
-	}
-
+	
 	const handleOptionChange = (event) => {
 		setCurrentAns(event.target.value);
 
@@ -159,56 +107,30 @@ function Quiz(props) {
 		setAllAns(newState);
 	}
 
-	const getQuestions = async () => {
-		let token = localStorage.getItem('authToken');
-		let url = `https://scholastic-quiz-app.herokuapp.com/questionsTwentyFive`;
-
+	const setupQuiz = (questions) => {
 		let questionsData = [];
 		let answerData = [];
 
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				if(res.status === 2010) {
-					setRedirect(true);
-					return;
-				}
-				else {
-					res.data["questions"].map((question) => {
-						let questionObj = {
-							q_id: question._id,
-							text: question.description,
-							options: question.alternatives,
-						}
-						questionsData.push(questionObj);
-	
-						let ansObj = {
-							q_id: question._id,
-							option: null,
-						}
-	
-						answerData.push(ansObj);
-					});
-				}
-			});
-
-			setQuestions(questionsData);
-			setAllAns(answerData);
-		} catch (error) {
-			if(error.response.status === 403) {
-				setRedirect(true);
-				setBlocked(true);
-				return;
-			} else {
-				console.log(error);
+		questions.map((question) => {
+			let questionObj = {
+				q_id: question._id,
+				text: question.description,
+				options: question.options,
 			}
-		}
+			questionsData.push(questionObj);
 
+			let ansObj = {
+				quesId: question._id,
+				selectedOption: null,
+			}
+
+			answerData.push(ansObj);
+		});
+
+		setQuestions(questionsData);
+		setAllAns(answerData);
+		
 		setLoading(false);
-		intervalId = setInterval(() => tick(), 1000);
 	}
 
 	useEffect(() => {
@@ -217,6 +139,13 @@ function Quiz(props) {
 			return;
 		}
 	}, [pageVisible])
+
+	useEffect(() => {
+		let endTime = Number(startTime) + (duration*60*1000);
+		setTimeout(() => {
+			setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
+		}, 1000)
+	});
 
 	useEffect(() => {
 		let token = localStorage.getItem('authToken');
@@ -229,18 +158,19 @@ function Quiz(props) {
 			setRedirect(true);
 			return;
 		} else {
+			setDuration(props.location.state.duration);
+			setStartTime(props.location.state.start);
 			setQuestions(props.location.state.questions);
-			console.log(props.location.state.questions);
-		}
-
-		return () => {
-			clearInterval(intervalId);
+			setupQuiz(props.location.state.questions);
 		}
 	}, [])
 
 	if (redirect) {
 		return (
-			<Redirect to="/" />
+			<Redirect to={{
+				pathname: "/dashboard",
+				state: {blocked: true}
+			}} />
 		)
 	} else if(submitLoading) {
 		return (
@@ -254,12 +184,12 @@ function Quiz(props) {
 				<div className="quiz-page">
 					<Grid container xs={12} spacing={5} className="quiz-container">
 						<Grid item xs={10} md={8} lg={7} className="q-count" >
-							<h2 style={{ padding: 0 }}>QUESTION {currentStep}</h2>
+							<h2 style={{ padding: 0 }}>QUESTION {currentStep} OF {allQuestions.length}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
-							<p style={{margin: 0}}>Time Remaining <h2>{min}:{sec}</h2></p>
+							<p style={{margin: 0}}>Time Remaining <h2 className="rem-time-display">{timeRemaining}</h2></p>
 						</Grid>
-						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '5px solid #222', minHeight: '40vh' }}>
+						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '3px solid #222', minHeight: '30vh' }}>
 							<FormControl style={{ margin: 'auto', width: "100%" }} component="fieldset">
 								<FormLabel className="label" component="legend"><p className="question">{allQuestions[currentQuestion].text}</p></FormLabel>
 								<RadioGroup aria-label="correct-choice" value={currentAns} onChange={handleOptionChange}>
@@ -283,7 +213,7 @@ function Quiz(props) {
 
 					<Dialog open={confirmModal} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
 						PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '10%' } }}>
-						<DialogTitle>Are you sure you want to submit the Hunger Games quiz and move on to the Competitive coding section?</DialogTitle>
+						<DialogTitle>Are you sure you want to submit the quiz?</DialogTitle>
 						<div className="btn-div">
 							<Button className="logout-btn m-right" onClick={handleSubmit}>Yes</Button>
 							<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>

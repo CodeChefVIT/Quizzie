@@ -47,7 +47,8 @@
 .timer{
 	display: flex !important; 
 	justify-content: center !important;
-	padding-top: 0px;
+	padding: 0px !important;
+	margin-bottom: 5% !important;
 	color: #ff0000 !important;
 	width: 100%;
 }
@@ -55,6 +56,12 @@
 .timer p, .timer h2 {
 	margin: 0 !important;
 	text-align: center !important;
+}
+
+@media screen and (max-width: 500px) {
+	.rem-time-display {
+		font-size: 1rem !important;
+	}
 }
 
 .button{

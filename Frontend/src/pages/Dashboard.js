@@ -1,5 +1,5 @@
 import React, {useState, useContext, useEffect} from "react";
-import { Container, Typography, AppBar, Tabs, Tab } from "@material-ui/core";
+import { Container, Typography, AppBar, Tabs, Tab, Snackbar } from "@material-ui/core";
 import "./Dashboard.css";
 import InfoContext from '../context/InfoContext';
 import { Redirect } from "react-router";
@@ -9,9 +9,10 @@ import '../components/ProfileSection';
 import ProfileSection from "../components/ProfileSection";
 import HistorySection from '../components/HistorySection';
 import QuizzesSection from "../components/QuizzesSection";
+import { Alert } from "@material-ui/lab";
 
 
-function Dashboard() {
+function Dashboard(props) {
 	const [tab, setTab] = useState(0);
 	const [redirect, setRedirect] = useState(false);
 	const [redirectOwner, setRedirectOwner] = useState(false);
@@ -21,6 +22,8 @@ function Dashboard() {
 	const [loading, setLoading] = useState(true);
 
 	const [refresh, setRefresh] = useState(false);
+
+	const [blockSnack, setBlockSnack] = useState(false);
 
 	const {isLoggedIn} = useContext(InfoContext);
 
@@ -102,6 +105,14 @@ function Dashboard() {
 		}
 	}, [refresh])
 
+	useEffect(() => {
+		if(Object.keys(props).length !== 0 && props.location.state !== undefined) {
+			if(props.location.state.blocked) {
+				setBlockSnack(true);
+			}
+		}
+	}, [])
+
 	if(redirect) {
 		return (
 			<Redirect to="/" />
@@ -142,6 +153,9 @@ function Dashboard() {
 						<ProfileSection profile={profile} type={userType}/>
 					</TabPanel>
 				</div>
+				<Snackbar open={blockSnack} autoHideDuration={5000} onClose={() => setBlockSnack(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setBlockSnack(false)}>You violated the quiz rules!</Alert>
+				</Snackbar>
 			</Container>
 		)
 	}

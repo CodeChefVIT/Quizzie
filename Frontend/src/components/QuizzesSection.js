@@ -39,7 +39,7 @@ function QuizzesSection(props) {
 	const [startModal, setStartModal] = useState(false);
 	const [quizStarted, setQuizStarted] = useState(false);
 	const [redirectId, setRedirectId] = useState("");
-	const [quizQuestions, setQuizQuestion] = useState([]);
+	const [quizDetails, setQuizDetails] = useState({});
 
 	const [earlyError, setEarlyError] = useState(false);
 	const [givenSnack, setGivenSnack] = useState(false);
@@ -219,7 +219,7 @@ function QuizzesSection(props) {
 				}
 			}).then(res => {
 				setRedirectId(data.quizId);
-				setQuizQuestion(res.data.data);
+				setQuizDetails(res.data);
 				setQuizStarted(true);
 			})
 		} catch(error) {
@@ -231,7 +231,6 @@ function QuizzesSection(props) {
 			} else if(error.response.status === 405) {
 				setGivenSnack(true);
 			}
-			console.log(error.message);
 		}
 	}
 
@@ -289,8 +288,12 @@ function QuizzesSection(props) {
 		)
 	} else if(quizStarted) {
 		return <Redirect to={{
-				pathname: `/quiz/${redirectId}`,
-				state: {questions: quizQuestions}
+				pathname: `/quiz`,
+				state: {
+					questions: quizDetails.data,
+					duration: quizDetails.duration,
+					start: quizDetails.scheduledFor
+				}
 			}} />
 	}
 	else {
