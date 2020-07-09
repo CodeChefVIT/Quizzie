@@ -20,7 +20,6 @@ function OwnerQuizzes(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setQuizzes(res.data.result);
 			})
 		} catch(error) {

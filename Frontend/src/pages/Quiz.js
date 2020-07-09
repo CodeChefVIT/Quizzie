@@ -111,7 +111,6 @@ function Quiz(props) {
 		let questionsData = [];
 		let answerData = [];
 
-		console.log(questions);
 		questions.map((question) => {
 			let questionObj = {
 				q_id: question._id,
@@ -168,7 +167,10 @@ function Quiz(props) {
 
 	if (redirect) {
 		return (
-			<Redirect to="/" />
+			<Redirect to={{
+				pathname: "/dashboard",
+				state: {blocked: true}
+			}} />
 		)
 	} else if(submitLoading) {
 		return (
