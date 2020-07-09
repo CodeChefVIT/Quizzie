@@ -9,7 +9,7 @@ import InfoContext from "../context/InfoContext";
 import SubmitLoading from './SubmitLoading';
 import { usePageVisibility } from "react-page-visibility";
 
-function Quiz() {
+function Quiz(props) {
 	const [currentStep, setStep] = useState(1);
 	const [min, setMin] = useState('10');
 	const [sec, setSec] = useState('00');
@@ -219,16 +219,19 @@ function Quiz() {
 	}, [pageVisible])
 
 	useEffect(() => {
-		if(closed) {
-			setRedirect(true);
-			return;
-		}
 		let token = localStorage.getItem('authToken');
 		if (token === null) {
 			setRedirect(true);
 			return;
 		}
-		getQuestions();
+
+		if(props.location.state === undefined) {
+			setRedirect(true);
+			return;
+		} else {
+			setQuestions(props.location.state.questions);
+			console.log(props.location.state.questions);
+		}
 
 		return () => {
 			clearInterval(intervalId);
