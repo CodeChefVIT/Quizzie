@@ -19,6 +19,9 @@ function Quiz(props) {
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [currentAns, setCurrentAns] = useState(null);
 
+	const [duration, setDuration] = useState(-1);
+	const [startTime, setStartTime] = useState(-1);
+
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
 
@@ -39,31 +42,6 @@ function Quiz(props) {
 
 	const submitQuiz = async () => {
 		clearInterval(intervalId);
-		setSubmitLoading(true);
-		let url = `https://scholastic-quiz-app.herokuapp.com/answer`;
-		let token = localStorage.getItem('authToken');
-		let time = seconds;
-		if (token === null) {
-			setRedirect(true);
-		}
-
-		let data = {
-			"questions": allChosenAns,
-			"timeLeft": final,
-		}
-
-		try {
-			await axios.put(url, data, {
-				headers: {
-					"auth-token": token,
-				}
-			}).then(res => {
-				setResultData(res);
-			});
-		} catch (error) {
-			console.log(error);
-		}
-		setSubmitLoading(false);
 		setTestCompleted(true);
 	}
 
@@ -205,6 +183,8 @@ function Quiz(props) {
 			setRedirect(true);
 			return;
 		} else {
+			setDuration(props.location.state.duration);
+			setStartTime(props.location.state.start);
 			setQuestions(props.location.state.questions);
 			setupQuiz(props.location.state.questions);
 		}

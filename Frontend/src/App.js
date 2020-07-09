@@ -73,7 +73,7 @@ function App() {
 					<Route exact path="/admin">
 						<Admin />
 					</Route>
-					<Route exact path="/quiz/:id" component={Quiz} />
+					<Route exact path="/quiz/" component={Quiz} />
 					<Route exact path="/adminRegister">
 						<AdminRegister />
 					</Route>
