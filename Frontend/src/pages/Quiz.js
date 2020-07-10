@@ -11,6 +11,7 @@ import { usePageVisibility } from "react-page-visibility";
 import countdown from "countdown";
 
 function Quiz(props) {
+	const [quizId, setQuizId] = useState(null);
 	const [currentStep, setStep] = useState(1);
 
 	const [loading, setLoading] = useState(true);
@@ -21,6 +22,9 @@ function Quiz(props) {
 	const [duration, setDuration] = useState(-1);
 	const [startTime, setStartTime] = useState(-1);
 	const [timeRemaining, setTimeRemaining] = useState(false);
+	const [timeUp, setTimeUp] = useState(false);
+
+	const [tabChange, setTabChange] = useState(false);
 
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
@@ -51,9 +55,32 @@ function Quiz(props) {
 	const handleSubmit = (event) => {
 		submitQuiz();
 	}
-	const timesUp = () => {
-		submitQuiz();
+	const timesUp = async () => {
+		setLoading(true);
+		setTimeUp(true);
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/quiz/finish";
+
+
+		let data = {
+			"quizId": quizId
+		}
+		
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				setRedirect(true);
+				return;
+			})
+		} catch(error) {
+			console.log(error);
+		} 
 	}
+
 	const _next = () => {
 		let currQues = currentQuestion + 1;
 		setStep(currentStep + 1)
@@ -135,6 +162,7 @@ function Quiz(props) {
 
 	useEffect(() => {
 		if(!pageVisible) {
+			setTabChange(true);
 			setRedirect(true);
 			return;
 		}
@@ -142,9 +170,14 @@ function Quiz(props) {
 
 	useEffect(() => {
 		let endTime = Number(startTime) + (duration*60*1000);
-		setTimeout(() => {
-			setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
-		}, 1000)
+		if(!loading && endTime > 0 && Number(endTime) < Number(Date.now())) {
+			timesUp();
+			return;
+		} else {
+			setTimeout(() => {
+				setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
+			}, 1000);
+		}
 	});
 
 	useEffect(() => {
@@ -158,6 +191,7 @@ function Quiz(props) {
 			setRedirect(true);
 			return;
 		} else {
+			setQuizId(props.location.state.id);
 			setDuration(props.location.state.duration);
 			setStartTime(props.location.state.start);
 			setQuestions(props.location.state.questions);
@@ -169,7 +203,7 @@ function Quiz(props) {
 		return (
 			<Redirect to={{
 				pathname: "/dashboard",
-				state: {blocked: true}
+				state: {blocked: tabChange, timeUp: timeUp}
 			}} />
 		)
 	} else if(submitLoading) {
