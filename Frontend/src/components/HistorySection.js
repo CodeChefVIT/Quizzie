@@ -90,14 +90,15 @@ function HistorySection(props) {
 					<p style={{ textAlign: 'center' }}>You have not given any quizzes yet!</p>
 					: <List aria-label="quiz display" className="owner-quiz-list">
 						{quizzes.map(quiz => (
-							<ListItem button className="owner-quiz-item" component={Link} key={quiz._id}>
-								<ListItemText primary={quiz.quizId.quizName} secondary={`Scored: ${quiz.marks}`} />
-								<ListItemSecondaryAction>
-									<IconButton edge="end" aria-label="details" component={Link} >
-										<ArrowForwardIos />
-									</IconButton>
-								</ListItemSecondaryAction>
-							</ListItem>
+							quiz.quizId !== null?
+								(<ListItem button className="owner-quiz-item" component={Link} key={quiz._id}>
+									<ListItemText primary={quiz.quizId.quizName} secondary={`Scored: ${quiz.marks}`} />
+									<ListItemSecondaryAction>
+										<IconButton edge="end" aria-label="details" component={Link} >
+											<ArrowForwardIos />
+										</IconButton>
+									</ListItemSecondaryAction>
+								</ListItem>): null
 						))}
 					</List>}
 			</div>
