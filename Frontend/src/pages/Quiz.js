@@ -51,13 +51,14 @@ function Quiz(props) {
 		}
 		
 		console.log(data);
+		console.log(JSON.stringify(data));
+
 		try {
 			await axios.post(url, data, {
 				headers: {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res.data);
 				setRedirect(true);
 			})
 		} catch(error) {
@@ -162,14 +163,14 @@ function Quiz(props) {
 		console.log(questions);
 		questions.map((question) => {
 			let questionObj = {
-				q_id: question._id,
+				q_id: question.questionId,
 				text: question.description,
 				options: question.options,
 			}
 			questionsData.push(questionObj);
 
 			let ansObj = {
-				quesId: question._id,
+				quesId: question.questionId,
 				selectedOption: null,
 			}
 
