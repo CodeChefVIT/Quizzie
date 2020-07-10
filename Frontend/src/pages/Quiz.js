@@ -50,9 +50,6 @@ function Quiz(props) {
 			"questions": allChosenAns
 		}
 		
-		console.log(data);
-		console.log(JSON.stringify(data));
-
 		try {
 			await axios.post(url, data, {
 				headers: {
@@ -94,7 +91,6 @@ function Quiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setRedirect(true);
 				return;
 			})
@@ -160,7 +156,6 @@ function Quiz(props) {
 		let questionsData = [];
 		let answerData = [];
 
-		console.log(questions);
 		questions.map((question) => {
 			let questionObj = {
 				q_id: question.questionId,
