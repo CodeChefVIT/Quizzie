@@ -41,7 +41,28 @@ function Quiz(props) {
 	const {setBlocked, closed} = useContext(InfoContext);
 
 	const submitQuiz = async () => {
-		setTestCompleted(true);
+		setSubmitLoading(true);
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/quiz/check";
+
+		let data = {
+			"quizId": quizId,
+			"questions": allChosenAns
+		}
+		
+		console.log(data);
+		try {
+			await axios.post(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res.data);
+				setRedirect(true);
+			})
+		} catch(error) {
+			console.log(error);
+		}
 	}
 
 	const onCloseHandle = () => {
@@ -85,13 +106,13 @@ function Quiz(props) {
 		let currQues = currentQuestion + 1;
 		setStep(currentStep + 1)
 		setCurrentQuestion(currentQuestion + 1);
-		setCurrentAns(allChosenAns[currQues].option);
+		setCurrentAns(allChosenAns[currQues].selectedOption);
 	}
 	const _prev = () => {
 		let currQues = currentQuestion - 1;
 		setStep(currentStep - 1);
 		setCurrentQuestion(currentQuestion - 1);
-		setCurrentAns(allChosenAns[currQues].option);
+		setCurrentAns(allChosenAns[currQues].selectedOption);
 	}
 	const previousButton = () => {
 		if (currentStep !== 1) {
@@ -129,7 +150,7 @@ function Quiz(props) {
 		setCurrentAns(event.target.value);
 
 		let newState = allChosenAns;
-		newState[currentQuestion].option = event.target.value;
+		newState[currentQuestion].selectedOption = event.target.value;
 
 		setAllAns(newState);
 	}
@@ -138,6 +159,7 @@ function Quiz(props) {
 		let questionsData = [];
 		let answerData = [];
 
+		console.log(questions);
 		questions.map((question) => {
 			let questionObj = {
 				q_id: question._id,
