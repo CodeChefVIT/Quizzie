@@ -194,8 +194,6 @@ function RegisterPage(props) {
 				}
 			}
 
-			console.log(data);
-
 			let response = null;
 			try {
 				await axios.post(url, data).then(res => {

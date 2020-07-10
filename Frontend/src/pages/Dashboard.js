@@ -24,6 +24,7 @@ function Dashboard(props) {
 	const [refresh, setRefresh] = useState(false);
 
 	const [blockSnack, setBlockSnack] = useState(false);
+	const [timeUpSnack, setTimeUpSnack] = useState(false);
 
 	const {isLoggedIn} = useContext(InfoContext);
 
@@ -109,6 +110,8 @@ function Dashboard(props) {
 		if(Object.keys(props).length !== 0 && props.location.state !== undefined) {
 			if(props.location.state.blocked) {
 				setBlockSnack(true);
+			} else if(props.location.state.timeUp) {
+				setTimeUpSnack(true);
 			}
 		}
 	}, [])
@@ -155,6 +158,9 @@ function Dashboard(props) {
 				</div>
 				<Snackbar open={blockSnack} autoHideDuration={5000} onClose={() => setBlockSnack(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setBlockSnack(false)}>You violated the quiz rules!</Alert>
+				</Snackbar>
+				<Snackbar open={timeUpSnack} autoHideDuration={5000} onClose={() => setTimeUpSnack(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setTimeUpSnack(false)}>Time's Up! Your quiz was not submitted!</Alert>
 				</Snackbar>
 			</Container>
 		)
