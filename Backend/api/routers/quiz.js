@@ -348,7 +348,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-					console.log(result0);
+					console.log(result)
 					if (result0.quizStatus == 0) {
 						if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
@@ -399,6 +399,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 															quizId: result[i].quizId,
 															description: result[i].description,
 															options: result[i].options,
+															questionId:result[i]._id
 														};
 														data.push(object);
 													}
@@ -474,6 +475,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 												quizId: result[i].quizId,
 												description: result[i].description,
 												options: result[i].options,
+												questionId:result[i]._id
 											};
 											data.push(object);
 										}
@@ -487,6 +489,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									.catch(async (err) => {
 										await res.status(400).json({
 											message: "some error occurred",
+											error:err.toString()
 										});
 									});
 							})
@@ -583,6 +586,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		}
 		dataQues = JSON.parse(data);
+		console.log(dataQues)
 		if (data != null) {
 			for (i = 0; i < dataQues.length; i++) {
 				if (que_data[i].selectedOption == dataQues[i].correctAnswer) {
