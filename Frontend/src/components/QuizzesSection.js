@@ -321,7 +321,7 @@ function QuizzesSection(props) {
 											<GridListTileBar
 												title={quiz.quizId.quizName}
 												actionIcon={
-													<div>
+													<div className="inline">
 														<Tooltip title="Start Quiz">
 															<IconButton aria-label={`start ${quiz.quizId.quizName}`} onClick={() => handleStartButton(quiz)}>
 																<PlayCircleFilled className="enroll-icon" />
@@ -424,7 +424,7 @@ function QuizzesSection(props) {
 					
 					{/* From the profile section */}
 					{infoLoading? <Loading /> :
-						<div className="modal-info no-p-top">
+						<div className="modal-info no-p-top" style={{textAlign: "center"}}>
 							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toDateString()}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toLocaleTimeString()}</span></Typography>

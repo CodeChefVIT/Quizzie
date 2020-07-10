@@ -50,6 +50,15 @@
     transform: translateZ(0);
 }
 
+.MuiGridListTileBar-title {
+	font-family: "Montserrat", sans-serif !important;
+	font-weight: bold !important;
+}
+
+.inline {
+	white-space: nowrap !important;
+}
+
 .enrolled-list {
 	margin-bottom: 5% !important;
 }
