@@ -35,7 +35,6 @@ function HistorySection(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setQuizzes(res.data.result);
 				setLoading(false);
 			})

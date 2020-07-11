@@ -18,6 +18,7 @@ function QuizzesSection(props) {
 	const [userType, setUserType] = useState(props.type);
 	const [profile, setProfile] = useState(props.profile);
 	const [quizzes, setQuizzes] = useState([]);
+	const [quizzesEnrolled, setQuizzesEnrolled] = useState([]);
 
 	const [joinModal, setJoinModal] = useState(false);
 	const [quizCode, setQuizCode] = useState("");
@@ -235,6 +236,19 @@ function QuizzesSection(props) {
 		}
 	}
 
+	const setupEnrolled = () => {
+		let quizzes = [];
+		
+		profile.quizzesEnrolled.map((quiz) => {
+			if(!profile.quizzesGiven.find(o => o.quizId === quiz.quizId._id)) {
+
+				quizzes.push(quiz);
+			}
+		});
+
+		setQuizzesEnrolled(quizzes);
+	}
+
 	const getQuizzes = async () => {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
@@ -280,6 +294,7 @@ function QuizzesSection(props) {
 
 
 	useEffect(() => {
+		setupEnrolled();
 		getQuizzes();
 	}, []);
 
@@ -311,11 +326,11 @@ function QuizzesSection(props) {
 				{userType === "user" ?
 					<div className="enrolled-list">
 						<Typography variant="h5" className="up-quizzes">Enrolled Quizzes</Typography>
-						{profile.quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
+						{quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
 							:
 							<div className="quiz-list root1">
 								<GridList cols={getCols()} className="grid-list btn-set">
-									{profile.quizzesEnrolled.map((quiz) => (
+									{quizzesEnrolled.map((quiz) => (
 										<GridListTile key={quiz._id} className="quiz-tile">
 											<img src="../CC LOGO-01.svg" />
 											<GridListTileBar
