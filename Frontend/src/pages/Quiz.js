@@ -56,7 +56,6 @@ function Quiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setRedirect(true);
 			})
 		} catch(error) {

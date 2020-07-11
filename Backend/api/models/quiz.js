@@ -12,6 +12,8 @@ const QuizSchema = new mongoose.Schema({
 	usersParticipated: [
 		{
 			userId: { type: mongoose.Schema.Types.ObjectID, ref: "User" },
+			marks:{type:Number},
+			responses:[]
 		},
 	],
 	usersEnrolled: [
