@@ -6,10 +6,10 @@ function SubmitLoading() {
 	return (
 		<div className="loading-screen">
 			<CircularProgress color="secondary" />
-			<div class="loader">Submitting your answers
-				<span class="loader__dot">.</span>
-				<span class="loader__dot">.</span>
-				<span class="loader__dot">.</span></div>
+			<div className="loader">Submitting your answers
+				<span className="loader__dot">.</span>
+				<span className="loader__dot">.</span>
+				<span className="loader__dot">.</span></div>
 		</div>
 	);
 }

@@ -6,11 +6,12 @@ import {
 	GridList, GridListTile, GridListTileBar, Typography, Button, Dialog,
 	isWidthUp, withWidth, IconButton, Tooltip, Snackbar, DialogTitle
 } from "@material-ui/core";
-import { Add, Check, Info, Block } from '@material-ui/icons';
+import { Add, Check, Info, Block, PlayCircleFilled } from '@material-ui/icons';
 import TextInput from "./TextInput";
 import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Loading from "../pages/Loading";
+import countdown from "countdown";
 
 function QuizzesSection(props) {
 	const [loading, setLoading] = useState(true);
@@ -33,6 +34,16 @@ function QuizzesSection(props) {
 	const [infoModal, setInfoModal] = useState(false);
 	const [infoLoading, setInfoLoading] = useState(false);
 	const [currQuiz, setCurrQuiz] = useState({});
+	const [timeRemain, setTimeRemain] = useState("");
+
+	const [startModal, setStartModal] = useState(false);
+	const [quizStarted, setQuizStarted] = useState(false);
+	const [redirectId, setRedirectId] = useState("");
+	const [quizDetails, setQuizDetails] = useState({});
+
+	const [earlyError, setEarlyError] = useState(false);
+	const [lateError, setLateError] = useState(false);
+	const [givenSnack, setGivenSnack] = useState(false);
 
 	const setRefresh = props.refresh;
 
@@ -44,15 +55,25 @@ function QuizzesSection(props) {
 		return 2;
 	}
 
+	const getInfoWidth = () => {
+		if(isWidthUp('sm', props.width)) {
+			return '45%';
+		}
+
+		return '80%';
+	}
+
 	const onCloseHandle = () => {
 		setJoinModal(false);
+		setInfoModal(false);
+		setStartModal(false);
+
 		setQuizCode("");
 		setQuizCodeError(false);
 		setEnrollModal(false);
 		setEnrollQuiz("");
 		setEnrollQuizId("");
-
-		setInfoModal(false);
+		setTimeRemain("");
 		setCurrQuiz({});
 	}
 
@@ -73,6 +94,12 @@ function QuizzesSection(props) {
 	const handleInfoButton = (quiz) => {
 		setInfoModal(true);
 		getQuizInfo(quiz.quizId._id);
+	}
+
+	const handleStartButton = (quiz) => {
+		setEnrollQuiz(quiz.quizId.quizName);
+		setEnrollQuizId(quiz.quizId._id);
+		setStartModal(true);
 	}
 
 	const getQuizInfo = async (id) => {
@@ -177,6 +204,37 @@ function QuizzesSection(props) {
 		}
 	}
 
+	const handleQuizStart = async () => {
+		setEnrollSnack(true);
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/start`;
+		
+		let data = {
+			"quizId": enrollQuizId
+		}
+		
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setRedirectId(data.quizId);
+				setQuizDetails(res.data);
+				setQuizStarted(true);
+			})
+		} catch(error) {
+			setEnrollSnack(false);
+			if(error.response.status === 401) {
+				setEarlyError(true);
+			} else if(error.response.status === 402) {
+				setLateError(true);
+			} else if(error.response.status === 405) {
+				setGivenSnack(true);
+			}
+		}
+	}
+
 	const getQuizzes = async () => {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
@@ -208,6 +266,18 @@ function QuizzesSection(props) {
 		}
 	}
 
+	useEffect(() => {
+		if(infoModal) {
+			if(currQuiz.scheduledFor <= Date.now()) {
+				setTimeRemain("Already Started!");
+			} else {
+				setTimeout(() => {
+					setTimeRemain(countdown(new Date(), new Date(Number(currQuiz.scheduledFor))).toString());
+				}, 1000);
+			}
+		}
+	})
+
 
 	useEffect(() => {
 		getQuizzes();
@@ -217,7 +287,18 @@ function QuizzesSection(props) {
 		return (
 			<QuizLoading />
 		)
-	} else {
+	} else if(quizStarted) {
+		return <Redirect to={{
+				pathname: `/quiz`,
+				state: {
+					questions: quizDetails.data,
+					duration: quizDetails.duration,
+					start: quizDetails.scheduledFor,
+					id: enrollQuizId
+				}
+			}} />
+	}
+	else {
 		return (
 			<div className="quizzes-section">
 				<div className="quiz-btn-section">
@@ -233,18 +314,25 @@ function QuizzesSection(props) {
 						{profile.quizzesEnrolled.length === 0 ? <p style={{ textAlign: 'center' }}>Sorry! No quizzes available at the moment!</p>
 							:
 							<div className="quiz-list root1">
-								<GridList cols={getCols()} className="grid-list">
+								<GridList cols={getCols()} className="grid-list btn-set">
 									{profile.quizzesEnrolled.map((quiz) => (
 										<GridListTile key={quiz._id} className="quiz-tile">
 											<img src="../CC LOGO-01.svg" />
 											<GridListTileBar
 												title={quiz.quizId.quizName}
 												actionIcon={
-													<Tooltip title="Info">
-														<IconButton aria-label={`info ${quiz.quizId.quizName}`} onClick={() => handleInfoButton(quiz)}>
-															<Info className="enroll-icon" />
-														</IconButton>
-													</Tooltip>
+													<div className="inline">
+														<Tooltip title="Start Quiz">
+															<IconButton aria-label={`start ${quiz.quizId.quizName}`} onClick={() => handleStartButton(quiz)}>
+																<PlayCircleFilled className="enroll-icon" />
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Info">
+															<IconButton aria-label={`info ${quiz.quizId.quizName}`} onClick={() => handleInfoButton(quiz)}>
+																<Info className="enroll-icon" />
+															</IconButton>
+														</Tooltip>
+													</div>
 												}
 											/>
 										</GridListTile>
@@ -315,17 +403,34 @@ function QuizzesSection(props) {
 						}
 					</div>
 				</Dialog>
+				<Dialog open={startModal} onClose={onCloseHandle} aria-labelledby="start-quiz-modal"
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '30%' } }}
+					style={{ width: '100%' }}>
+					<div className="modal-info">
+						<div>
+							<Typography variant="h6" className="type-head join-sub">{`Are you sure you want to start ${enrollQuizName}?`}</Typography>
+							<div className="btn-div m-top2 start-div">
+								{/* classes in Navbar.css */}
+								<Button className="logout-btn m-right" onClick={handleQuizStart}>Yes</Button>
+								<Button className="cancel-btn m-left" onClick={onCloseHandle}>No</Button>
+							</div>
+						</div>
+					</div>
+				</Dialog>
 				<Dialog open={infoModal} onClose={onCloseHandle} aria-labelledby="info-quiz-modal"
-					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '40%', maxHeight:'40%' } }}
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: getInfoWidth(), maxHeight:'45%' } }}
 					style={{ width: '100%' }}>
 					<DialogTitle style={{textAlign: 'center', fontWeight: 'bold'}}>Quiz Info</DialogTitle>
 					
 					{/* From the profile section */}
 					{infoLoading? <Loading /> :
-						<div className="modal-info no-p-top">
+						<div className="modal-info no-p-top" style={{textAlign: "center"}}>
 							<Typography variant="h6" className="profile-param info-param">Name: <span className="profile-data">{currQuiz.quizName}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Date: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toDateString()}</span></Typography>
 							<Typography variant="h6" className="profile-param info-param">Time: <span className="profile-data">{new Date(Number(currQuiz.scheduledFor)).toLocaleTimeString()}</span></Typography>
+							<div className="time-sec">
+								<Typography variant="h6" className="profile-param info-param"><span className="profile-data time-rem">{timeRemain}</span></Typography>
+							</div>
 							<Button className="unenroll-btn" onClick={handleUnenroll}>
 								<Block style={{color: 'white'}}/>Unenroll
 							</Button>
@@ -340,6 +445,15 @@ function QuizzesSection(props) {
 				</Snackbar>
 				<Snackbar open={enrollSnack} autoHideDuration={5000} onClose={() => setEnrollSnack(false)}>
 					<Alert variant="filled" severity="info" onClose={() => setErrorSnack(false)}>Processing... Please Wait!</Alert>
+				</Snackbar>
+				<Snackbar open={earlyError} autoHideDuration={5000} onClose={() => setEarlyError(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setEarlyError(false)}>The quiz has not yet started!</Alert>
+				</Snackbar>
+				<Snackbar open={lateError} autoHideDuration={5000} onClose={() => setLateError(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setLateError(false)}>This quiz has ended!</Alert>
+				</Snackbar>
+				<Snackbar open={givenSnack} autoHideDuration={5000} onClose={() => setGivenSnack(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setGivenSnack(false)}>Already given this quiz!</Alert>
 				</Snackbar>
 			</div>
 		)

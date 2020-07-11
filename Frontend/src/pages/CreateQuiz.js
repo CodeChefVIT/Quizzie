@@ -45,7 +45,6 @@ function CreateQuiz() {
 			"quizType": type
 		}
 		
-		console.log(data);
 		try {
 			await axios.post(url, data, {
 				headers: {

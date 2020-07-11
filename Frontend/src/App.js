@@ -57,9 +57,7 @@ function App() {
 					<Route exact path="/">
 						<Welcome />
 					</Route>
-					<Route exact path="/dashboard">
-						<Dashboard />
-					</Route>
+					<Route exact path="/dashboard" component={Dashboard} />
 					<Route exact path="/coronilOP" component={OwnerDashboard} />
 					<Route exact path="/ownerQuizDetails/:id" component={OwnerQuizDetails} />
 					<Route exact path="/updateProfile/:type" component={UpdateProfile} />
@@ -73,9 +71,7 @@ function App() {
 					<Route exact path="/admin">
 						<Admin />
 					</Route>
-					<Route exact path="/quiz">
-						<Quiz />
-					</Route>
+					<Route exact path="/quiz/" component={Quiz} />
 					<Route exact path="/adminRegister">
 						<AdminRegister />
 					</Route>
