@@ -263,6 +263,20 @@ router.patch(
 	}
 );
 
+
+router.get('/allStudentsQuizResult',checkAuth,checkAuthAdmin,async(req,res,next)=>{
+	const users = await Quiz.findById(req.body.quizId)
+	if(!users){
+		res.status(400).json({
+			message:"Some error occurred"
+		})
+	}
+	const userResults = users.usersParticipated
+	res.status(200).json({
+		userResults
+	})
+})
+
 ////Delete profile
 // router.delete(
 // 	"/",

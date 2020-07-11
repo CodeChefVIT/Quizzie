@@ -348,7 +348,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-					console.log(result)
+					console.log(result);
 					if (result0.quizStatus == 0) {
 						if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
@@ -399,15 +399,15 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 															quizId: result[i].quizId,
 															description: result[i].description,
 															options: result[i].options,
-															questionId:result[i]._id
+															questionId: result[i]._id,
 														};
 														data.push(object);
 													}
 													await res.status(200).json({
 														message: "Quiz started for " + req.user.name,
 														data,
-														duration:result0.quizDuration,
-														scheduledFor:result0.scheduledFor
+														duration: result0.quizDuration,
+														scheduledFor: result0.scheduledFor,
 													});
 												})
 												.catch(async (err) => {
@@ -475,21 +475,21 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 												quizId: result[i].quizId,
 												description: result[i].description,
 												options: result[i].options,
-												questionId:result[i]._id
+												questionId: result[i]._id,
 											};
 											data.push(object);
 										}
 										await res.status(200).json({
 											message: "Quiz started for " + req.user.name,
 											data,
-											duration:result0.quizDuration,
-											scheduledFor:result0.scheduledFor
+											duration: result0.quizDuration,
+											scheduledFor: result0.scheduledFor,
 										});
 									})
 									.catch(async (err) => {
 										await res.status(400).json({
 											message: "some error occurred",
-											error:err.toString()
+											error: err.toString(),
 										});
 									});
 							})
@@ -533,22 +533,19 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 		});
 });
 
-router.patch('/finish',checkAuth,async(req,res)=>{
-	await Quiz.updateOne(
-		{ _id: req.body.quizId },
-		{ $set: { quizStatus: 2 } }
-	)
-	.then((result)=>{
-		res.status(200).json({
-			message:'Updated Quiz Status'
+router.patch("/finish", checkAuth, async (req, res) => {
+	await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
+		.then((result) => {
+			res.status(200).json({
+				message: "Updated Quiz Status",
+			});
 		})
-	})
-	.catch((err)=>{   
-		res.status(400).json({
-			error:err.toString()
-		})
-	})
-})
+		.catch((err) => {
+			res.status(400).json({
+				error: err.toString(),
+			});
+		});
+});
 
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
@@ -556,28 +553,32 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	var responses = [];
 	var score = 0;
 	Quiz.findById(req.body.quizId)
-		.then(async(result9) => {
-			console.log(Date.now())
-			console.log(Number(result9.scheduledFor)+Number(Number(result9.quizDuration)*60*1000))
-			if(Date.now()>=Number(result9.scheduledFor)+Number(Number(result9.quizDuration)*60*1000)){
-				await Quiz.updateOne(
-					{ _id: req.body.quizId },
-					{ $set: { quizStatus: 2 } }
-				)
-				.then((result)=>{
-					console.log('updated quiz status')
-				})
-				.catch((err)=>{
-					res.status(400).json({
-						error:err.toString()
+		.then(async (result9) => {
+			console.log(Date.now());
+			console.log(
+				Number(result9.scheduledFor) +
+					Number(Number(result9.quizDuration) * 60 * 1000)
+			);
+			if (
+				Date.now() >=
+				Number(result9.scheduledFor) +
+					Number(Number(result9.quizDuration) * 60 * 1000)
+			) {
+				await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
+					.then((result) => {
+						console.log("updated quiz status");
 					})
-				})
+					.catch((err) => {
+						res.status(400).json({
+							error: err.toString(),
+						});
+					});
 			}
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message:err.toString()
-			})
+				message: err.toString(),
+			});
 		});
 	client.get(req.user.userId, (err, data) => {
 		if (err) {
@@ -586,7 +587,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		}
 		dataQues = JSON.parse(data);
-		console.log(dataQues)
+		console.log(dataQues);
 		if (data != null) {
 			for (i = 0; i < dataQues.length; i++) {
 				if (que_data[i].selectedOption == dataQues[i].correctAnswer) {
@@ -605,12 +606,26 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 				{ $push: { quizzesGiven: { quizId, marks: score, responses } } }
 			)
 				.then(async (result) => {
-					res.status(200).json({
-						message: "Updated",
-						quizId,
-						marks: score,
-						responses,
-					});
+					await Quiz.updateOne(
+						{ _id: req.body.quizId },
+						{
+							$push: {
+								usersParticipated: { userId: req.user.userId, marks: score, responses },
+							},
+						}
+					).then((result7)=>{
+						res.status(200).json({
+							message: "Updated",
+							quizId,
+							marks: score,
+							responses,
+						});
+					}).catch((err)=>{
+						res.status(400).json({
+							message:"Unexpected Error"
+						})
+					})
+
 				})
 				.catch((err) => {
 					res.status(400).json({
@@ -699,5 +714,7 @@ router.patch(
 			});
 	}
 );
+
+
 
 module.exports = router;
