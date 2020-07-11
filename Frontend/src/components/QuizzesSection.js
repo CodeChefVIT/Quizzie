@@ -294,7 +294,7 @@ function QuizzesSection(props) {
 
 
 	useEffect(() => {
-		setupEnrolled();
+		if(userType === "user") setupEnrolled();
 		getQuizzes();
 	}, []);
 
