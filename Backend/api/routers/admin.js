@@ -264,8 +264,8 @@ router.patch(
 );
 
 
-router.get('/allStudentsQuizResult',checkAuth,checkAuthAdmin,async(req,res,next)=>{
-	const users = await Quiz.findById(req.body.quizId)
+router.get('/allStudentsQuizResult/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
+	const users = await Quiz.findById(req.params.quizId)
 	if(!users){
 		res.status(400).json({
 			message:"Some error occurred"

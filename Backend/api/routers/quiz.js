@@ -271,8 +271,8 @@ router.patch(
 	}
 );
 
-router.get("/checkAdmin", checkAuth, checkAuthAdmin, async (req, res, next) => {
-	await Quiz.findOne({ _id: req.body.quizId })
+router.get("/checkAdmin/:quizId", checkAuth, checkAuthAdmin, async (req, res, next) => {
+	await Quiz.findOne({ _id: req.params.quizId })
 		.then(async (result) => {
 			if (result.adminId == req.user.userId) {
 				return res.status(200).json({

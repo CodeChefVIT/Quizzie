@@ -254,14 +254,14 @@ router.patch(
 );
 
 
-router.get("/studentQuizResult",checkAuth,checkAuthUser,async(req,res,next)=>{
+router.get("/studentQuizResult/:quizId",checkAuth,checkAuthUser,async(req,res,next)=>{
 	const studentId = req.user.userId
 	if (studentId.match(/^[0-9a-fA-F]{24}$/)) {
 		
 	  
 	const user = await User.findById(studentId)
 	const quizLength = user.quizzesGiven.length
-	const quizId=req.body.quizId
+	const quizId=req.params.quizId
 	for(i=0;i<quizLength;i++){
 		if(quizId==user.quizzesGiven[i].quizId){
 			res.status(200).json({
