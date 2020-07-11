@@ -598,7 +598,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 					quesId: que_data[i].quesId,
 					correctAnswer: dataQues[i].correctAnswer,
 				};
-				responses.push[object];
+				responses.push(object);
 			}
 			User.updateOne(
 				{ _id: req.user.userId },
