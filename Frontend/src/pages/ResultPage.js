@@ -8,9 +8,27 @@ function ResultPage(props) {
 	const [quizId, setQuizId] = useState(props.match.params.id);
 	const [loading, setLoading] = useState(true);
 
+	const [name, setName] = useState("");
 	const [marks, setMarks] = useState(null);
 	const [responses, setResponses] = useState([]);
 
+
+	const getDetails = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/${quizId}`;
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setName(res.data.result.quizName);
+			})
+		} catch(error) {
+			console.log(error);
+		}
+	}
 
 	const getResponses = async () => {
 		let token = localStorage.getItem("authToken");
@@ -33,6 +51,7 @@ function ResultPage(props) {
 	}
 
 	useState(() => {
+		getDetails();
 		getResponses();
 	}, [])
 
@@ -46,7 +65,7 @@ function ResultPage(props) {
 				<Typography variant="h4" className="result-title">Results</Typography>
 			</div>
 			<div className="result-quiz-info">
-				<Typography variant="h5"><span className="profile-param">Name</span></Typography>
+				<Typography variant="h5"><span className="profile-param">Quiz:</span> <strong>{name}</strong></Typography>
 				<Typography variant="h5"><span className="profile-param">Scored:</span> <strong>{marks}</strong> out of <strong>{responses.length}</strong></Typography>
 			</div>
 			<div className="result-responses">
