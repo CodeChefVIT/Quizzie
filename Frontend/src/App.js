@@ -55,9 +55,7 @@ function App() {
 			<Router>
 				<Navbar loggedIn={info.isLoggedIn} />
 				<Switch>
-					<Route exact path="/">
-						<Welcome />
-					</Route>
+					<Route exact path="/" component={Welcome} />
 					<Route exact path="/dashboard" component={Dashboard} />
 					<Route exact path="/coronilOP" component={OwnerDashboard} />
 					<Route exact path="/ownerQuizDetails/:id" component={OwnerQuizDetails} />
