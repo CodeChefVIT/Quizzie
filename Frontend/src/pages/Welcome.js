@@ -28,7 +28,7 @@ function Welcome(props) {
 				token = sp[1];
 			}
 		})
-		console.log(name, token);
+
 		if(name !== null && token !== null) {
 			setAuthToken(token);
 			changeName(name);

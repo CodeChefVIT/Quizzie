@@ -269,7 +269,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				return true;
 			})
 		} catch(error) {
