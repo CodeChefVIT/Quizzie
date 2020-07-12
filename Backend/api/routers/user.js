@@ -183,6 +183,33 @@ router.get(
 	}
 );
 
+
+router.get("/studentQuizResult/:quizId",checkAuth,checkAuthUser,async(req,res,next)=>{
+	const studentId = req.user.userId
+	if (studentId.match(/^[0-9a-fA-F]{24}$/)) {
+		
+	  
+	const user = await User.findById(studentId)
+	const quizLength = user.quizzesGiven.length
+	const quizId=req.params.quizId
+	for(i=0;i<quizLength;i++){
+		if(quizId==user.quizzesGiven[i].quizId){
+			var result = user.quizzesGiven[i]
+		}
+	}
+
+	if(result){
+		res.status(200).json({
+			message:"Retrieved",
+			result:result
+		})
+	}
+	res.status(400).json({
+		message:"Quiz not found in Database"
+	})
+}
+});
+
 //Update user profile
 router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 	const id = req.user.userId;
@@ -254,26 +281,6 @@ router.patch(
 );
 
 
-router.get("/studentQuizResult/:quizId",checkAuth,checkAuthUser,async(req,res,next)=>{
-	const studentId = req.user.userId
-	if (studentId.match(/^[0-9a-fA-F]{24}$/)) {
-		
-	  
-	const user = await User.findById(studentId)
-	const quizLength = user.quizzesGiven.length
-	const quizId=req.params.quizId
-	for(i=0;i<quizLength;i++){
-		if(quizId==user.quizzesGiven[i].quizId){
-			res.status(200).json({
-				messgae:"Retrieved",
-				result:user.quizzesGiven[i]
-			})
-		}
-	}
-	res.status(400).json({
-		message:"Quiz not found in Database"
-	})
-}
-});
+
 
 module.exports = router;
