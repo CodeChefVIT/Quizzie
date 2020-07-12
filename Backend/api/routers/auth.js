@@ -47,7 +47,7 @@ router.get(
 		var name = encodeURIComponent(req.user.name);
 		res.redirect(
 			303,
-			"https://quizzie-cc.netlify.app/dashboard/?name=" + name + "&token=" + token
+			"http://localhost:3000/dashboard/?name=" + name + "&token=" + token
 		);
 	}
 );
