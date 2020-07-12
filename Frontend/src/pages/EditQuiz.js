@@ -261,15 +261,12 @@ function EditQuiz(props) {
 
 	const isOwnerOfQuiz = async () => {
 		let token = localStorage.getItem("authToken");
-		let url = "https://quizzie-api.herokuapp.com/quiz/checkAdmin";
+		let url = `https://quizzie-api.herokuapp.com/quiz/checkAdmin/${quizId}`;
 
 		try {
 			await axios.get(url, {
 				headers: {
 					"auth-token": token
-				},
-				data: {
-					"quizId":quizId
 				}
 			}).then(res => {
 				console.log(res);
@@ -324,7 +321,7 @@ function EditQuiz(props) {
 			return;
 		}
 
-		//isOwnerOfQuiz();
+		isOwnerOfQuiz();
 
 		getQuizDetails();
 	}, [])
