@@ -598,6 +598,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 					selected: que_data[i].selectedOption,
 					quesId: que_data[i].quesId,
 					correctAnswer: dataQues[i].correctAnswer,
+					options:dataQues[i].options
 				};
 				responses.push(object);
 			}
