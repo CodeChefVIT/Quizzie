@@ -202,14 +202,16 @@ function LoginPage(props) {
 					</div>
 					<Button className="login-btn" onClick={handleSubmit}>Login</Button>
 					<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
-					<a href="https://quizzie-api.herokuapp.com/auth/google" className="google-link">
-						<div class="google-btn">
-							<div class="google-icon-wrapper">
-								<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+					{type === "user"? 
+						<a href="https://quizzie-api.herokuapp.com/auth/google" className="google-link">
+							<div class="google-btn">
+								<div class="google-icon-wrapper">
+									<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+								</div>
+								<p class="btn-text"><b>Sign in with google</b></p>
 							</div>
-							<p class="btn-text"><b>Sign in with google</b></p>
-						</div>
-					</a>
+						</a>
+					:null}
 
 				</div>
 			</Container>
