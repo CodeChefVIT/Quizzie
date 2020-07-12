@@ -271,25 +271,30 @@ router.patch(
 	}
 );
 
-router.get("/checkAdmin/:quizId", checkAuth, checkAuthAdmin, async (req, res, next) => {
-	await Quiz.findOne({ _id: req.params.quizId })
-		.then(async (result) => {
-			if (result.adminId == req.user.userId) {
-				return res.status(200).json({
-					message: "This is your quiz",
+router.get(
+	"/checkAdmin/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.findOne({ _id: req.params.quizId })
+			.then(async (result) => {
+				if (result.adminId == req.user.userId) {
+					return res.status(200).json({
+						message: "This is your quiz",
+					});
+				} else {
+					return res.status(401).json({
+						message: "This is not your quiz",
+					});
+				}
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Please enter a correct quizId",
 				});
-			} else {
-				return res.status(401).json({
-					message: "This is not your quiz",
-				});
-			}
-		})
-		.catch((err) => {
-			res.status(400).json({
-				message: "Please enter a correct quizId",
 			});
-		});
-});
+	}
+);
 
 router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 	await User.findById(req.user.userId)
@@ -348,7 +353,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-					console.log(result);
 					if (result0.quizStatus == 0) {
 						if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
@@ -356,7 +360,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									for (let i = result.length - 1; i > 0; i--) {
 										const j = Math.floor(Math.random() * (i + 1));
 										[result[i], result[j]] = [result[j], result[i]];
-							  		}
+									}
 									var flag = 0;
 									var numQuiz = result2.quizzesStarted.length;
 									var numEnrolled = result2.quizzesEnrolled.length;
@@ -587,7 +591,6 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		}
 		dataQues = JSON.parse(data);
-		console.log(dataQues);
 		if (data != null) {
 			for (i = 0; i < dataQues.length; i++) {
 				if (que_data[i].selectedOption == dataQues[i].correctAnswer) {
@@ -598,7 +601,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 					selected: que_data[i].selectedOption,
 					quesId: que_data[i].quesId,
 					correctAnswer: dataQues[i].correctAnswer,
-					options:dataQues[i].options
+					options: dataQues[i].options,
 				};
 				responses.push(object);
 			}
@@ -614,19 +617,20 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 								usersParticipated: { userId: req.user.userId, marks: score, responses },
 							},
 						}
-					).then((result7)=>{
-						res.status(200).json({
-							message: "Updated",
-							quizId,
-							marks: score,
-							responses,
-						});
-					}).catch((err)=>{
-						res.status(400).json({
-							message:"Unexpected Error"
+					)
+						.then((result7) => {
+							res.status(200).json({
+								message: "Updated",
+								quizId,
+								marks: score,
+								responses,
+							});
 						})
-					})
-
+						.catch((err) => {
+							res.status(400).json({
+								message: "Unexpected Error",
+							});
+						});
 				})
 				.catch((err) => {
 					res.status(400).json({
@@ -715,7 +719,5 @@ router.patch(
 			});
 	}
 );
-
-
 
 module.exports = router;
