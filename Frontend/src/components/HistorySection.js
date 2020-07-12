@@ -91,10 +91,10 @@ function HistorySection(props) {
 					: <List aria-label="quiz display" className="owner-quiz-list">
 						{quizzes.map(quiz => (
 							quiz.quizId !== null?
-								(<ListItem button className="owner-quiz-item" component={Link} key={quiz._id}>
+								(<ListItem button className="owner-quiz-item" component={Link} key={quiz._id} to={`/results/${quiz.quizId._id}`}>
 									<ListItemText primary={quiz.quizId.quizName} secondary={`Scored: ${quiz.marks}`} />
 									<ListItemSecondaryAction>
-										<IconButton edge="end" aria-label="details" component={Link} >
+										<IconButton edge="end" aria-label="details" component={Link} to={`/results/${quiz.quizId._id}`}>
 											<ArrowForwardIos />
 										</IconButton>
 									</ListItemSecondaryAction>

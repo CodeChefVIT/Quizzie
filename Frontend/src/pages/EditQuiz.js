@@ -259,6 +259,29 @@ function EditQuiz(props) {
 
 	}
 
+	const isOwnerOfQuiz = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/quiz/checkAdmin";
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				},
+				data: {
+					"quizId":quizId
+				}
+			}).then(res => {
+				console.log(res);
+				return true;
+			})
+		} catch(error) {
+			setRedirect(true);
+			return;
+		}
+
+	}
+
 	const getQuizDetails = async () => {
 		setLoading(true);
 		let token = localStorage.getItem("authToken");
@@ -300,6 +323,9 @@ function EditQuiz(props) {
 			setRedirect(true);
 			return;
 		}
+
+		//isOwnerOfQuiz();
+
 		getQuizDetails();
 	}, [])
 
