@@ -14,9 +14,12 @@
 	justify-content: center;
 	align-items: center;
 
-	flex-direction: column;
-	
+	flex-direction: column;	
 }
+
+/* .login-form .MuiFormLabel-root {
+	font-family: "Montserrat", sans-serif !important;
+} */
 
 .form {
 	margin-top: 5%;
@@ -92,7 +95,6 @@
 
 .register-link {
 	text-align: center;
-	margin-top: 5%;
 	font-family: "Montserrat", sans-serif !important;
 	text-align: center !important;
 	color: black;

@@ -37,10 +37,10 @@ function Navbar() {
 		let loggedin = localStorage.getItem("userLoggedIn");
 		if(loggedin === "true") {
 			setNavLoggedIn(true);
-			setNavName(localStorage.getItem("name"));
+			setNavName(localStorage.getItem("name").split(" ")[0]);
 		} else {
 			setNavLoggedIn(isLoggedIn);
-			setNavName(name);
+			if(name !== null) setNavName(name.split(" ")[0]);
 		}
 	})
 
