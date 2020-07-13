@@ -33,6 +33,11 @@
 	color: #2980B9 !important;
 }
 
+@media screen and (max-width: 950px) {
+	.login-head {
+		font-size: 2.5rem !important;
+	}
+}
 @media screen and (max-width: 440px) {
 	.login-head {
 		font-size: 2rem !important;

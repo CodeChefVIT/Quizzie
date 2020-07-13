@@ -159,6 +159,16 @@ function LoginPage(props) {
 				<div className="login-form">
 					<Typography variant="h3" color="primary" className="login-head">{type === "user" ? "Login Now" : (type === "organizer" ? "Organizer Login" : "Owner Login")}</Typography><br />
 					{didLogin === false ? <Alert severity="error">{errorText}</Alert> : null}
+					{type === "user"? 
+						<a href="https://quizzie-api.herokuapp.com/auth/google" className="google-link">
+							<div class="google-btn">
+								<div class="google-icon-wrapper">
+									<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+								</div>
+								<p class="btn-text"><b>Sign in with google</b></p>
+							</div>
+						</a>
+					:null}
 					<form className="form">
 						<TextInput
 							error={emailChanged ? (emailError.length === 0 ? false : true) : false}
@@ -202,14 +212,6 @@ function LoginPage(props) {
 					</div>
 					<Button className="login-btn" onClick={handleSubmit}>Login</Button>
 					<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
-					<a href="https://quizzie-api.herokuapp.com/auth/google" className="google-link">
-						<div class="google-btn">
-							<div class="google-icon-wrapper">
-								<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
-							</div>
-							<p class="btn-text"><b>Sign in with google</b></p>
-						</div>
-					</a>
 
 				</div>
 			</Container>

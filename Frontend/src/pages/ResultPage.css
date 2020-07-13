@@ -42,9 +42,12 @@
 .result-response-title h5 {
 	font-family: "Montserrat", sans-serif !important;
 	font-weight: bold !important;
-
 	color: #35a1e9 !important;
 	font-size: 1.7rem !important;
 
 	border-bottom: 3px solid #35a1e9;
+}
+
+.result-responses-list {
+	padding-top: 3% !important;
 }
