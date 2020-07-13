@@ -119,6 +119,10 @@ router.get("/all", checkAuth, async (req, res, next) => {
 		.select("-__v")
 		.exec()
 		.then(async (result) => {
+			const remover = (result) => {
+				return result.quizStatus <= 1;
+			};
+			result = result.filter(remover);
 			await res.status(200).json({
 				message: "Successfully retrieved",
 				result,
