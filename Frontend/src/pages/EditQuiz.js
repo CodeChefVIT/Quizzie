@@ -423,7 +423,7 @@ function EditQuiz(props) {
 						: 
 						<List aria-label="responses list">
 							{responses.map((response) => (
-								<ListItem button>
+								<ListItem button key={response._id}>
 									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
 								</ListItem>
 							))}
