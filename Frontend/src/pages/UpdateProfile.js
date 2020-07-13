@@ -84,7 +84,8 @@ function UpdateProfile(props) {
 				}
 			}).then(res => {
 				setName(res.data.result1.name);
-				setPhoneNumber(res.data.result1.mobileNumber.toString());
+				if(res.data.result1.mobileNumber !== undefined) setPhoneNumber(res.data.result1.mobileNumber.toString());
+				else setPhoneNumber("");
 				setLoading(false);
 			})
 		} catch(error) {
