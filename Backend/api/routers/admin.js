@@ -265,7 +265,10 @@ router.patch(
 
 
 router.get('/allStudentsQuizResult/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
-	const users = await Quiz.findById(req.params.quizId)
+	const users = await Quiz.findById(req.params.quizId).populate({
+        path: "usersParticipated",
+        populate: { path: "userId", select: { name: 1 } },
+      })
 	if(!users){
 		res.status(400).json({
 			message:"Some error occurred"
