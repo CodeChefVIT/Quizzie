@@ -42,6 +42,8 @@ function EditQuiz(props) {
 	const [deleteQuestionModal, setDeleteQuestionModal] = useState(false);
 
 	const [responses, setResponses] = useState([]);
+	const [currResponse, setCurrResponse] = useState(null);
+	const [responseRedir, setResponseRedir] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -112,6 +114,11 @@ function EditQuiz(props) {
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
+	}
+
+	const studentResonse = (response) => {
+		setCurrResponse(response);
+		setResponseRedir(true);
 	}
 
 	const handleDeleteQuestion = async () => {
@@ -320,7 +327,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setResponses(res.data.userResults);
 				setLoading(false);
 			})
@@ -348,6 +354,15 @@ function EditQuiz(props) {
 	} else if (redirect) {
 		return (
 			<Redirect to="/dashboard" />
+		)
+	} else if(responseRedir) {
+		return (
+			<Redirect to={{
+				pathname: "/studentResponse",
+				state: {
+					response: currResponse
+				}
+			}} />
 		)
 	}
 	else {
@@ -423,7 +438,7 @@ function EditQuiz(props) {
 						: 
 						<List aria-label="responses list">
 							{responses.map((response) => (
-								<ListItem button key={response._id}>
+								<ListItem button key={response._id} onClick={() => studentResonse(response)} >
 									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
 								</ListItem>
 							))}
