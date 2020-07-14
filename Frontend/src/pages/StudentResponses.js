@@ -1,18 +1,22 @@
+/* Copy of Results.js */
 import React, { useState } from "react";
 import "./ResultPage.css";
 import { Container, Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItemIcon, ListItemText, ListItem } from "@material-ui/core";
 import axios from "axios";
 import Loading from "./Loading";
 import { Adjust, ExpandMore, Check, Close, Warning } from "@material-ui/icons";
+import { Redirect } from "react-router";
 
-function ResultPage(props) {
-	const [quizId, setQuizId] = useState(props.match.params.id);
+function StudentResponses(props) {
 	const [loading, setLoading] = useState(true);
 
 	const [name, setName] = useState("");
 	const [marks, setMarks] = useState(null);
 	const [responses, setResponses] = useState([]);
+	
+	const [redirect, setRedirect] = useState(false);
 
+	let state = null;
 
 	const resIcon = (response) => {
 		if(response.selected === response.correctAnswer) {
@@ -25,49 +29,29 @@ function ResultPage(props) {
 		}
 	}
 
-	const getDetails = async () => {
-		let token = localStorage.getItem("authToken");
-		let url = `https://quizzie-api.herokuapp.com/quiz/${quizId}`;
-
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				setName(res.data.result.quizName);
-			})
-		} catch (error) {
-			console.log(error);
-		}
+	const setup = () => {
+		setName(state.userId.name);
+		setMarks(state.marks);
+		setResponses(state.responses);
+		setLoading(false);
 	}
 
-	const getResponses = async () => {
-		let token = localStorage.getItem("authToken");
-		let url = `https://quizzie-api.herokuapp.com/user/studentQuizResult/${quizId}`;
-
-		try {
-			await axios.get(url, {
-				headers: {
-					"auth-token": token
-				}
-			}).then(res => {
-				setMarks(res.data.result.marks);
-				setResponses(res.data.result.responses);
-				setLoading(false);
-			})
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
+	
 	useState(() => {
-		getDetails();
-		getResponses();
+		if(props.location.state === undefined) {
+			setLoading(false);
+			setRedirect(true);
+			return;
+		}
+
+		state = props.location.state.response;
+		setup();
 	}, [])
 
 	if (loading) {
 		return <Loading />
+	} else if(redirect) {
+		return <Redirect to="/dashboard" />
 	}
 
 	return (
@@ -112,4 +96,4 @@ function ResultPage(props) {
 	)
 }
 
-export default ResultPage;
+export default StudentResponses;

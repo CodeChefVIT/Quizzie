@@ -20,7 +20,7 @@ function ProfileSection(props) {
 			: <Typography variant="h6" className="profile-param">Quizzes Created: <span className="profile-data">{profile.quizzes.length}</span></Typography> }
 			<div className="m-top">
 				<Button className="profile-btn update-prof-btn" component={Link} to={`/updateProfile/${userType}`}>Update Profile</Button>
-				<Button className="profile-btn" component={Link} to={`/updatePassword/${userType}`}>Update Password</Button>
+				{profile.googleId === undefined ? <Button className="profile-btn" component={Link} to={`/updatePassword/${userType}`}>Update Password</Button> : null }
 			</div>
 		</div>
 	)

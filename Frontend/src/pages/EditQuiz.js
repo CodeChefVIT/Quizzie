@@ -41,6 +41,10 @@ function EditQuiz(props) {
 	const [deleteModal, setDeleteModal] = useState(false);
 	const [deleteQuestionModal, setDeleteQuestionModal] = useState(false);
 
+	const [responses, setResponses] = useState([]);
+	const [currResponse, setCurrResponse] = useState(null);
+	const [responseRedir, setResponseRedir] = useState(false);
+
 	const onCloseHandle = () => {
 		setQuestionModal(false);
 		if (update) {
@@ -110,6 +114,11 @@ function EditQuiz(props) {
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
+	}
+
+	const studentResonse = (response) => {
+		setCurrResponse(response);
+		setResponseRedir(true);
 	}
 
 	const handleDeleteQuestion = async () => {
@@ -305,9 +314,23 @@ function EditQuiz(props) {
 				}
 			}).then(res => {
 				setQuizQuestions(res.data.result);
-				setLoading(false);
 			})
 		} catch (error) {
+			console.log(error);
+		}
+
+		url = `https://quizzie-api.herokuapp.com/admin/allStudentsQuizResult/${quizId}`;
+
+		try {
+			await axios.get(url, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				setResponses(res.data.userResults);
+				setLoading(false);
+			})
+		} catch(error) {
 			console.log(error);
 		}
 	}
@@ -321,7 +344,6 @@ function EditQuiz(props) {
 		}
 
 		isOwnerOfQuiz();
-
 		getQuizDetails();
 	}, [])
 
@@ -332,6 +354,15 @@ function EditQuiz(props) {
 	} else if (redirect) {
 		return (
 			<Redirect to="/dashboard" />
+		)
+	} else if(responseRedir) {
+		return (
+			<Redirect to={{
+				pathname: "/studentResponse",
+				state: {
+					response: currResponse
+				}
+			}} />
 		)
 	}
 	else {
@@ -399,6 +430,19 @@ function EditQuiz(props) {
 									</ExpansionPanel>
 								))}
 							</div>
+						}
+					</div>
+					<Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
+					<div className="quiz-students-list">
+						{responses.length === 0? <p style={{ textAlign: 'center' }}>No responses yet!</p>
+						: 
+						<List aria-label="responses list">
+							{responses.map((response) => (
+								<ListItem button key={response._id} onClick={() => studentResonse(response)} >
+									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
+								</ListItem>
+							))}
+						</List>
 						}
 					</div>
 				</div>
