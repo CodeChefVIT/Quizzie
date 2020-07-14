@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./Backend/api/config/passport-setup");
+const passportSetupAdmin = require("./Backend/api/config/passport-setup-admin");
 const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
