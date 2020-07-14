@@ -29,16 +29,12 @@ function Quiz(props) {
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
 
-	const [testCompleted, setTestCompleted] = useState(false);
-	const [resultData, setResultData] = useState(null);
-
 	const [submitLoading, setSubmitLoading] = useState(false);
 
 	const [confirmModal, setConfirmModal] = useState(false);
+	const [empty, setEmpty] = useState(false);
 
 	const pageVisible = usePageVisibility();
-
-	const {setBlocked, closed} = useContext(InfoContext);
 
 	const submitQuiz = async () => {
 		setSubmitLoading(true);
@@ -156,6 +152,12 @@ function Quiz(props) {
 		let questionsData = [];
 		let answerData = [];
 
+		if(questions.length === 0) {
+			setEmpty(true);
+			setRedirect(true);
+			return;
+		}
+
 		questions.map((question) => {
 			let questionObj = {
 				q_id: question.questionId,
@@ -221,7 +223,7 @@ function Quiz(props) {
 		return (
 			<Redirect to={{
 				pathname: "/dashboard",
-				state: {blocked: tabChange, timeUp: timeUp}
+				state: {blocked: tabChange, timeUp: timeUp, emptyQuiz: empty}
 			}} />
 		)
 	} else if(submitLoading) {

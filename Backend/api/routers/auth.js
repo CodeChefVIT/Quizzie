@@ -47,7 +47,7 @@ router.get(
 		var name = encodeURIComponent(req.user.name);
 		res.redirect(
 			303,
-			"https://quizzie-cc.netlify.app/?name=" + name + "&token=" + token
+			"https://quizzie.codechefvit.com/?name=" + name + "&token=" + token
 		);
 	}
 );

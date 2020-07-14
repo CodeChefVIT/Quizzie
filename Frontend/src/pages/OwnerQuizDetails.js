@@ -22,6 +22,7 @@ function OwnerQuizDetails(props) {
 
 	const [quizDetails, setQuizDetails] = useState({});
 	const [quizQuestions, setQuizQuestions] = useState([]);
+	const [responses, setResponses] = useState([]);
 	
 	const [deleteModal, setDeleteModal] = useState(false);
 	const [deleteSnack, setDeleteSnack] = useState(false);
@@ -100,6 +101,22 @@ function OwnerQuizDetails(props) {
 		} catch (error) {
 			console.log(error);
 		}
+
+		// url = `https://quizzie-api.herokuapp.com/admin/allStudentsQuizResult/${quizId}`;
+
+		// try {
+		// 	await axios.get(url, {
+		// 		headers: {
+		// 			"auth-token": token
+		// 		}
+		// 	}).then(res => {
+		// 		console.log(res);
+		// 		setResponses(res.data.userResults);
+		// 		setLoading(false);
+		// 	})
+		// } catch(error) {
+		// 	console.log(error);
+		// }
 	}
 
 	useEffect(() => {
@@ -174,6 +191,19 @@ function OwnerQuizDetails(props) {
 							</div>
 						}
 					</div>
+					{/* <Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
+					<div className="quiz-students-list">
+						{responses.length === 0? <p style={{ textAlign: 'center' }}>No responses yet!</p>
+						: 
+						<List aria-label="responses list">
+							{responses.map((response) => (
+								<ListItem button key={response._id}>
+									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
+								</ListItem>
+							))}
+						</List>
+						}
+					</div> */}
 				</div>
 				<Dialog open={deleteModal} onClose={() => setDeleteModal(false)} aria-labelledby="delete-quiz-modal"
 					PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>

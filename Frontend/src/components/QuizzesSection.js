@@ -271,7 +271,9 @@ function QuizzesSection(props) {
 							quizList.push(quiz);
 					}
 				});
-
+				
+				quizList.sort(function(a,b) {return a.scheduledFor - b.scheduledFor});
+				
 				setQuizzes(quizList);
 				setLoading(false);
 			})
