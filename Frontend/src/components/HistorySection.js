@@ -35,7 +35,8 @@ function HistorySection(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				setQuizzes(res.data.result);
+				let quizL = res.data.result.sort(function(a,b) {return a.scheduledFor - b.scheduledFor});
+				setQuizzes(quizL);
 				setLoading(false);
 			})
 		} catch (error) {
