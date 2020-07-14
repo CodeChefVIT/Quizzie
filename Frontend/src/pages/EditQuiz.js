@@ -320,7 +320,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setResponses(res.data.userResults);
 				setLoading(false);
 			})

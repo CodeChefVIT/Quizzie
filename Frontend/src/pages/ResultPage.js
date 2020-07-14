@@ -52,7 +52,6 @@ function ResultPage(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setMarks(res.data.result.marks);
 				setResponses(res.data.result.responses);
 				setLoading(false);
