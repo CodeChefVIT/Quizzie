@@ -303,7 +303,7 @@ router.post("/forgot", (req, res) => {
 			const msg = {
 			  to: email,
 			  from: process.env.sendgridEmail,
-			  subject: "Kaloory: Password Reset Request",
+			  subject: "Quzzie: Password Reset Request",
 			  text: " ",
 			  html: `
 			 
