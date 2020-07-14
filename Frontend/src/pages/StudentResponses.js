@@ -8,7 +8,6 @@ import { Adjust, ExpandMore, Check, Close, Warning } from "@material-ui/icons";
 import { Redirect } from "react-router";
 
 function StudentResponses(props) {
-	const [quizId, setQuizId] = useState(props.match.params.id);
 	const [loading, setLoading] = useState(true);
 
 	const [name, setName] = useState("");
