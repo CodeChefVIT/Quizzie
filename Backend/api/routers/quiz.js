@@ -558,6 +558,7 @@ router.patch("/finish", checkAuth, async (req, res) => {
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
+	const timeTaken = req.body.timeTaken
 	var responses = [];
 	var score = 0;
 	Quiz.findById(req.body.quizId)
@@ -611,14 +612,14 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			}
 			User.updateOne(
 				{ _id: req.user.userId },
-				{ $push: { quizzesGiven: { quizId, marks: score, responses } } }
+				{ $push: { quizzesGiven: { quizId, marks: score, responses,timeTaken } } }
 			)
 				.then(async (result) => {
 					await Quiz.updateOne(
 						{ _id: req.body.quizId },
 						{
 							$push: {
-								usersParticipated: { userId: req.user.userId, marks: score, responses },
+								usersParticipated: { userId: req.user.userId, marks: score, responses,timeTaken },
 							},
 						}
 					)
@@ -628,6 +629,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 								quizId,
 								marks: score,
 								responses,
+								timeTaken
 							});
 						})
 						.catch((err) => {
