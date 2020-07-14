@@ -6,6 +6,7 @@ const multer = require("multer");
 const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
+const sgMail = require("@sendgrid/mail");
 //const sharp = require('sharp');
 const User = require("../models/user");
 const Quiz = require("../models/quiz");
@@ -17,6 +18,8 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthOwner = require("../middleware/checkAuthOwner");
 
 const router = express.Router();
+
+sgMail.setApiKey(process.env.SendgridAPIKey);
 
 router.post("/signup", async (req, res, next) => {
 	Owner.find({ email: req.body.email })

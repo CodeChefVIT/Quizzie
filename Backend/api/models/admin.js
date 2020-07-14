@@ -26,6 +26,9 @@ const adminSchema = mongoose.Schema({
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
 		},
 	],
+
+	passResetKey: { type: String },
+	passKeyExpires: { type: Number },
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

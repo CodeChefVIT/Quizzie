@@ -6,6 +6,7 @@ const multer = require("multer");
 const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
+const sgMail = require("@sendgrid/mail");
 //const sharp = require('sharp');
 const User = require("../models/user");
 const Quiz = require("../models/quiz");
@@ -14,6 +15,8 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
+
+sgMail.setApiKey(process.env.SendgridAPIKey);
 
 ////Signup
 router.post("/signup", async (req, res, next) => {
@@ -279,6 +282,89 @@ router.patch(
 			});
 	}
 );
+
+
+router.post("/forgot", (req, res) => {
+	var email = req.body.email;
+	User.findOne({ email: email }, (err, userData) => {
+	  if (!err && userData != null) {
+		userData.passResetKey = shortid.generate();
+		userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
+		userData.save().then((x) => {
+		  if (!err) {
+			// let transporter = nodemailer.createTransport({
+			//   service: "gmail",
+			//   port: 465,
+			//   auth: {
+			//     user: process.env.sendgridEmail,
+			//     pass: "",
+			//   },
+			// });
+			const msg = {
+			  to: email,
+			  from: process.env.sendgridEmail,
+			  subject: "Kaloory: Password Reset Request",
+			  text: " ",
+			  html: `
+			 
+			  `,
+			};
+  
+			sgMail
+			  .send(msg)
+			  .then((result) => {
+				res.status(200).json({
+				  message: "Password reset key sent to email",
+				});
+			  })
+			  .catch((err) => {
+				console.log(err.toString());
+				res.status(500).json({
+				  // message: "something went wrong1",
+				  error: err,
+				});
+			  });
+  
+		  }
+		});
+	  } else {
+		res.status(400).send("email is incorrect");
+	  }
+	});
+  });
+  
+  router.post("/resetpass", async (req, res) => {
+	let resetKey = req.body.resetKey;
+	let newPassword = req.body.newPassword;
+  
+	await User.findOne({ passResetKey: resetKey }, (err, userData) => {
+	  if (!err && userData != null) {
+		let now = new Date().getTime();
+		let keyExpiration = userData.passKeyExpires;
+		if (keyExpiration > now) {
+		  userData.password = bcrypt.hash(newPassword, 10);
+		  userData.passResetKey = null; // remove passResetKey from user's records
+		  userData.passKeyExpires = null;
+		  userData.save().then((x) => {
+			// save the new changes
+			if (x) {
+			  res.status(200).send("Password reset successful");
+			} else {
+			  res.status(500).send("error resetting your password");
+			}
+		  });
+		} else {
+		  res
+			.status(400)
+			.send(
+			  "Sorry, pass key has expired. Please initiate the request for a new one"
+			);
+		}
+	  } else {
+		res.status(400).send("invalid pass key!");
+	  }
+	});
+  });
 
 
 

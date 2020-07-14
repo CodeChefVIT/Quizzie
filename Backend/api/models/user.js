@@ -41,6 +41,8 @@ const userSchema = mongoose.Schema({
 	token: {
 		type: String,
 	},
+	passResetKey: { type: String },
+	passKeyExpires: { type: Number },
 });
 
 module.exports = mongoose.model("User", userSchema);
