@@ -371,11 +371,13 @@ function QuizzesSection(props) {
 										title={quiz.quizName}
 										subtitle={`By: ${quiz.adminId.name}`}
 										actionIcon={
-											<Tooltip title="Enroll">
-												<IconButton aria-label={`enroll ${quiz.quizName}`} onClick={() => handleEnrollButton(quiz)}>
-													<Check className="enroll-icon" />
-												</IconButton>
-											</Tooltip>
+											userType === "user"?
+												(<Tooltip title="Enroll">
+													<IconButton aria-label={`enroll ${quiz.quizName}`} onClick={() => handleEnrollButton(quiz)}>
+														<Check className="enroll-icon" />
+													</IconButton>
+												</Tooltip>)
+											: null
 										}
 									/>
 								</GridListTile>

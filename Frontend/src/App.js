@@ -5,10 +5,8 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Welcome from './pages/Welcome';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import Admin from './pages/Admin';
 import Quiz from './pages/Quiz';
 import ErrorPage from './pages/ErrorPage';
-import AdminRegister from './pages/AdminRegister';
 import InfoContext from './context/InfoContext';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
@@ -27,11 +25,6 @@ function App() {
 	const [isLoggedIn, setLoggedIn] = useState(false);
 	const [name, changeName] = useState(null);
 	const [isAdmin, setAdmin] = useState(false);
-	const [testGiven, setTestGiven] = useState(false);
-	const [blocked, setBlocked] = useState(false);
-	const [ccStarted, setCCStarted] = useState(false);
-
-	const [closed, setClosed] = useState(false);
 
 	let info = {
 		name: name,
@@ -42,13 +35,6 @@ function App() {
 		setLoggedIn: setLoggedIn,
 		isAdmin: isAdmin,
 		setAdmin: setAdmin,
-		testGiven: testGiven,
-		setTestGiven: setTestGiven,
-		blocked: blocked,
-		setBlocked: setBlocked,
-		ccStarted: ccStarted,
-		setCCStarted: setCCStarted,
-		closed: closed,
 	}
 
 	return (
@@ -70,13 +56,7 @@ function App() {
 					<Route exact path="/studentResponse" component={StudentResponses} />
 					<Route exact path="/updateQuizDetails/:id" component={UpdateQuizDetails} />
 					<Route exact path="/register/:type" component={RegisterPage} />
-					<Route exact path="/admin">
-						<Admin />
-					</Route>
 					<Route exact path="/quiz/" component={Quiz} />
-					<Route exact path="/adminRegister">
-						<AdminRegister />
-					</Route>
 					<Route exact path="/login/:type" component={LoginPage} />
 					<Route exact path="/forgotPassword">
 						<ForgotPassword />
