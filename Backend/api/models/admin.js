@@ -13,7 +13,7 @@ const adminSchema = mongoose.Schema({
 		unique: true,
 		match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
 	},
-	password: { type: String, required: true },
+	password: { type: String},
 
 	//personal details
 
@@ -26,6 +26,9 @@ const adminSchema = mongoose.Schema({
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
 		},
 	],
+
+	passResetKey: { type: String },
+	passKeyExpires: { type: Number },
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

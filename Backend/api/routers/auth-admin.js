@@ -30,7 +30,7 @@ router.use(
 
 router.get(
 	"/google",
-	passport.authenticate("google", {
+	passport.authenticate("googleAdmin", {
 		scope: ["profile", "email"],
 	})
 );
@@ -38,7 +38,7 @@ router.get(
 ///Callback route for google to redirect
 router.get(
 	"/google/redirect",
-	passport.authenticate("google"),
+	passport.authenticate("googleAdmin"),
 	(req, res, next) => {
 		console.log("req.user:", req.user);
 		req.session.context = req.user;

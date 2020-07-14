@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./Backend/api/config/passport-setup");
+const passportSetupAdmin = require("./Backend/api/config/passport-setup-admin");
 const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
@@ -16,6 +17,7 @@ const adminRoutes = require("./Backend/api/routers/admin");
 const quizRoutes = require("./Backend/api/routers/quiz");
 const questionRoutes = require("./Backend/api/routers/questions");
 const authRoutes = require("./Backend/api/routers/auth");
+const authAdminRoutes = require("./Backend/api/routers/auth-admin");
 const generalRoutes = require("./Backend/api/routers/general");
 const ownerRoutes = require("./Backend/api/routers/owner");
 
@@ -31,7 +33,7 @@ mongoose
 	.catch((err) => console.log(err));
 
 mongoose.Promise = global.Promise;
-console.log(Date.now())
+console.log(Date.now());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -68,6 +70,7 @@ app.use("/question", questionRoutes);
 app.use("/auth", authRoutes);
 app.use("/general", generalRoutes);
 app.use("/owner", ownerRoutes);
+app.use("/auth/admin", authAdminRoutes);
 
 //route not found
 app.use((req, res, next) => {
