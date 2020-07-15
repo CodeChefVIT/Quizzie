@@ -29,6 +29,7 @@ function ForgotPassword(props) {
 
 	const [tokenSent, setTokenSent] = useState(false);
 	const [invalidKey, setInvalidKey] = useState(false);
+	const [expiredKey, setExpiredKey] = useState(false);
 	const [notSent, setNotSent] = useState(false);
 	const [passwordConfirmed, setPasswordConfirmed] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -142,9 +143,11 @@ function ForgotPassword(props) {
 					setPasswordConfirmed(true);
 				});
 			} catch(error) {
+				setReset(false);
 				if(error.response.status === 400){
 					setInvalidKey(true);
-					setReset(false);
+				} else if(error.response.status === 401) {
+					setExpiredKey(true);
 				}
 				console.log(error);
 			}
@@ -207,6 +210,7 @@ function ForgotPassword(props) {
 						<Typography variant="h3" color="primary" className="login-head forgot-head">Forgot Password</Typography><br />
 						{reset ? <Alert severity="info">Reset code sent!</Alert> : null }
 						{invalidKey? <Alert severity="error" color="warning">Invalid reset Code</Alert>: null}
+						{expiredKey? <Alert severity="error" color="warning">Reset Code expired!</Alert>: null}
 						{passwordConfirmed? <Alert severity="success" color="warning">Password reset successful!</Alert>: null}
 						<form className="form">
 							<TextInput
