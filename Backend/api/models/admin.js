@@ -29,6 +29,9 @@ const adminSchema = mongoose.Schema({
 
 	passResetKey: { type: String },
 	passKeyExpires: { type: Number },
+	verificationKey: { type: String },
+	verificationKeyExpires: { type: Number },
+	isEmailVerified: { type: Boolean ,default:false},
 });
 
 module.exports = mongoose.model("Admin", adminSchema);

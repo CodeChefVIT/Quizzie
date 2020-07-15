@@ -19,6 +19,83 @@ const router = express.Router();
 
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
+router.post("/sendVerificationEmail", async (req, res, next) => {
+	const { email } = req.body;
+	const user = await Admin.findOne({ email });
+	if (user) {
+		user.verificationKey = shortid.generate();
+		user.verificationKeyExpires = new Date().getTime() + 20 * 60 * 1000;
+		await user
+			.save()
+			.then((result) => {
+				const msg = {
+					to: email,
+					from: process.env.sendgridEmail,
+					subject: "Quzzie: Email Verification",
+					text: " ",
+					html: `
+      `,
+				};
+
+				sgMail
+					.send(msg)
+					.then((result) => {
+						res.status(200).json({
+							message: "Password reset key sent to email",
+						});
+					})
+					.catch((err) => {
+						console.log(err.toString());
+						res.status(500).json({
+							// message: "something went wrong1",
+							error: err,
+						});
+					});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Some error occurred",
+					error: err.toString(),
+				});
+			});
+	}
+});
+///Verify email
+router.patch("/verifyEmail", async (req, res, next) => {
+  const { verificationKey } = req.body;
+  console.log(verificationKey)
+	await Admin.findOne({ verificationKey })
+		.then(async (user) => {
+			if (Date.now() > user.verificationKeyExpires) {
+				res.status(401).json({
+					message: "Pass key expired",
+				});
+			}
+			user.verificationKeyExpires = null;
+			user.verificationKey = null;
+			user.isEmailVerified = true;
+			await user
+				.save()
+				.then((result1) => {
+					res.status(200).json({
+						message: "User verified",
+					});
+				})
+				.catch((err) => {
+					res.status(400).json({
+						message: "Some error",
+						error: err.toString(),
+					});
+				});
+		})
+		.catch((err) => {
+			res.status(409).json({
+        message: "Invalid verification key",
+        error:err.toString()
+			});
+		});
+});
+
 //signup
 router.post("/signup", async (req, res, next) => {
 	Admin.find({ email: req.body.email })
@@ -44,16 +121,49 @@ router.post("/signup", async (req, res, next) => {
 						});
 						user
 							.save()
-							.then((result) => {
-								res.status(201).json({
-									message: "user created",
-									userDetails: {
-										userId: result._id,
-										email: result.email,
-										name: result.name,
-										mobileNumber: result.mobileNumber,
-									},
-								});
+							.then(async (result) => {
+								result.verificationKey = shortid.generate();
+								result.verificationKeyExpires = new Date().getTime() + 20 * 60 * 1000;
+								await result
+									.save()
+									.then((result1) => {
+										const msg = {
+											to: result.email,
+											from: process.env.sendgridEmail,
+											subject: "Quizzie: Email Verification",
+											text: " ",
+											html: `
+                `,
+										};
+
+										sgMail
+											.send(msg)
+											.then((result) => {
+												console.log("Email sent");
+											})
+											.catch((err) => {
+												console.log(err.toString());
+												res.status(500).json({
+													// message: "something went wrong1",
+													error: err,
+												});
+											});
+										res.status(201).json({
+											message: "user created",
+											userDetails: {
+												userId: result._id,
+												email: result.email,
+												name: result.name,
+												mobileNumber: result.mobileNumber,
+											},
+										});
+									})
+									.catch((err) => {
+										res.status(400).json({
+											message: "Error",
+											error: err.toString(),
+										});
+									});
 							})
 							.catch((err) => {
 								res.status(500).json({
@@ -94,7 +204,8 @@ router.post("/login", async (req, res, next) => {
 							userId: user[0]._id,
 							email: user[0].email,
 							name: user[0].name,
-							mobileNumber: user[0].mobileNumber,
+              mobileNumber: user[0].mobileNumber,
+              isEmailVerified:user[0].isEmailVerified
 						},
 						process.env.jwtSecret,
 						{
@@ -108,7 +219,8 @@ router.post("/login", async (req, res, next) => {
 							userId: user[0]._id,
 							name: user[0].name,
 							email: user[0].email,
-							mobileNumber: user[0].mobileNumber,
+              mobileNumber: user[0].mobileNumber,
+              isEmailVerified:user[0].isEmailVerified
 						},
 						token: token,
 					});
@@ -266,22 +378,26 @@ router.patch(
 	}
 );
 
-
-router.get('/allStudentsQuizResult/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
-	const users = await Quiz.findById(req.params.quizId).populate({
-        path: "usersParticipated",
-        populate: { path: "userId", select: { name: 1 } },
-      })
-	if(!users){
-		res.status(400).json({
-			message:"Some error occurred"
-		})
+router.get(
+	"/allStudentsQuizResult/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		const users = await Quiz.findById(req.params.quizId).populate({
+			path: "usersParticipated",
+			populate: { path: "userId", select: { name: 1 } },
+		});
+		if (!users) {
+			res.status(400).json({
+				message: "Some error occurred",
+			});
+		}
+		const userResults = users.usersParticipated;
+		res.status(200).json({
+			userResults,
+		});
 	}
-	const userResults = users.usersParticipated
-	res.status(200).json({
-		userResults
-	})
-})
+);
 
 ////Delete profile
 // router.delete(
@@ -348,30 +464,28 @@ router.get('/allStudentsQuizResult/:quizId',checkAuth,checkAuthAdmin,async(req,r
 // 	}
 // );
 
-
-
 router.post("/forgot", (req, res) => {
 	var email = req.body.email;
 	Admin.findOne({ email: email }, (err, userData) => {
-	  if (!err && userData != null) {
-		userData.passResetKey = shortid.generate();
-		userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
-		userData.save().then((x) => {
-		  if (!err) {
-			// let transporter = nodemailer.createTransport({
-			//   service: "gmail",
-			//   port: 465,
-			//   auth: {
-			//     user: process.env.sendgridEmail,
-			//     pass: "",
-			//   },
-			// });
-			const msg = {
-			  to: email,
-			  from: process.env.sendgridEmail,
-			  subject: "Kaloory: Password Reset Request",
-			  text: " ",
-			  html: `
+		if (!err && userData != null) {
+			userData.passResetKey = shortid.generate();
+			userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
+			userData.save().then((x) => {
+				if (!err) {
+					// let transporter = nodemailer.createTransport({
+					//   service: "gmail",
+					//   port: 465,
+					//   auth: {
+					//     user: process.env.sendgridEmail,
+					//     pass: "",
+					//   },
+					// });
+					const msg = {
+						to: email,
+						from: process.env.sendgridEmail,
+						subject: "Kaloory: Password Reset Request",
+						text: " ",
+						html: `
 			  <!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 
@@ -543,7 +657,7 @@ router.post("/forgot", (req, res) => {
         </tr>
       </tbody>
     </table>
-    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#4390B1;background-color:#4390B1;width:100%;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#2980b9;background-color:#2980b9;width:100%;">
       <tbody>
         <tr>
           <td>
@@ -575,7 +689,7 @@ router.post("/forgot", (req, res) => {
                               <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                 <tbody>
                                   <tr>
-                                    <td style="width:149px;"> <img alt="CodeChef VIT" height="auto" src="../../Frontend/public/favicon.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="149" /> </td>
+                                    <td style="width:149px;"> <img alt="CodeChef VIT" height="auto" src="https://codechefvit.com/assets/images/logos/ccwhite.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="149" /> </td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -678,7 +792,8 @@ router.post("/forgot", (req, res) => {
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;"> <span style="font-weight: bold; font-size: 21px; color: #45474e">
             
           </span><br /><br /><br /> <span style="font-weight: bold; font-size: 15px; color: grey">Hey ${userData.name}!<br/><br/>
-							We heard that you los your Quizzie password, sorry about that. You can use the following code in order to generate a new password
+							Lost your password? Don't worry, it happens to the best of us :)
+Use the code below and start enjoying Quizzie again by generating a new password.
 							<br>
 							<br>
 							<br>
@@ -745,7 +860,7 @@ router.post("/forgot", (req, res) => {
         </tr>
       </table>
       <![endif]-->
-    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#4390B1;background-color:#4390B1;width:100%;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#2980b9;background-color:#2980b9;width:100%;">
       <tbody>
         <tr>
           <td>
@@ -899,62 +1014,63 @@ router.post("/forgot", (req, res) => {
 </html>
 			 
 			  `,
-			};
-  
-			sgMail
-			  .send(msg)
-			  .then((result) => {
-				res.status(200).json({
-				  message: "Password reset key sent to email",
-				});
-			  })
-			  .catch((err) => {
-				console.log(err.toString());
-				res.status(500).json({
-				  // message: "something went wrong1",
-				  error: err,
-				});
-			  });
-  
-		  }
-		});
-	  } else {
-		res.status(400).send("email is incorrect");
-	  }
+					};
+
+					sgMail
+						.send(msg)
+						.then((result) => {
+							res.status(200).json({
+								message: "Password reset key sent to email",
+							});
+						})
+						.catch((err) => {
+							console.log(err.toString());
+							res.status(500).json({
+								// message: "something went wrong1",
+								error: err,
+							});
+						});
+				}
+			});
+		} else {
+			res.status(400).send("email is incorrect");
+		}
 	});
-  });
-  
-  router.post("/resetpass", async (req, res) => {
+});
+
+router.post("/resetpass", async (req, res) => {
 	let resetKey = req.body.resetKey;
 	let newPassword = req.body.newPassword;
-	
-	await Admin.findOne({passResetKey:resetKey})
-	.then(async(result)=>{
-		if(Date.now()>result.passKeyExpires){
-			res.status(401).json({
-				message:"Pass key expired"
-			})
-		}
-		result.password = bcrypt.hashSync(newPassword,10)
-		result.passResetKey = null
-		result.passKeyExpires = null
-		await result.save().then((result1)=>{
-			res.status(200).json({
-				message:"Password updated"
-			})
-		}).catch((err)=>{
-			res.status(400).json({
-				message:"Unusual error",
-				err:err.toString()
-			})
 
+	await Admin.findOne({ passResetKey: resetKey })
+		.then(async (result) => {
+			if (Date.now() > result.passKeyExpires) {
+				res.status(401).json({
+					message: "Pass key expired",
+				});
+			}
+			result.password = bcrypt.hashSync(newPassword, 10);
+			result.passResetKey = null;
+			result.passKeyExpires = null;
+			await result
+				.save()
+				.then((result1) => {
+					res.status(200).json({
+						message: "Password updated",
+					});
+				})
+				.catch((err) => {
+					res.status(403).json({
+						message: "Unusual error",
+						err: err.toString(),
+					});
+				});
 		})
-	})
-	.catch((err)=>{
-		res.status(400).json({
-			message:"Invalid pass key"
-		})
-	})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Invalid pass key",
+			});
+		});
 });
 
 module.exports = router;
