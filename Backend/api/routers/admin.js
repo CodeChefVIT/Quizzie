@@ -543,7 +543,7 @@ router.post("/forgot", (req, res) => {
         </tr>
       </tbody>
     </table>
-    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#4390B1;background-color:#4390B1;width:100%;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#2980b9;background-color:#2980b9;width:100%;">
       <tbody>
         <tr>
           <td>
@@ -575,7 +575,7 @@ router.post("/forgot", (req, res) => {
                               <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-collapse:collapse;border-spacing:0px;">
                                 <tbody>
                                   <tr>
-                                    <td style="width:149px;"> <img alt="CodeChef VIT" height="auto" src="../../Frontend/public/favicon.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="149" /> </td>
+                                    <td style="width:149px;"> <img alt="CodeChef VIT" height="auto" src="https://codechefvit.com/assets/images/logos/ccwhite.png" style="border:0;display:block;outline:none;text-decoration:none;height:auto;width:100%;" width="149" /> </td>
                                   </tr>
                                 </tbody>
                               </table>
@@ -678,7 +678,8 @@ router.post("/forgot", (req, res) => {
                       <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;"> <span style="font-weight: bold; font-size: 21px; color: #45474e">
             
           </span><br /><br /><br /> <span style="font-weight: bold; font-size: 15px; color: grey">Hey ${userData.name}!<br/><br/>
-							We heard that you los your Quizzie password, sorry about that. You can use the following code in order to generate a new password
+							Lost your password? Don't worry, it happens to the best of us :)
+Use the code below and start enjoying Quizzie again by generating a new password.
 							<br>
 							<br>
 							<br>
@@ -745,7 +746,7 @@ router.post("/forgot", (req, res) => {
         </tr>
       </table>
       <![endif]-->
-    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#4390B1;background-color:#4390B1;width:100%;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#2980b9;background-color:#2980b9;width:100%;">
       <tbody>
         <tr>
           <td>
