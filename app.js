@@ -8,6 +8,11 @@ const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 
+const rateLimit = require("express-rate-limit");
+
+ 
+
+
 ////routers
 
 const app = express();
@@ -46,6 +51,18 @@ app.use(bodyParser.json());
 // initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+
+/////Rate Limiter
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 150 // limit each IP to 100 requests per windowMs
+  });
+   
+  //  apply to all requests
+  app.use(limiter);
+
+
 
 // Allow CORS
 app.use((req, res, next) => {
