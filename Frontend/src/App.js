@@ -58,9 +58,7 @@ function App() {
 					<Route exact path="/register/:type" component={RegisterPage} />
 					<Route exact path="/quiz/" component={Quiz} />
 					<Route exact path="/login/:type" component={LoginPage} />
-					<Route exact path="/forgotPassword">
-						<ForgotPassword />
-					</Route>
+					<Route exact path="/forgotPassword/:type" component={ForgotPassword} />
 					<Route path='*'>
 						<ErrorPage />
 					</Route>

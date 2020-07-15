@@ -6,8 +6,11 @@ import './ForgotPassword.css';
 import axios from "axios";
 import Loading from "./Loading";
 import { Alert } from "@material-ui/lab";
+import { Redirect } from "react-router";
 
-function ForgotPassword() {
+function ForgotPassword(props) {
+	const [userType] = useState(props.match.params.type);
+
 	const [email, changeEmail] = useState("");
 	const [emailError, setEmailError] = useState("");
 	const [emailChanged, setEmailChanged] = useState(false);
@@ -29,6 +32,7 @@ function ForgotPassword() {
 	const [notSent, setNotSent] = useState(false);
 	const [passwordConfirmed, setPasswordConfirmed] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [redirect, setRedirect] = useState(false);
 
 	const handleEmailChange = (event) => {
 		setEmailChanged(true);
@@ -81,18 +85,23 @@ function ForgotPassword() {
 
 		if(!errors && emailError.length === 0) {
 			setLoading(true);
-			let url = `https://scholastic-quiz-app.herokuapp.com/forgot`;
+			let url = null;
+			if(userType === "organizer") {
+				url = `https://quizzie-api.herokuapp.com/admin/forgot`;
+			} else if(userType === "user") {
+				url = `https://quizzie-api.herokuapp.com/user/forgot`;
+			}
 
 			let data = {
 				email: email,
 			}
-			let response = null;
 
 			try {
-				await axios.post(url, data).then(res => response = res);
-				setTokenSent(true);
+				await axios.post(url, data).then(res => {
+					setTokenSent(true);
+				})
 			} catch(error) {
-				if(error.response.status === 500){
+				if(error.response.status === 400){
 					setNotSent(true);
 				}
 				console.log(error);
@@ -113,7 +122,13 @@ function ForgotPassword() {
 
 		if(!errors) {
 			setLoading(true);
-			let url = `https://scholastic-quiz-app.herokuapp.com/resetpass`;
+			let url = null;
+
+			if(userType === "organizer") {
+				url = `https://quizzie-api.herokuapp.com/admin/resetpass`;
+			} else if(userType === "user") {
+				url = `https://quizzie-api.herokuapp.com/user/resetpass`;
+			}
 
 			let data = {
 				resetKey: resetCode,
@@ -122,8 +137,10 @@ function ForgotPassword() {
 
 			let response = null;
 			try {
-				await axios.post(url, data).then(res => response = res);
-				setPasswordConfirmed(true);
+				await axios.post(url, data).then(res => {
+					setReset(false);
+					setPasswordConfirmed(true);
+				});
 			} catch(error) {
 				if(error.response.status === 400){
 					setInvalidKey(true);
@@ -142,6 +159,10 @@ function ForgotPassword() {
 	}
 
 	useEffect(() => {
+		if(props.match.params.type !== "user" && props.match.params.type !== "organizer") {
+			setRedirect(true);
+			return;
+		}
 		if(email.length === 0) setEmailError(mailErrorText);
 		else setEmailError("");
 
@@ -154,6 +175,7 @@ function ForgotPassword() {
 
 
 	if(loading) return <Loading />
+	else if(redirect) return <Redirect to="/" />
 	else if(!tokenSent) {
 		return (
 				<Container className="login-page">
