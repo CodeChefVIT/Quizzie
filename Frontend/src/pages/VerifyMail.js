@@ -19,6 +19,8 @@ function VerifyMail(props) {
 	const [redirect, setRedirect] = useState(false);
 	const [redirectMain, setRedirectMain] = useState(false);
 
+	const [error, setError] = useState(false);
+
 	const handleCodeChange = (event) => {
 		setCode(event.target.value);
 	}
@@ -48,14 +50,17 @@ function VerifyMail(props) {
 
 			try {
 				await axios.patch(url, data).then(res => {
-					console.log(res);
+					setLoading(false);
 					setRedirect(true);
 				})
 			} catch(error) {
+				setLoading(false);
+				if(error.response.status === 500) {
+					setCodeError(true);
+				}
 				console.log(error);
 			}
 		}
-		setLoading(false);
 	}
 
 	useEffect(() => {
@@ -84,7 +89,8 @@ function VerifyMail(props) {
 				<Container className="login-page">
 					<div className="login-form">
 						<Typography variant="h3" color="primary" className="login-head forgot-head">Verify E-mail</Typography><br />
-						<Alert severity="error" color="warning">A verification email was sent to {email}</Alert>
+						{!error? <Alert severity="info" color="info">A verification email was sent to {email}</Alert>: null}
+						{error? <Alert severity="error" color="error">Verification mail could not be sent. Please try again...</Alert> : null}
 						<form className="form">
 							<TextInput
 								error={codeChanged? (codeError.length === 0? false: true): false}
