@@ -70,7 +70,8 @@ passport.use('googleAdmin',new GoogleStrategy({
 				_id: new mongoose.Types.ObjectId(),
 				googleId: profile.id,
 				name: profile.displayName,
-				email:profile.emails[0].value
+				email:profile.emails[0].value,
+				isEmailVerified:true
 			}).save().then((newUser) => {
 				const token = jwt.sign(
 					{
@@ -79,6 +80,7 @@ passport.use('googleAdmin',new GoogleStrategy({
 						email: newUser.email,
 						name: newUser.name,
 						mobileNumber: newUser.mobileNumber,
+						isEmailVerified:newUser.isEmailVerified,
 					},
 					process.env.jwtSecret,
 					{
