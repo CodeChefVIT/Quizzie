@@ -20,6 +20,7 @@ import OwnerQuizDetails from './pages/OwnerQuizDetails';
 import ResultPage from './pages/ResultPage';
 import StudentResponses from './pages/StudentResponses';
 import VerifyMail from './pages/VerifyMail';
+import QuizStats from './pages/QuizStats';
 
 function App() {
 	const [authToken, setAuthToken] = useState(null);
@@ -54,6 +55,7 @@ function App() {
 						<CreateQuiz />
 					</Route>
 					<Route exact path="/editQuiz/:id" component={EditQuiz} />
+					<Route exact path="/quizStats" component={QuizStats} />
 					<Route exact path="/studentResponse" component={StudentResponses} />
 					<Route exact path="/updateQuizDetails/:id" component={UpdateQuizDetails} />
 					<Route exact path="/register/:type" component={RegisterPage} />

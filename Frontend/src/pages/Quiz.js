@@ -47,7 +47,6 @@ function Quiz(props) {
 			"timeTaken": Date.now()-startTime
 		}
 		
-		console.log(data);
 		try {
 			await axios.post(url, data, {
 				headers: {

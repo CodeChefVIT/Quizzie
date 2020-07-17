@@ -5,7 +5,7 @@ import {
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
 	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
 } from "@material-ui/core";
-import { Create, ExpandMore, Adjust, Delete } from "@material-ui/icons";
+import { Create, ExpandMore, Adjust, Delete, BarChart } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
@@ -418,6 +418,13 @@ function EditQuiz(props) {
 					</div>
 					<Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
 					<div className="quiz-students-list">
+						<div className="add-question-bar">
+							<Button className="add-question-btn stats-btn" component={Link}
+								to={{pathname: "/quizStats", state: {responses: responses}}}	
+							>
+								<BarChart />View Stats
+							</Button>
+						</div>
 						{responses.length === 0? <p style={{ textAlign: 'center' }}>No responses yet!</p>
 						: 
 						<List aria-label="responses list">
