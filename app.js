@@ -10,9 +10,6 @@ const cookieSession = require("cookie-session");
 
 const rateLimit = require("express-rate-limit");
 
- 
-
-
 ////routers
 
 const app = express();
@@ -38,7 +35,6 @@ mongoose
 	.catch((err) => console.log(err));
 
 mongoose.Promise = global.Promise;
-console.log(Date.now());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -52,17 +48,14 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-
 /////Rate Limiter
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 150 // limit each IP to 100 requests per windowMs
-  });
-   
-  //  apply to all requests
-  app.use(limiter);
+	max: 150, // limit each IP to 100 requests per windowMs
+});
 
-
+//  apply to all requests
+app.use(limiter);
 
 // Allow CORS
 app.use((req, res, next) => {

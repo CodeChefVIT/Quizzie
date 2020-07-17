@@ -40,7 +40,6 @@ router.get(
 	"/google/redirect",
 	passport.authenticate("googleAdmin"),
 	(req, res, next) => {
-		console.log("req.user:", req.user);
 		req.session.context = req.user;
 		const x = req.user;
 		var token = encodeURIComponent(req.user.token);
@@ -53,7 +52,6 @@ router.get(
 );
 
 router.get("/auth", async (req, res) => {
-	console.log("auth", req.session.context);
 	res.send(req.session.context);
 });
 
