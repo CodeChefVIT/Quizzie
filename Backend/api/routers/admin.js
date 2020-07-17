@@ -20,7 +20,7 @@ const router = express.Router();
 
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
-router.post("/sendVerificationEmail", async (req, res, next) => {
+router.post("/resendVerificationEmail", async (req, res, next) => {
 	const { email } = req.body;
 	const user = await Admin.findOne({ email });
 	if (user) {
@@ -188,7 +188,12 @@ router.post("/login", async (req, res, next) => {
 				return res.status(401).json({
 					message: "Auth failed: Email not found probably",
 				});
-			}
+      }
+      if(user[0].isEmailVerified===false){
+        res.status(409).json({
+          message:"Please verify your email"
+        })
+      }
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
 				if (err) {
 					return res.status(401).json({

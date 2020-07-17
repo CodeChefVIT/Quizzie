@@ -20,7 +20,7 @@ const router = express.Router();
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
 ///Send Verification email
-router.post("/sendVerificationEmail", async (req, res, next) => {
+router.post("/resendVerificationEmail", async (req, res, next) => {
 	const { email } = req.body;
 	const user = await User.findOne({ email });
 	if (user) {
@@ -192,7 +192,12 @@ router.post("/login", async (req, res, next) => {
 				return res.status(401).json({
 					message: "Auth failed: Email not found probably",
 				});
-			}
+      }
+      if(user[0].isEmailVerified===false){
+        res.status(409).json({
+          message:"Please verify your email"
+        })
+      }
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
 				if (err) {
 					return res.status(401).json({
@@ -402,14 +407,6 @@ router.post("/forgot", (req, res) => {
 			userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
 			userData.save().then((x) => {
 				if (!err) {
-					// let transporter = nodemailer.createTransport({
-					//   service: "gmail",
-					//   port: 465,
-					//   auth: {
-					//     user: process.env.sendgridEmail,
-					//     pass: "",
-					//   },
-					// });
 					const msg = {
 						to: email,
 						from: process.env.sendgridEmail,
