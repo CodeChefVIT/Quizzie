@@ -42,8 +42,6 @@ function EditQuiz(props) {
 	const [deleteQuestionModal, setDeleteQuestionModal] = useState(false);
 
 	const [responses, setResponses] = useState([]);
-	const [currResponse, setCurrResponse] = useState(null);
-	const [responseRedir, setResponseRedir] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -114,11 +112,6 @@ function EditQuiz(props) {
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
-	}
-
-	const studentResonse = (response) => {
-		setCurrResponse(response);
-		setResponseRedir(true);
 	}
 
 	const handleDeleteQuestion = async () => {
@@ -355,16 +348,7 @@ function EditQuiz(props) {
 		return (
 			<Redirect to="/dashboard" />
 		)
-	} else if(responseRedir) {
-		return (
-			<Redirect to={{
-				pathname: "/studentResponse",
-				state: {
-					response: currResponse
-				}
-			}} />
-		)
-	}
+	} 
 	else {
 		return (
 			<Container className="edit-quiz-page">
@@ -438,7 +422,7 @@ function EditQuiz(props) {
 						: 
 						<List aria-label="responses list">
 							{responses.map((response) => (
-								<ListItem button key={response._id} onClick={() => studentResonse(response)} >
+								<ListItem button key={response._id} component={Link} to={{pathname: `/studentResponse`, state: {response: response}}} >
 									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
 								</ListItem>
 							))}
