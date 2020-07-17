@@ -13,7 +13,6 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
     Admin.findById(id).then((user) => {
-		console.log(user)
         done(null, user);
     }).catch((err)=>{
 		console.log(err)
@@ -30,9 +29,6 @@ passport.use('googleAdmin',new GoogleStrategy({
 	callbackURL: '/auth/admin/google/redirect'
 },async(accessToken,refreshToken,profile,done)=>{
 	// check if user already exists in our own db
-
-	console.log('accessToken',accessToken),
-	console.log('profile',profile)
 	Admin.findOne({googleId: profile.id}).then((currentUser) => {
 		if(currentUser){
 			// already have this user
@@ -49,14 +45,11 @@ passport.use('googleAdmin',new GoogleStrategy({
 					expiresIn: "1d",
 				}
 			);
-			// console.log(token)
-			// console.log('user logged in',profile)
 
 
 			Admin.findById(currentUser._id).then((result7)=>{
 				result7.token = token
 				result7.save().then((user)=>{
-					console.log("Logged in",user)
 					done(null,user)
 				}).catch((err)=>{
 					console.log(err)
@@ -87,11 +80,9 @@ passport.use('googleAdmin',new GoogleStrategy({
 						expiresIn: "1d",
 					}
 				);
-				// console.log(token)
 				Admin.findById(newUser._id).then((result7)=>{
 					result7.token = token
 					result7.save().then((user)=>{
-						console.log("user created",user)
 						done(null,user)
 					}).catch((err)=>{
 						console.log(err)

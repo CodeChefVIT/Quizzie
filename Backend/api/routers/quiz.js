@@ -95,7 +95,6 @@ router.post(
 					)
 						.then(async (result1) => {
 							const date = new Date(Number(result.scheduledFor));
-							console.log(date.toLocaleString());
 							res.status(201).json({
 								message: "created",
 								result,
@@ -563,11 +562,6 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	var score = 0;
 	Quiz.findById(req.body.quizId)
 		.then(async (result9) => {
-			console.log(Date.now());
-			console.log(
-				Number(result9.scheduledFor) +
-					Number(Number(result9.quizDuration) * 60 * 1000)
-			);
 			if (
 				Date.now() >=
 				Number(result9.scheduledFor) +
