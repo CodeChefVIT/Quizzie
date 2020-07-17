@@ -224,7 +224,12 @@ function RegisterPage(props) {
 
 	if (redirect === true) {
 		let to = (type === "user" ? "user" : (type === "organizer"? "organizer": "owner"));
-		return <Redirect to={`/login/${to}`} />
+		return <Redirect to={{
+			pathname: `/verify/${to}`,
+			state: {
+				email: email
+			}
+		}} />
 	} else if (redirectMain) {
 		return <Redirect to="/" />
 	}

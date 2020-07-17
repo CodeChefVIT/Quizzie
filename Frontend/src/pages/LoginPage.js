@@ -159,16 +159,16 @@ function LoginPage(props) {
 				<div className="login-form">
 					<Typography variant="h3" color="primary" className="login-head">{type === "user" ? "Login Now" : (type === "organizer" ? "Organizer Login" : "Owner Login")}</Typography><br />
 					{didLogin === false ? <Alert severity="error">{errorText}</Alert> : null}
-					{type === "user"? 
-						<a href="https://quizzie-api.herokuapp.com/auth/google" className="google-link">
+					{type !== "owner"?
+						<a href={type === "user"? "https://quizzie-api.herokuapp.com/auth/google": "https://quizzie-api.herokuapp.com/auth/admin/google"} className="google-link">
 							<div className="google-btn">
 								<div className="google-icon-wrapper">
 									<img className="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
 								</div>
-								<p className="btn-text"><b>Sign in with google</b></p>
+								<p className="btn-text"><b>Sign in with Google</b></p>
 							</div>
 						</a>
-					:null}
+					: null}
 					<form className="form">
 						<TextInput
 							error={emailChanged ? (emailError.length === 0 ? false : true) : false}
@@ -208,7 +208,9 @@ function LoginPage(props) {
 							}}></TextInput>
 					</form>
 					<div className="forgot-section">
-						<Link to="/forgotPassword" className="link forgot-pass">Forgot your password?</Link>
+						{type === "owner"? null: 
+							<Link to={`/forgotPassword/${type}`} className="link forgot-pass">Forgot your password?</Link>
+						}
 					</div>
 					<Button className="login-btn" onClick={handleSubmit}>Login</Button>
 					<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
