@@ -43,7 +43,8 @@ function Quiz(props) {
 
 		let data = {
 			"quizId": quizId,
-			"questions": allChosenAns
+			"questions": allChosenAns,
+			"timeTaken": Date.now()-startTime
 		}
 		
 		try {
