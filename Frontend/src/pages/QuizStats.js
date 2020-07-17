@@ -1,16 +1,17 @@
 /* Copy of Results.js */
 import React, { useState } from "react";
 import "./ResultPage.css";
-import { Container, Typography } from "@material-ui/core";
+import { Container, Typography, Grid } from "@material-ui/core";
 import Loading from "./Loading";
 import { Redirect } from "react-router";
-import {Pie} from "react-chartjs-2";
+import {Pie, Bar} from "react-chartjs-2";
 
 function QuizStats(props) {
 	const [loading, setLoading] = useState(true);
 
 	let state = null;
 	const [marksPieData, setMarksPieData] = useState({labels: [], data: [], colors: []});
+	const [highLowGraph, setHighLowData] = useState({highest: -1, lowest: -1, average: -1})
 	
 	const [redirect, setRedirect] = useState(false);
 
@@ -24,7 +25,14 @@ function QuizStats(props) {
 	const setup = () => {
 		let obj = {};
 
+		let highest = -1;
+		let lowest = Infinity;
+		let sum = 0;
+
 		state.map((response) => {
+			highest = Math.max(highest, response.marks);
+			lowest = Math.min(lowest, response.marks);
+			sum += response.marks;
 			if(obj[response.marks] === undefined) {
 				obj[response.marks] = 1;
 			} else {
@@ -40,7 +48,13 @@ function QuizStats(props) {
 			setMarksPieData(newData);
 		})
 
-		console.log(marksPieData);
+		let average = sum/state.length;
+		let newBarData = highLowGraph;
+		newBarData["highest"] = highest;
+		newBarData["average"] = average;
+		newBarData["lowest"] = lowest;
+		setHighLowData(newBarData);
+		
 		setLoading(false);
 	}
 	
@@ -69,17 +83,44 @@ function QuizStats(props) {
 				<Typography variant="p">Quiz</Typography>
 			</div> */}
 			<div className="charts-container">
-				<Pie data={{
-					datasets: [{data: marksPieData["data"], backgroundColor: marksPieData["colors"]}], 
-					labels: marksPieData["labels"]
-				}} width={300} height={300} options={{
-					maintainAspectRatio: false, 
-					responsive: true, 
-					title: {
-						display: true,
-						text: "Marks Obtained",
-						fontSize: 16
-					}}}/>
+				<div className="pie-chart" style={{marginBottom: '3%'}}>
+					<Pie data={{
+						datasets: [{data: marksPieData["data"], backgroundColor: marksPieData["colors"]}], 
+						labels: marksPieData["labels"]
+					}} 
+					width={300} height={300} 
+					options={{
+						maintainAspectRatio: false, 
+						responsive: true, 
+						title: {
+							display: true,
+							text: "Marks Obtained",
+							fontSize: 16
+						}}}/>
+				</div>
+				<Grid container spacing={0}>
+					<Grid item xs={12} sm={6}>
+						<Bar width={300} height={300}
+							data={{
+								datasets: [{
+									data: [highLowGraph["highest"], highLowGraph["average"], highLowGraph["lowest"]],
+									backgroundColor: ["green", "yellow", "red"],
+									barThickness: 70
+								}],
+								labels: ["Highest", "Average", "Lowest"]
+							}}
+							options={{
+								legend: {display: false},
+								maintainAspectRatio: false,
+								title: {
+									display: true,
+									text: "Highest/Average/Lowest",
+									fontSize: 16
+								},
+								scales: { yAxes: [{ticks: {beginAtZero: true}}]}
+							}} />
+					</Grid>
+				</Grid>
 			</div>
 		</Container>
 	)
