@@ -4,14 +4,15 @@ import "./ResultPage.css";
 import { Container, Typography, Grid } from "@material-ui/core";
 import Loading from "./Loading";
 import { Redirect } from "react-router";
-import {Pie, Bar} from "react-chartjs-2";
+import {Pie, Bar, Line} from "react-chartjs-2";
 
 function QuizStats(props) {
 	const [loading, setLoading] = useState(true);
 
 	let state = null;
 	const [marksPieData, setMarksPieData] = useState({labels: [], data: [], colors: []});
-	const [highLowGraph, setHighLowData] = useState({highest: -1, lowest: -1, average: -1})
+	const [highLowGraph, setHighLowData] = useState({highest: -1, lowest: -1, average: -1});
+	const [lineGraphData, setLineData] = useState({labels: [], data: []});
 	
 	const [redirect, setRedirect] = useState(false);
 
@@ -24,6 +25,7 @@ function QuizStats(props) {
 
 	const setup = () => {
 		let obj = {};
+		let obj2 = {labels: [], data: []};
 
 		let highest = -1;
 		let lowest = Infinity;
@@ -38,6 +40,11 @@ function QuizStats(props) {
 			} else {
 				obj[response.marks]++;
 			}
+			
+			let time = response.timeTaken/(1000*60);
+
+			obj2["labels"].push(response.userId.name);
+			obj2["data"].push(time);
 		})
 
 		Object.keys(obj).map((mark) => {
@@ -54,7 +61,8 @@ function QuizStats(props) {
 		newBarData["average"] = average;
 		newBarData["lowest"] = lowest;
 		setHighLowData(newBarData);
-		
+		setLineData(obj2);
+
 		setLoading(false);
 	}
 	
@@ -66,6 +74,7 @@ function QuizStats(props) {
 		}
 
 		state = props.location.state.responses;
+		console.log(state);
 		setup();
 	}, [])
 
@@ -118,6 +127,27 @@ function QuizStats(props) {
 									fontSize: 16
 								},
 								scales: { yAxes: [{ticks: {beginAtZero: true}}]}
+							}} />
+					</Grid>
+					<Grid item xs={12} sm={6}>
+						<Line width={300} height={300}
+							data={{
+								datasets: [{
+									data: lineGraphData["data"],
+									backgroundColor: "rgba(255, 0, 255, 0.3)",
+									borderColor: "rgb(255, 0, 255)"
+								}],
+								labels: lineGraphData["labels"]
+							}}
+
+							options={{
+								maintainAspectRatio: false,
+								title: {
+									display: true,
+									text: "Time taken (in minutes)",
+									fontSize: 16
+								},
+								legend: {display: false}
 							}} />
 					</Grid>
 				</Grid>
