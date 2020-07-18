@@ -1,10 +1,10 @@
 /* Copy of Results.js */
 import React, { useState } from "react";
 import "./ResultPage.css";
-import { Container, Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItemIcon, ListItemText, ListItem } from "@material-ui/core";
+import { Container, Typography, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List, ListItemIcon, ListItemText, ListItem, IconButton } from "@material-ui/core";
 import axios from "axios";
 import Loading from "./Loading";
-import { Adjust, ExpandMore, Check, Close, Warning } from "@material-ui/icons";
+import { Adjust, ExpandMore, Check, Close, Warning, ArrowBackIos, ArrowBack } from "@material-ui/icons";
 import { Redirect } from "react-router";
 
 function StudentResponses(props) {
