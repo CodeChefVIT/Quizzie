@@ -91,7 +91,7 @@ function QuizStats(props) {
 			{/* <div className="quiz-stats-div">
 				<Typography variant="p">Quiz</Typography>
 			</div> */}
-			<div className="charts-container">
+			<div className="charts-container" style={{paddingBottom: '3%'}}>
 				<div className="pie-chart" style={{marginBottom: '3%'}}>
 					<Pie data={{
 						datasets: [{data: marksPieData["data"], backgroundColor: marksPieData["colors"]}], 

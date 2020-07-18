@@ -28,6 +28,8 @@ function LoginPage(props) {
 	const [ownerRedirect, setOwnerRedirect] = useState(false);
 	const [loginRedirect, setLoginRedirect] = useState(false);
 
+	const [notVerified, setNotVerified] = useState(false);
+
 	const type = props.match.params.type;
 	const type1 = type === "user" ? "user" : "organizer";
 
@@ -126,16 +128,11 @@ function LoginPage(props) {
 				}
 			} catch (error) {
 				console.log(error);
-				if (error.response.status === 404) {
-					setErrorText("Account doesn't exist.. Join the rebellion now!")
-					changeEmail("")
-					changePassword("")
+				 if(error.response.status === 409) {
+					setNotVerified(true);
+				} else {
+					setDidLogin(false);
 				}
-				else if (error.response.status === 400) {
-					setErrorText("Incorrect Password")
-					changePassword("")
-				}
-				setDidLogin(false);
 			}
 		}
 		setLoading(false);
@@ -159,6 +156,7 @@ function LoginPage(props) {
 				<div className="login-form">
 					<Typography variant="h3" color="primary" className="login-head">{type === "user" ? "Login Now" : (type === "organizer" ? "Organizer Login" : "Owner Login")}</Typography><br />
 					{didLogin === false ? <Alert severity="error">{errorText}</Alert> : null}
+					{notVerified? <Alert severity="error">Your email is not verified. <Link>Click here to verify...</Link></Alert> : null}
 					{type !== "owner"?
 						<a href={type === "user"? "https://quizzie-api.herokuapp.com/auth/google": "https://quizzie-api.herokuapp.com/auth/admin/google"} className="google-link">
 							<div className="google-btn">
