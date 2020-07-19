@@ -190,7 +190,7 @@ router.post("/login", async (req, res, next) => {
 				});
 			}
 			if (user[0].isEmailVerified === false) {
-				res.status(409).json({
+				return res.status(409).json({
 					message: "Please verify your email",
 				});
 			}
