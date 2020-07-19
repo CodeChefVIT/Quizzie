@@ -261,10 +261,6 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
-router.get("/hey", (req, res, next) => {
-	res.send("he;llo");
-});
-
 ////Update admin profile
 router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 	const id = req.user.userId;
