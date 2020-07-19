@@ -40,7 +40,7 @@ passport.use(new GoogleStrategy({
 					email: currentUser.email,
 					name: currentUser.name,
 					mobileNumber: currentUser.mobileNumber,
-					isEmailVerified:newUser.isEmailVerified
+					isEmailVerified:currentUser.isEmailVerified
 				},
 				process.env.jwtSecret,
 				{
