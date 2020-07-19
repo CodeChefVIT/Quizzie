@@ -13,7 +13,7 @@ const User = require("../models/user");
 const querystring = require("querystring");
 const cookieParser = require("cookie-parser");
 
-const session = require("express-session");
+
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
@@ -24,9 +24,7 @@ const user = require("../models/user");
 const router = express.Router();
 
 router.use(cookieParser());
-router.use(
-	session({ secret: "mySecret", resave: false, saveUninitialized: false })
-);
+
 
 router.get(
 	"/google",
@@ -39,8 +37,7 @@ router.get(
 router.get(
 	"/google/redirect",
 	passport.authenticate("google"),
-	(req, res, next) => {
-		req.session.context = req.user;
+	(req, res, next) =>{
 		const x = req.user;
 		var token = encodeURIComponent(req.user.token);
 		var name = encodeURIComponent(req.user.name);
@@ -51,8 +48,6 @@ router.get(
 	}
 );
 
-router.get("/auth", async (req, res) => {
-	res.send(req.session.context);
-});
+
 
 module.exports = router;
