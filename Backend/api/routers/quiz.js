@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
-const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
@@ -25,17 +24,6 @@ const client = redis.createClient(REDIS_PORT);
 const router = express.Router();
 
 router.use(cookieParser());
-router.use(
-	session({
-		secret: "mySecret",
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			maxAge: 60 * 60 * 1000,
-			expires: 40 * 60 * 1000,
-		},
-	})
-);
 
 ////Create and Innitialise the quiz
 router.post(
@@ -388,7 +376,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									// var clientId = questions+req.user.userId
 									client.setex(req.user.userId, 3600, JSON.stringify(result));
 									var quizId = req.body.quizId;
-									req.session.questions = result;
 									await User.updateOne(
 										{ _id: req.user.userId },
 										{ $push: { quizzesStarted: { quizId } } }
@@ -469,7 +456,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 								// var clientId = questions+req.user.userId
 								client.setex(req.user.userId, 3600, JSON.stringify(result));
 								var quizId = req.body.quizId;
-								req.session.questions = result;
 								await User.updateOne(
 									{ _id: req.user.userId },
 									{ $push: { quizzesStarted: { quizId } } }
@@ -557,7 +543,7 @@ router.patch("/finish", checkAuth, async (req, res) => {
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
-	const timeTaken = req.body.timeTaken
+	const timeTaken = req.body.timeTaken;
 	var responses = [];
 	var score = 0;
 	Quiz.findById(req.body.quizId)
@@ -606,14 +592,19 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			}
 			User.updateOne(
 				{ _id: req.user.userId },
-				{ $push: { quizzesGiven: { quizId, marks: score, responses,timeTaken } } }
+				{ $push: { quizzesGiven: { quizId, marks: score, responses, timeTaken } } }
 			)
 				.then(async (result) => {
 					await Quiz.updateOne(
 						{ _id: req.body.quizId },
 						{
 							$push: {
-								usersParticipated: { userId: req.user.userId, marks: score, responses,timeTaken },
+								usersParticipated: {
+									userId: req.user.userId,
+									marks: score,
+									responses,
+									timeTaken,
+								},
 							},
 						}
 					)
@@ -623,7 +614,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 								quizId,
 								marks: score,
 								responses,
-								timeTaken
+								timeTaken,
 							});
 						})
 						.catch((err) => {

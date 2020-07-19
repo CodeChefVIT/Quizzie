@@ -16,14 +16,10 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 
-const session = require("express-session");
 
 const router = express.Router();
 
 router.use(cookieParser());
-router.use(
-	session({ secret: "mySecret", resave: false, saveUninitialized: false })
-);
 
 router.delete("/:questionId", async (req, res, next) => {
 	await Question.deleteOne({ _id: req.params.questionId })

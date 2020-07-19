@@ -10,7 +10,7 @@ const sgMail = require("@sendgrid/mail");
 const Admin = require("../models/admin");
 const Quiz = require("../models/quiz");
 const User = require("../models/user");
-const emailTemplates = require('../../emails/email')
+const emailTemplates = require("../../emails/email");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
@@ -62,7 +62,7 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 });
 ///Verify email
 router.patch("/verifyEmail", async (req, res, next) => {
-  const { verificationKey } = req.body;
+	const { verificationKey } = req.body;
 	await Admin.findOne({ verificationKey })
 		.then(async (user) => {
 			if (Date.now() > user.verificationKeyExpires) {
@@ -89,8 +89,8 @@ router.patch("/verifyEmail", async (req, res, next) => {
 		})
 		.catch((err) => {
 			res.status(409).json({
-        message: "Invalid verification key",
-        error:err.toString()
+				message: "Invalid verification key",
+				error: err.toString(),
 			});
 		});
 });
@@ -116,8 +116,8 @@ router.post("/signup", async (req, res, next) => {
 							email: req.body.email,
 							password: hash,
 							name: req.body.name,
-              mobileNumber: req.body.mobileNumber,
-              isEmailVerified:false,
+							mobileNumber: req.body.mobileNumber,
+							isEmailVerified: false,
 						});
 						user
 							.save()
@@ -188,12 +188,12 @@ router.post("/login", async (req, res, next) => {
 				return res.status(401).json({
 					message: "Auth failed: Email not found probably",
 				});
-      }
-      if(user[0].isEmailVerified===false){
-        res.status(409).json({
-          message:"Please verify your email"
-        })
-      }
+			}
+			if (user[0].isEmailVerified === false) {
+				return res.status(409).json({
+					message: "Please verify your email",
+				});
+			}
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
 				if (err) {
 					return res.status(401).json({
@@ -207,8 +207,7 @@ router.post("/login", async (req, res, next) => {
 							userId: user[0]._id,
 							email: user[0].email,
 							name: user[0].name,
-              mobileNumber: user[0].mobileNumber,
-              isEmailVerified:user[0].isEmailVerified
+							mobileNumber: user[0].mobileNumber,
 						},
 						process.env.jwtSecret,
 						{
@@ -222,8 +221,7 @@ router.post("/login", async (req, res, next) => {
 							userId: user[0]._id,
 							name: user[0].name,
 							email: user[0].email,
-              mobileNumber: user[0].mobileNumber,
-              isEmailVerified:user[0].isEmailVerified
+							mobileNumber: user[0].mobileNumber,
 						},
 						token: token,
 					});
@@ -259,10 +257,6 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 				message: "Error",
 			});
 		});
-});
-
-router.get("/hey", (req, res, next) => {
-	res.send("he;llo");
 });
 
 ////Update admin profile
@@ -362,8 +356,8 @@ router.patch(
 								})
 								.catch((err) => {
 									res.status(400).json({
-                    message: "error",
-                    error:err.toString()
+										message: "error",
+										error: err.toString(),
 									});
 								});
 						});
@@ -376,7 +370,7 @@ router.patch(
 			})
 			.catch((err) => {
 				res.status(400).json({
-					error:err.toString(),
+					error: err.toString(),
 				});
 			});
 	}
@@ -402,8 +396,6 @@ router.get(
 		});
 	}
 );
-
-
 
 router.post("/forgot", (req, res) => {
 	var email = req.body.email;
