@@ -212,7 +212,6 @@ router.post("/login", async (req, res, next) => {
 							email: user[0].email,
 							name: user[0].name,
 							mobileNumber: user[0].mobileNumber,
-							isEmailVerified: user[0].isEmailVerified,
 						},
 						process.env.jwtSecret,
 						{
@@ -228,7 +227,6 @@ router.post("/login", async (req, res, next) => {
 							name: user[0].name,
 							email: user[0].email,
 							mobileNumber: user[0].mobileNumber,
-							isEmailVerified: user[0].isEmailVerified,
 						},
 						token: token,
 					});
