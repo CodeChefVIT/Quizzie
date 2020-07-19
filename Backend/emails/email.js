@@ -1,5 +1,5 @@
 const emails = {
-    FORGOT_PASSWORD : async(userData)=>{
+    FORGOT_PASSWORD : (userData)=>{
         return `<!doctype html>
         <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
         
@@ -528,3 +528,5 @@ const emails = {
         </html>`
     }
 }
+
+module.exports = emails

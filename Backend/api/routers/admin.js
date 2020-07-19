@@ -402,15 +402,18 @@ router.post("/forgot", (req, res) => {
 	Admin.findOne({ email: email }, (err, userData) => {
 		if (!err && userData != null) {
 			userData.passResetKey = shortid.generate();
+
 			userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
 			userData.save().then((x) => {
+				const html = emailTemplates.FORGOT_PASSWORD(x)
+				console.log(html)
 				if (!err) {
 					const msg = {
 						to: email,
 						from: process.env.sendgridEmail,
-						subject: "Kaloory: Password Reset Request",
+						subject: "Quizzie: Password Reset Request",
 						text: " ",
-						html: emailTemplates.FORGOT_PASSWORD(x),
+						html: html
 					};
 
 					sgMail
