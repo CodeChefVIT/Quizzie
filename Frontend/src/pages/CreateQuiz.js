@@ -18,6 +18,8 @@ function CreateQuiz() {
 
 	const [loading, setLoading] = useState(false);
 	const [redirect, setRedirect] = useState(false);
+	const [redirectEdit, setRedirectEdit] = useState(false);
+	const [quizId, setQuizId] = useState("");
 
 	const [error, setError] = useState(false);
 
@@ -55,8 +57,9 @@ function CreateQuiz() {
 					"auth-token": token,
 				}
 			}).then(res => {
+				setQuizId(res.data.result._id);
 				setLoading(false);
-				setRedirect(true);
+				setRedirectEdit(true);
 			})
 		} catch(error) {
 			console.log(error);
@@ -81,6 +84,8 @@ function CreateQuiz() {
 		return (
 			<Redirect to="/dashboard" />
 		)
+	} else if(redirectEdit) {
+		return <Redirect to={`/editQuiz/${quizId}`} />
 	}
 	else {
 		return (
