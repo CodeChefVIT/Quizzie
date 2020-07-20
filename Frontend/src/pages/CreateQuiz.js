@@ -8,6 +8,7 @@ import axios from "axios";
 import { Redirect } from "react-router";
 import Loading from "../pages/Loading";
 import { Alert } from "@material-ui/lab";
+import { AccessAlarm } from "@material-ui/icons";
 
 function CreateQuiz() {
 	const [quizName, setQuizName] = useState("");
@@ -117,6 +118,7 @@ function CreateQuiz() {
 										label="Select Quiz Start Time"
 										value={quizDate}
 										onChange={handleDateChange}
+										keyboardIcon={<AccessAlarm />}
 									/>
 								</Grid>
 							</Grid>
