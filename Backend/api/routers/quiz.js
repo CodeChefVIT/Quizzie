@@ -345,7 +345,25 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.exec()
 				.then(async (result) => {
 					if (result0.quizStatus == 0) {
-						if (Date.now() >= result0.scheduledFor) {
+						if (
+							Date.now() >=
+							result0.scheduledFor + result0.quizDuration * 60 * 1000
+						) {
+							await Quiz.updateOne(
+								{ _id: req.body.quizId },
+								{ $set: { quizStatus: 2 } }
+							)
+								.then((result) => {
+									res.status(402).json({
+										message: "Quiz time elapsed",
+									});
+								})
+								.catch((err) => {
+									res.status(400).json({
+										message: err.toString(),
+									});
+								});
+						} else if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
 								.then(async (result2) => {
 									for (let i = result.length - 1; i > 0; i--) {
@@ -422,6 +440,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									});
 								});
 						}
+
 						return res.status(401).json({
 							message: "Quiz hasn't started yet",
 						});
@@ -553,7 +572,10 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 				Number(result9.scheduledFor) +
 					Number(Number(result9.quizDuration) * 60 * 1000)
 			) {
-				await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
+				await Quiz.updateOne(
+					{ _id: req.body.quizId },
+					{ $set: { quizStatus: 2 } }
+				)
 					.then((result) => {
 						console.log("updated quiz status");
 					})
@@ -592,7 +614,11 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			}
 			User.updateOne(
 				{ _id: req.user.userId },
-				{ $push: { quizzesGiven: { quizId, marks: score, responses, timeTaken } } }
+				{
+					$push: {
+						quizzesGiven: { quizId, marks: score, responses, timeTaken },
+					},
+				}
 			)
 				.then(async (result) => {
 					await Quiz.updateOne(
