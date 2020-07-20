@@ -34,8 +34,7 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 					from: process.env.sendgridEmail,
 					subject: "Quzzie: Email Verification",
 					text: " ",
-					html: `
-      `,
+					html: emailTemplates.VERIFY_EMAIL(result)`,
 				};
 
 				sgMail
@@ -134,8 +133,7 @@ router.post("/signup", async (req, res, next) => {
 											from: process.env.sendgridEmail,
 											subject: "Quizzie: Email Verification",
 											text: " ",
-											html: `
-                `,
+											html: emailTemplates.VERIFY_EMAIL(result1),
 										};
 
 										sgMail
