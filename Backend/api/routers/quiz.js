@@ -347,7 +347,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 					if (result0.quizStatus == 0) {
 						if (
 							Date.now() >=
-							result0.scheduledFor + result0.quizDuration * 60 * 1000
+							Number(result0.scheduledFor) + Number( result0.quizDuration * 60 * 1000)
 						) {
 							await Quiz.updateOne(
 								{ _id: req.body.quizId },
