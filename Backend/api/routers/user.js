@@ -34,7 +34,7 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 					from: process.env.sendgridEmail,
 					subject: "Quzzie: Email Verification",
 					text: " ",
-					html: emailTemplates.VERIFY_EMAIL(result)`,
+					html: emailTemplates.VERIFY_EMAIL(result),
 				};
 
 				sgMail
