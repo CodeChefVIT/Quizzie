@@ -45,6 +45,8 @@ function QuizzesSection(props) {
 	const [earlyError, setEarlyError] = useState(false);
 	const [lateError, setLateError] = useState(false);
 	const [givenSnack, setGivenSnack] = useState(false);
+	const [privateWrongCode, setPrivateWrongCode] = useState(false);
+	const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
 
 	const setRefresh = props.refresh;
 
@@ -151,9 +153,15 @@ function QuizzesSection(props) {
 				setSnackBar(true);
 			})
 		} catch (error) {
-			console.log(error);
 			setEnrollSnack(false);
-			setErrorSnack(true);
+			if(error.response.status === 404) {
+				setPrivateWrongCode(true);
+			} else if(error.response.status === 409) {
+				setAlreadyEnrolled(true);
+			}
+			else {
+				setErrorSnack(true);
+			}
 		}
 	}
 
@@ -473,6 +481,12 @@ function QuizzesSection(props) {
 				</Snackbar>
 				<Snackbar open={givenSnack} autoHideDuration={5000} onClose={() => setGivenSnack(false)}>
 					<Alert variant="filled" severity="error" onClose={() => setGivenSnack(false)}>Already given this quiz!</Alert>
+				</Snackbar>
+				<Snackbar open={privateWrongCode} autoHideDuration={5000} onClose={() => setPrivateWrongCode(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setPrivateWrongCode(false)}>This quiz code does not exists!</Alert>
+				</Snackbar>
+				<Snackbar open={alreadyEnrolled} autoHideDuration={5000} onClose={() => setAlreadyEnrolled(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setAlreadyEnrolled(false)}>Already enrolled in this quiz!</Alert>
 				</Snackbar>
 			</div>
 		)

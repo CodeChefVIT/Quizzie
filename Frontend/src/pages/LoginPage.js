@@ -130,9 +130,14 @@ function LoginPage(props) {
 			} catch (error) {
 				console.log(error);
 				 if(error.response.status === 409) {
-					 setVerifyMail(data.email);
+					setVerifyMail(data.email);
 					setNotVerified(true);
-				} else {
+				} else if(error.response.status === 401) {
+					setErrorText("Invalid Credentials...");
+					setDidLogin(false);
+				} 
+				else {
+					setErrorText("Error Logging In! Try again....")
 					setDidLogin(false);
 				}
 			}
@@ -223,7 +228,7 @@ function LoginPage(props) {
 						}
 					</div>
 					<Button className="login-btn" onClick={handleSubmit}>Login</Button>
-					<Link to={`/register/${type1}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
+					<Link to={`/register/${type}`} className="link register-link">Don't have an account? Join the Quizzie now!</Link>
 
 				</div>
 			</Container>

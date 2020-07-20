@@ -72,7 +72,7 @@ function Navbar() {
 				</div>
 			</Dialog>
 			<Dialog open={loginModalOpen} onClose={onCloseHandle} aria-labelledby="form-dialog-title"
-					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
+					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '40%' } }}
 					style={{ width: '100%' }}>
 					<div className="modal-info">
 						<Typography variant="h5" className="type-head">Are you a student or an organizer?</Typography>
