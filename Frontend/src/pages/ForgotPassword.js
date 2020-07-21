@@ -34,6 +34,7 @@ function ForgotPassword(props) {
 	const [passwordConfirmed, setPasswordConfirmed] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [redirect, setRedirect] = useState(false);
+	const [loginRedirect, setLoginRedirect] = useState(false);
 
 	const handleEmailChange = (event) => {
 		setEmailChanged(true);
@@ -176,9 +177,18 @@ function ForgotPassword(props) {
 		else setResetCodeError("");
 	}, [email, password, resetCode]);
 
+	
+	useEffect(() => {
+		if(passwordConfirmed) {
+			setTimeout(() => {
+				setLoginRedirect(true);
+			}, 1500)
+		}
+	}, [passwordConfirmed])
 
 	if(loading) return <Loading />
 	else if(redirect) return <Redirect to="/" />
+	else if(loginRedirect) return <Redirect to={`/login/${userType}`} />
 	else if(!tokenSent) {
 		return (
 				<Container className="login-page">
@@ -211,7 +221,7 @@ function ForgotPassword(props) {
 						{reset ? <Alert severity="info">Reset code sent!</Alert> : null }
 						{invalidKey? <Alert severity="error" color="warning">Invalid reset Code</Alert>: null}
 						{expiredKey? <Alert severity="error" color="warning">Reset Code expired!</Alert>: null}
-						{passwordConfirmed? <Alert severity="success" color="warning">Password reset successful!</Alert>: null}
+						{passwordConfirmed? <Alert severity="success" color="warning">Password reset successful! Redirecting...</Alert>: null}
 						<form className="form">
 							<TextInput
 								error={resetCodeChanged? (resetCodeError.length === 0? false: true): false}

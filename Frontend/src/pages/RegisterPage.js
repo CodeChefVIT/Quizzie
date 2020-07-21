@@ -246,6 +246,16 @@ function RegisterPage(props) {
 					<Typography variant="h3" color="primary" className="login-head signup-text">{type === "user" ? "Join the force!" : (type === "organizer"? "Organizer Sign Up": "Owner Signup")}</Typography><br />
 					{signedUp === true ? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert> : null}
 					{error === true ? <Alert severity="error" color="error">{errorText}</Alert> : null}
+					{type !== "owner"?
+						<a href={type === "user"? "https://quizzie-api.herokuapp.com/auth/google": "https://quizzie-api.herokuapp.com/auth/admin/google"} className="google-link">
+							<div className="google-btn">
+								<div className="google-icon-wrapper">
+									<img className="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />
+								</div>
+								<p className="btn-text"><b>Sign up with Google</b></p>
+							</div>
+						</a>
+					: null}
 					<form className="form">
 						<TextInput
 							error={nameChanged ? (nameError.length === 0 ? false : true) : false}
