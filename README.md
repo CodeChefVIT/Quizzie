@@ -51,8 +51,8 @@ $ npm run dev
 ```
 
 ## Contributors
-- <a href="https://github.com/jugaldb">Jugal Bhatt Name</a>
-- <a href="https://github.com/Sarthakbh321">Sarthak Bhardwaj Name</a>
+- <a href="https://github.com/jugaldb">Jugal Bhatt</a>
+- <a href="https://github.com/Sarthakbh321">Sarthak Bhardwaj</a>
 
 ## License
 
