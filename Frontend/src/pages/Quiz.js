@@ -44,8 +44,10 @@ function Quiz(props) {
 		let data = {
 			"quizId": quizId,
 			"questions": allChosenAns,
-			"timeTaken": Date.now()-startTime
+			"timeStarted": props.location.state.timeStarted,
+			"timeEnded": Date.now()
 		}
+
 		
 		try {
 			await axios.post(url, data, {

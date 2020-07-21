@@ -319,7 +319,8 @@ function QuizzesSection(props) {
 					questions: quizDetails.data,
 					duration: quizDetails.duration,
 					start: quizDetails.scheduledFor,
-					id: enrollQuizId
+					id: enrollQuizId,
+					timeStarted: Date.now()
 				}
 			}} />
 	}
