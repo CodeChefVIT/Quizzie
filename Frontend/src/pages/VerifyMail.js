@@ -25,6 +25,27 @@ function VerifyMail(props) {
 		setCode(event.target.value);
 	}
 
+	const sendCode = async () => {
+		let url = null;
+		if(userType === "organizer") {
+			url = `https://quizzie-api.herokuapp.com/admin/resendverificationemail`;
+		} else {
+			url = `https://quizzie-api.herokuapp.com/user/resendverificationemail`;
+		}
+
+		let data = {
+			email: props.location.state.email
+		}
+
+		try {
+			await axios.post(url, data).then(res => {
+				console.log(res);
+			})
+		} catch(error) {
+			console.log(error);
+		}
+	}
+
 	const handleSubmit = async () => {
 		setCodeChanged(true);
 
@@ -64,6 +85,11 @@ function VerifyMail(props) {
 	}
 
 	useEffect(() => {
+		if(code.length === 0) setCodeError("This cannot be empty!");
+		else setCodeError("");
+	}, [code]);
+
+	useEffect(() => {
 		if(props.match.params.type !== "user" && props.match.params.type !== "organizer") {
 			setRedirectMain(true);
 			return;
@@ -74,11 +100,11 @@ function VerifyMail(props) {
 			return;
 		} else {
 			setEmail(props.location.state.email);
+			if(props.location.state.sendCode) {
+				sendCode();
+			}
 		}
-
-		if(code.length === 0) setCodeError("This cannot be empty!");
-		else setCodeError("");
-	}, [code]);
+	}, []);
 
 
 	if(loading) return <Loading />

@@ -146,3 +146,7 @@
 .bg-red-btn:hover {
 	background-color: rgb(192, 0, 0) !important;
 }
+
+.stats-btn {
+	background-color: blueviolet !important;
+}

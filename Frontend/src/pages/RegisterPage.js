@@ -205,11 +205,16 @@ function RegisterPage(props) {
 					setRedirect(true);
 				}
 			} catch (error) {
-				console.log(error);
+				if(error.response.status === 409) {
+					setErrorText("Account already exists...");
+				} else if(type === "owner" && error.response.status === 400) {
+					setErrorText("Wrong secret code...");
+				}
+				else {
+					setErrorText("There was some error!");
+				}
 				setPasswordChanged(false);
 				changePassword("");
-				setPasswordChanged(false);
-				setErrorText("There was some error!");
 				setError(true);
 			}
 		}
@@ -240,7 +245,7 @@ function RegisterPage(props) {
 				<div className="login-form">
 					<Typography variant="h3" color="primary" className="login-head signup-text">{type === "user" ? "Join the force!" : (type === "organizer"? "Organizer Sign Up": "Owner Signup")}</Typography><br />
 					{signedUp === true ? <Alert severity="success" color="warning">Succesfully Signed Up! Redirecting...</Alert> : null}
-					{error === true ? <Alert severity="warning" color="warning">{errorText}</Alert> : null}
+					{error === true ? <Alert severity="error" color="error">{errorText}</Alert> : null}
 					<form className="form">
 						<TextInput
 							error={nameChanged ? (nameError.length === 0 ? false : true) : false}

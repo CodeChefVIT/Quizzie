@@ -26,6 +26,7 @@ function UpdateProfile(props) {
 
 	const [redirect, setRedirect] = useState(false);
 	const [error, setError] = useState(false);
+	const [errorText, setErrorText] = useState("There was some problem! Please try again...");
 
 	const handleOldPassChange = (event) => {
 		setOldPass(event.target.value);
@@ -98,6 +99,11 @@ function UpdateProfile(props) {
 			})
 		} catch(error) {
 			console.log(error);
+			if(error.response.status === 401) {
+				setErrorText("Old password is wrong!");
+			} else {
+				setErrorText("There was some problem! Please try again...");
+			}
 			setError(true);
 			setLoading(false);
 		}
@@ -122,7 +128,7 @@ function UpdateProfile(props) {
 		<Container className="login-page">
 			<div className="login-form">
 				<Typography variant="h3" color="primary" className="login-head">Update Profile</Typography><br />
-				{error === true? <Alert severity="error">There was some error! Please try again...</Alert>: null}
+				{error === true? <Alert severity="error">{errorText}</Alert>: null}
 				<form className="form">
 					<TextInput
 						error={oldPassError}

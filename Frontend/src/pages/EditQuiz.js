@@ -5,7 +5,7 @@ import {
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
 	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
 } from "@material-ui/core";
-import { Create, ExpandMore, Adjust, Delete } from "@material-ui/icons";
+import { Create, ExpandMore, Adjust, Delete, BarChart } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
@@ -42,8 +42,6 @@ function EditQuiz(props) {
 	const [deleteQuestionModal, setDeleteQuestionModal] = useState(false);
 
 	const [responses, setResponses] = useState([]);
-	const [currResponse, setCurrResponse] = useState(null);
-	const [responseRedir, setResponseRedir] = useState(false);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -114,11 +112,6 @@ function EditQuiz(props) {
 
 	const handleDeleteBtn = () => {
 		setDeleteModal(true);
-	}
-
-	const studentResonse = (response) => {
-		setCurrResponse(response);
-		setResponseRedir(true);
 	}
 
 	const handleDeleteQuestion = async () => {
@@ -355,16 +348,7 @@ function EditQuiz(props) {
 		return (
 			<Redirect to="/dashboard" />
 		)
-	} else if(responseRedir) {
-		return (
-			<Redirect to={{
-				pathname: "/studentResponse",
-				state: {
-					response: currResponse
-				}
-			}} />
-		)
-	}
+	} 
 	else {
 		return (
 			<Container className="edit-quiz-page">
@@ -434,11 +418,18 @@ function EditQuiz(props) {
 					</div>
 					<Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
 					<div className="quiz-students-list">
+						<div className="add-question-bar">
+							<Button className="add-question-btn stats-btn" component={Link}
+								to={{pathname: "/quizStats", state: {responses: responses}}}	
+							>
+								<BarChart />View Stats
+							</Button>
+						</div>
 						{responses.length === 0? <p style={{ textAlign: 'center' }}>No responses yet!</p>
 						: 
 						<List aria-label="responses list">
 							{responses.map((response) => (
-								<ListItem button key={response._id} onClick={() => studentResonse(response)} >
+								<ListItem button key={response._id} component={Link} to={{pathname: `/studentResponse`, state: {response: response}}} >
 									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
 								</ListItem>
 							))}
