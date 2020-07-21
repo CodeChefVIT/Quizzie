@@ -327,7 +327,9 @@ function QuizzesSection(props) {
 		return (
 			<div className="quizzes-section">
 				<div className="quiz-btn-section">
-					<Button className="join-quiz-btn" onClick={onJoinClick}><Check />Join a Quiz</Button>
+					{userType === "user"? 
+						<Button className="join-quiz-btn" onClick={onJoinClick}><Check />Join a Quiz</Button>
+					:null}
 					{userType === "admin" ?
 						<Button className="create-quiz-btn" component={Link} to="/createQuiz">
 							<Add />Create a quiz
