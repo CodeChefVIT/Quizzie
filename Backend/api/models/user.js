@@ -26,7 +26,8 @@ const userSchema = mongoose.Schema({
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
 			marks: { type: Number },
 			responses: [],
-			timeTaken: { type: Number },
+      timeEnded: { type: Number },
+      timeStarted:{type:Number}
 		},
 	],
 	quizzesStarted: [
