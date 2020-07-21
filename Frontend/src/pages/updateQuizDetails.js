@@ -42,8 +42,7 @@ function UpdateQuizDetails(props) {
 
 		let data = [
 			{"propName": "quizName", "value": quizName},
-			{"propName": "quizDate", "value": quizDate.toString()},
-			{"propName": "quizTime", "value": quizDate.toTimeString()},
+			{"propName": "scheduledFor", "value": quizDate.getTime()},
 			{"propName": "quizDuration", "value": duration},
 		]
 
@@ -75,7 +74,7 @@ function UpdateQuizDetails(props) {
 			}).then((res) => {
 				let details = res.data.result;
 				setQuizName(details.quizName);
-				setQuizDate(new Date(details.quizDate));
+				setQuizDate(new Date(Number(details.scheduledFor)));
 				setDuration(details.quizDuration);
 				setType(details.quizType);
 				setLoading(false);

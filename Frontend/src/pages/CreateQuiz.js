@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import './CreateQuiz.css';
-import { Container, Typography, Grid, Slider, InputLabel, Select, MenuItem, Button } from "@material-ui/core";
+import { Container, Typography, Grid, Slider, InputLabel, Select, MenuItem, Button, Snackbar } from "@material-ui/core";
 import TextInput from "../components/TextInput";
 import {KeyboardDatePicker, KeyboardTimePicker, MuiPickersUtilsProvider} from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 import axios from "axios";
 import { Redirect } from "react-router";
 import Loading from "../pages/Loading";
+import { Alert } from "@material-ui/lab";
 
 function CreateQuiz() {
 	const [quizName, setQuizName] = useState("");
@@ -16,6 +17,8 @@ function CreateQuiz() {
 
 	const [loading, setLoading] = useState(false);
 	const [redirect, setRedirect] = useState(false);
+
+	const [error, setError] = useState(false);
 
 	const onQuizNameChange = (event) => {
 		setQuizName(event.target.value);
@@ -145,6 +148,9 @@ function CreateQuiz() {
 								by editing the quiz in YOUR QUIZZES section of the dashboard.</Typography>
 					</div>
 				</div>
+				<Snackbar open={error} autoHideDuration={5000} onClose={() => setError(false)}>
+					<Alert variant="filled" severity="error" onClose={() => setError(false)}>There was a problem. Please try again!</Alert>
+				</Snackbar>
 			</Container>
 		)
 	}
