@@ -10,7 +10,7 @@ function ProfileSection(props) {
 	return (
 		<div className="profile-section">
 			<Typography variant="h6" className="profile-param">Name: <span className="profile-data">{profile.name}</span></Typography>
-			<Typography variant="h6" className="profile-param">E-mail: <span className="profile-data">{profile.email}</span></Typography>
+			<Typography variant="h6" className="profile-param">E-mail: <span className="profile-data resp-text">{profile.email}</span></Typography>
 			<Typography variant="h6" className="profile-param">Phone Number: <span className="profile-data">{profile.mobileNumber}</span></Typography>
 			{userType === "user" ?
 				<div>
