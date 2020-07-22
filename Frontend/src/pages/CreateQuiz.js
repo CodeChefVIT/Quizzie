@@ -8,6 +8,7 @@ import axios from "axios";
 import { Redirect } from "react-router";
 import Loading from "../pages/Loading";
 import { Alert } from "@material-ui/lab";
+import { AccessAlarm } from "@material-ui/icons";
 
 function CreateQuiz() {
 	const [quizName, setQuizName] = useState("");
@@ -17,6 +18,8 @@ function CreateQuiz() {
 
 	const [loading, setLoading] = useState(false);
 	const [redirect, setRedirect] = useState(false);
+	const [redirectEdit, setRedirectEdit] = useState(false);
+	const [quizId, setQuizId] = useState("");
 
 	const [error, setError] = useState(false);
 
@@ -54,8 +57,9 @@ function CreateQuiz() {
 					"auth-token": token,
 				}
 			}).then(res => {
+				setQuizId(res.data.result._id);
 				setLoading(false);
-				setRedirect(true);
+				setRedirectEdit(true);
 			})
 		} catch(error) {
 			console.log(error);
@@ -80,6 +84,8 @@ function CreateQuiz() {
 		return (
 			<Redirect to="/dashboard" />
 		)
+	} else if(redirectEdit) {
+		return <Redirect to={`/editQuiz/${quizId}`} />
 	}
 	else {
 		return (
@@ -117,6 +123,7 @@ function CreateQuiz() {
 										label="Select Quiz Start Time"
 										value={quizDate}
 										onChange={handleDateChange}
+										keyboardIcon={<AccessAlarm />}
 									/>
 								</Grid>
 							</Grid>
