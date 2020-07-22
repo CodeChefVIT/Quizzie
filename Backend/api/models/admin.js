@@ -6,7 +6,8 @@ const User = require("./user");
 const adminSchema = mongoose.Schema({
 	_id: mongoose.Schema.Types.ObjectId,
 	userType: { type: String, default: "Admin" },
-	name: { type: String, required: true },
+  name: { type: String, required: true },
+  googleId:{type:Number},
 	email: {
 		type: String,
 		required: true,
@@ -24,7 +25,10 @@ const adminSchema = mongoose.Schema({
 		{
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
 		},
-	],
+  ],
+  token: {
+		type: String,
+	},
 
 	passResetKey: { type: String },
 	passKeyExpires: { type: Number },

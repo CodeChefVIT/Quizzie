@@ -23,13 +23,15 @@ passport.deserializeUser((id, done) => {
 
 
 
+
 passport.use(new GoogleStrategy({
 	clientID :process.env.clientID,
 	clientSecret: process.env.clientSecret,
 	callbackURL: '/auth/google/redirect'
 },async(accessToken,refreshToken,profile,done)=>{
+  
 	// check if user already exists in our own db
-	User.findOne({email: profile.emails[0].value}).then((currentUser) => {
+	User.findOne({googleId: profile.id}).then((currentUser) => {
 		if(currentUser){
 			// already have this user
 			const token = jwt.sign(
@@ -38,7 +40,7 @@ passport.use(new GoogleStrategy({
 					userId: currentUser._id,
 					email: currentUser.email,
 					name: currentUser.name,
-					mobileNumber: currentUser.mobileNumber,
+					isEmailVerified:currentUser.isEmailVerified
 				},
 				process.env.jwtSecret,
 				{
@@ -66,14 +68,14 @@ passport.use(new GoogleStrategy({
 				email:profile.emails[0].value,
 				isEmailVerified:true
 			}).save().then((newUser) => {
+        console.log(newUser)
 				const token = jwt.sign(
 					{
 						userType: newUser.userType,
 						userId: newUser._id,
 						email: newUser.email,
 						name: newUser.name,
-						mobileNumber: newUser.mobileNumber,
-						isEmailVerified:newUser.isEmailVerified,
+						isEmailVerified:newUser.isEmailVerified
 					},
 					process.env.jwtSecret,
 					{
@@ -83,6 +85,7 @@ passport.use(new GoogleStrategy({
 				User.findById(newUser._id).then((result7)=>{
 					result7.token = token
 					result7.save().then((user)=>{
+            console.log(user)
 						done(null,user)
 					}).catch((err)=>{
 						console.log(err)
@@ -99,4 +102,3 @@ passport.use(new GoogleStrategy({
 
 
 
-  
