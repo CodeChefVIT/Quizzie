@@ -23,7 +23,6 @@ passport.deserializeUser((id, done) => {
 
 
 
-
 passport.use(new GoogleStrategy({
 	clientID :process.env.clientID,
 	clientSecret: process.env.clientSecret,
@@ -40,7 +39,6 @@ passport.use(new GoogleStrategy({
 					email: currentUser.email,
 					name: currentUser.name,
 					mobileNumber: currentUser.mobileNumber,
-					isEmailVerified:currentUser.isEmailVerified
 				},
 				process.env.jwtSecret,
 				{
@@ -75,7 +73,7 @@ passport.use(new GoogleStrategy({
 						email: newUser.email,
 						name: newUser.name,
 						mobileNumber: newUser.mobileNumber,
-						isEmailVerified:newUser.isEmailVerified
+						isEmailVerified:newUser.isEmailVerified,
 					},
 					process.env.jwtSecret,
 					{
@@ -101,3 +99,4 @@ passport.use(new GoogleStrategy({
 
 
 
+  
