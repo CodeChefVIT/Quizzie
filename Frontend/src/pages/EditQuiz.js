@@ -105,7 +105,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setQuizRestartModal(false);
 				getQuizDetails();
 			})
@@ -128,7 +127,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setCloseQuizModal(false);
 				getQuizDetails();
 			})
@@ -340,7 +338,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then((res) => {
-				console.log(res.data.result);
 				setQuizDetails(res.data.result);
 			})
 		} catch (error) {
