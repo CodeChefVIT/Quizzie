@@ -51,8 +51,46 @@ $ npm run dev
 ```
 
 ## Contributors
-- <a href="https://github.com/jugaldb">Jugal Bhatt</a>
-- <a href="https://github.com/Sarthakbh321">Sarthak Bhardwaj</a>
+<table>
+<tr align="center">
+
+
+<td>
+
+Jugal Bhatt
+
+<p align="center">
+<img src = "https://i.ibb.co/ncMD01G/Jugal-Bhatt.jpg" width="150" height="150" alt="Jugal Bhatt (Insert Your Image Link In Src">
+</p>
+<p align="center">
+<a href = "https://github.com/jugaldb"><img src = "http://www.iconninja.com/files/241/825/211/round-collaboration-social-github-code-circle-network-icon.svg" width="36" height = "36"/></a>
+<a href = "https://www.linkedin.com/in/jugal-bhatt14/">
+<img src = "http://www.iconninja.com/files/863/607/751/network-linkedin-social-connection-circular-circle-media-icon.svg" width="36" height="36"/>
+</a>
+</p>
+</td>
+
+
+<td>
+
+Sarthak Bhardwaj
+
+<p align="center">
+<img src = "https://avatars0.githubusercontent.com/u/28906009?s=400&u=5e6a38b0cf9a63bab372c98d2e4ed9029939ca61&v=4" width="150" height="150" alt="Your Name Here (Insert Your Image Link In Src">
+</p>
+<p align="center">
+<a href = "https://github.com/Sarthakbh321"><img src = "http://www.iconninja.com/files/241/825/211/round-collaboration-social-github-code-circle-network-icon.svg" width="36" height = "36"/></a>
+<a href = "https://www.linkedin.com/in/sarthak-bharadwaj-8552b5110/">
+<img src = "http://www.iconninja.com/files/863/607/751/network-linkedin-social-connection-circular-circle-media-icon.svg" width="36" height="36"/>
+</a>
+</p>
+</td>
+
+
+
+
+</tr>
+  </table>
 
 ## License
 
