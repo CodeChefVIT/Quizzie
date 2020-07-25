@@ -31,7 +31,7 @@ passport.use(new GoogleStrategy({
 },async(accessToken,refreshToken,profile,done)=>{
   
 	// check if user already exists in our own db
-	User.findOne({googleId: profile.id}).then((currentUser) => {
+	User.findOne({googleId: profile.id,email:profile.emails[0].value}).then((currentUser) => {
 		if(currentUser){
 			// already have this user
 			const token = jwt.sign(

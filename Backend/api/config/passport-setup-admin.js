@@ -30,7 +30,7 @@ passport.use('googleAdmin',new GoogleStrategy({
 	callbackURL: '/auth/admin/google/redirect'
 },async(accessToken,refreshToken,profile,done)=>{
 	// check if user already exists in our own db
-	Admin.findOne({googleId: profile.id}).then((currentUser) => {
+	Admin.findOne({googleId: profile.id,email:profile.emails[0].value}).then((currentUser) => {
 		if(currentUser){
 			// already have this user
 			const token = jwt.sign(
