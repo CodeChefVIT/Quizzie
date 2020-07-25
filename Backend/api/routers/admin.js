@@ -5,16 +5,94 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
 const nodemailer = require("nodemailer");
+const sgMail = require("@sendgrid/mail");
 //const sharp = require('sharp');
 const Admin = require("../models/admin");
 const Quiz = require("../models/quiz");
 const User = require("../models/user");
+const emailTemplates = require("../../emails/email");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 const checkAuthUser = require("../middleware/checkAuthUser");
 
 const router = express.Router();
+
+sgMail.setApiKey(process.env.SendgridAPIKey);
+
+router.post("/resendVerificationEmail", async (req, res, next) => {
+	const { email } = req.body;
+	const user = await Admin.findOne({ email });
+	if (user) {
+		user.verificationKey = shortid.generate();
+		user.verificationKeyExpires = new Date().getTime() + 20 * 60 * 1000;
+		await user
+			.save()
+			.then((result) => {
+				const msg = {
+					to: email,
+					from: process.env.sendgridEmail,
+					subject: "Quzzie: Email Verification",
+					text: " ",
+					html: emailTemplates.VERIFY_EMAIL(result),
+				};
+
+				sgMail
+					.send(msg)
+					.then((result) => {
+						res.status(200).json({
+							message: "Password reset key sent to email",
+						});
+					})
+					.catch((err) => {
+						res.status(500).json({
+							// message: "something went wrong1",
+							error: err.toString(),
+						});
+					});
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Some error occurred",
+					error: err.toString(),
+				});
+			});
+	}
+});
+///Verify email
+router.patch("/verifyEmail", async (req, res, next) => {
+	const { verificationKey } = req.body;
+	await Admin.findOne({ verificationKey })
+		.then(async (user) => {
+			if (Date.now() > user.verificationKeyExpires) {
+				res.status(401).json({
+					message: "Pass key expired",
+				});
+			}
+			user.verificationKeyExpires = null;
+			user.verificationKey = null;
+			user.isEmailVerified = true;
+			await user
+				.save()
+				.then((result1) => {
+					res.status(200).json({
+						message: "User verified",
+					});
+				})
+				.catch((err) => {
+					res.status(400).json({
+						message: "Some error",
+						error: err.toString(),
+					});
+				});
+		})
+		.catch((err) => {
+			res.status(409).json({
+				message: "Invalid verification key",
+				error: err.toString(),
+			});
+		});
+});
 
 //signup
 router.post("/signup", async (req, res, next) => {
@@ -38,23 +116,55 @@ router.post("/signup", async (req, res, next) => {
 							password: hash,
 							name: req.body.name,
 							mobileNumber: req.body.mobileNumber,
+							isEmailVerified: false,
 						});
 						user
 							.save()
-							.then((result) => {
-								res.status(201).json({
-									message: "user created",
-									userDetails: {
-										userId: result._id,
-										email: result.email,
-										name: result.name,
-										mobileNumber: result.mobileNumber,
-									},
-								});
+							.then(async (result) => {
+								result.verificationKey = shortid.generate();
+								result.verificationKeyExpires = new Date().getTime() + 20 * 60 * 1000;
+								await result
+									.save()
+									.then((result1) => {
+										const msg = {
+											to: result.email,
+											from: process.env.sendgridEmail,
+											subject: "Quizzie: Email Verification",
+											text: " ",
+											html: emailTemplates.VERIFY_EMAIL(result1),
+										};
+
+										sgMail
+											.send(msg)
+											.then((result) => {
+												console.log("Email sent");
+											})
+											.catch((err) => {
+												res.status(500).json({
+													// message: "something went wrong1",
+													error: err.toString(),
+												});
+											});
+										res.status(201).json({
+											message: "user created",
+											userDetails: {
+												userId: result._id,
+												email: result.email,
+												name: result.name,
+												mobileNumber: result.mobileNumber,
+											},
+										});
+									})
+									.catch((err) => {
+										res.status(400).json({
+											message: "Error",
+											error: err.toString(),
+										});
+									});
 							})
 							.catch((err) => {
 								res.status(500).json({
-									error: err,
+									error: err.toString(),
 								});
 							});
 					}
@@ -63,7 +173,7 @@ router.post("/signup", async (req, res, next) => {
 		})
 		.catch((err) => {
 			res.status(500).json({
-				error: err,
+				error: err.toString(),
 			});
 		});
 });
@@ -76,6 +186,11 @@ router.post("/login", async (req, res, next) => {
 			if (user.length < 1) {
 				return res.status(401).json({
 					message: "Auth failed: Email not found probably",
+				});
+			}
+			if (user[0].isEmailVerified === false) {
+				return res.status(409).json({
+					message: "Please verify your email",
 				});
 			}
 			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
@@ -143,10 +258,6 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		});
 });
 
-router.get("/hey", (req, res, next) => {
-	res.send("he;llo");
-});
-
 ////Update admin profile
 router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 	const id = req.user.userId;
@@ -164,7 +275,7 @@ router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 		})
 		.catch((err) => {
 			res.status(500).json({
-				error: err,
+				error: err.toString(),
 			});
 		});
 });
@@ -185,7 +296,7 @@ router.get("/created", checkAuthAdmin, checkAuth, async (req, res, next) => {
 		})
 		.catch((err) => {
 			res.status(400).json({
-				message: err,
+				message: err.toString(),
 			});
 		});
 });
@@ -210,7 +321,7 @@ router.get(
 			})
 			.catch((err) => {
 				res.status(400).json({
-					message: err,
+					message: err.toString(),
 				});
 			});
 	}
@@ -245,6 +356,7 @@ router.patch(
 								.catch((err) => {
 									res.status(400).json({
 										message: "error",
+										error: err.toString(),
 									});
 								});
 						});
@@ -257,89 +369,106 @@ router.patch(
 			})
 			.catch((err) => {
 				res.status(400).json({
-					err,
+					error: err.toString(),
 				});
 			});
 	}
 );
 
-
-router.get('/allStudentsQuizResult/:quizId',checkAuth,checkAuthAdmin,async(req,res,next)=>{
-	const users = await Quiz.findById(req.params.quizId)
-	if(!users){
-		res.status(400).json({
-			message:"Some error occurred"
-		})
+router.get(
+	"/allStudentsQuizResult/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		const users = await Quiz.findById(req.params.quizId).populate({
+			path: "usersParticipated",
+			populate: { path: "userId", select: { name: 1 } },
+		});
+		if (!users) {
+			res.status(400).json({
+				message: "Some error occurred",
+			});
+		}
+		const userResults = users.usersParticipated;
+		res.status(200).json({
+			userResults,
+		});
 	}
-	const userResults = users.usersParticipated
-	res.status(200).json({
-		userResults
-	})
-})
+);
 
-////Delete profile
-// router.delete(
-// 	"/",
-// 	checkAuth,
-// 	checkAuthAdmin,
-// 	async (req, res, next) => {
-// 		await Admin.findById(req.user.userId)
-// 			.exec()
-// 			.then(async(result) => {
-//                 const numQuizzes = result.quizzes.length
-//                 for(i=0;i<numQuizzes;i++){
-// 					const currentQuiz = result.quizzes[i].quizId
-// 					await Quiz.findById(currentQuiz)
-// 					.exec()
-// 					.then(async(result1)=>{
-// 						const numOfUsers = result1.usersEnrolled.length
-// 						for(j=0;j<numOfUsers;j++){
-// 							const currUser = result1.usersEnrolled[j].userId
-// 							await User.updateOne({_id:currUser},
-// 												{ $pull: { quizzesEnrolled: { quizId: currentQuiz } } }
-// 												).then(async(result3)=>{
-// 													await Question.deleteMany({quizId:currentQuiz})
-// 													.then(async(result4)=>{
-// 														await Quiz.deleteOne({_id:currentQuiz}).then(async(result5)=>{
-// 														})
-// 													})
-// 													.catch(async(err)=>{
-// 														await res.status(400).json({
-// 															message:"some error occurred"
-// 														})
-// 													})
-// 												}).catch(async(err)=>{
-// 													await res.status(400).json({
-// 														message:"Unexpected Erro"
-// 													})
-// 												})
-// 						}
-// 					})
-// 					.catch(async(err)=>{
-// 						await res.status(400).json({
-// 							message:'Unexpected Err'
-// 						})
-// 					})
-// 				}
-// 				await Admin.deleteOne({_id:req.user.userId})
-// 				.then(async(result6)=>{
-// 					await res.status(200).json({
-// 						message:'Successfully Deleted'
-// 					})
-// 				})
-// 				.catch(async(err)=>{
-// 					await res.status(400).json({
-// 						message:'Some error'
-// 					})
-// 				})
+router.post("/forgot", (req, res) => {
+	var email = req.body.email;
+	Admin.findOne({ email: email }, (err, userData) => {
+		if (!err && userData != null) {
+			userData.passResetKey = shortid.generate();
 
-//             })
-// 			.catch(async(err)=>{
-// 				await res.status(400).json({
-// 					message:'Unexpected Erroor'
-// 				})
-// 			});
-// 	}
-// );
+			userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
+			userData.save().then((x) => {
+				const html = emailTemplates.FORGOT_PASSWORD(x)
+				console.log(html)
+				if (!err) {
+					const msg = {
+						to: email,
+						from: process.env.sendgridEmail,
+						subject: "Quizzie: Password Reset Request",
+						text: " ",
+						html: html
+					};
+
+					sgMail
+						.send(msg)
+						.then((result) => {
+							res.status(200).json({
+								message: "Password reset key sent to email",
+							});
+						})
+						.catch((err) => {
+							res.status(500).json({
+								// message: "something went wrong1",
+								error: err.toString(),
+							});
+						});
+				}
+			});
+		} else {
+			res.status(400).send("email is incorrect");
+		}
+	});
+});
+
+router.post("/resetpass", async (req, res) => {
+	let resetKey = req.body.resetKey;
+	let newPassword = req.body.newPassword;
+
+	await Admin.findOne({ passResetKey: resetKey })
+		.then(async (result) => {
+			if (Date.now() > result.passKeyExpires) {
+				res.status(401).json({
+					message: "Pass key expired",
+				});
+			}
+			result.password = bcrypt.hashSync(newPassword, 10);
+			result.passResetKey = null;
+			result.passKeyExpires = null;
+			await result
+				.save()
+				.then((result1) => {
+					res.status(200).json({
+						message: "Password updated",
+					});
+				})
+				.catch((err) => {
+					res.status(403).json({
+						message: "Unusual error",
+						err: err.toString(),
+					});
+				});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "Invalid pass key",
+			});
+		});
+});
 
 module.exports = router;

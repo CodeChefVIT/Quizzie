@@ -3,9 +3,12 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const passportSetup = require("./Backend/api/config/passport-setup");
+const passportSetupAdmin = require("./Backend/api/config/passport-setup-admin");
 const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
+
+const rateLimit = require("express-rate-limit");
 
 ////routers
 
@@ -16,6 +19,7 @@ const adminRoutes = require("./Backend/api/routers/admin");
 const quizRoutes = require("./Backend/api/routers/quiz");
 const questionRoutes = require("./Backend/api/routers/questions");
 const authRoutes = require("./Backend/api/routers/auth");
+const authAdminRoutes = require("./Backend/api/routers/auth-admin");
 const generalRoutes = require("./Backend/api/routers/general");
 const ownerRoutes = require("./Backend/api/routers/owner");
 
@@ -31,7 +35,6 @@ mongoose
 	.catch((err) => console.log(err));
 
 mongoose.Promise = global.Promise;
-console.log(Date.now())
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -44,6 +47,15 @@ app.use(bodyParser.json());
 // initialize passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+/////Rate Limiter
+const limiter = rateLimit({
+	windowMs: 15 * 60 * 1000, // 15 minutes
+	max: 150, // limit each IP to 100 requests per windowMs
+});
+
+//  apply to all requests
+app.use(limiter);
 
 // Allow CORS
 app.use((req, res, next) => {
@@ -68,6 +80,7 @@ app.use("/question", questionRoutes);
 app.use("/auth", authRoutes);
 app.use("/general", generalRoutes);
 app.use("/owner", ownerRoutes);
+app.use("/auth/admin", authAdminRoutes);
 
 //route not found
 app.use((req, res, next) => {

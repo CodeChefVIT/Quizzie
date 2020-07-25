@@ -26,6 +26,8 @@ const userSchema = mongoose.Schema({
 			quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
 			marks: { type: Number },
 			responses: [],
+      timeEnded: { type: Number },
+      timeStarted:{type:Number}
 		},
 	],
 	quizzesStarted: [
@@ -41,6 +43,11 @@ const userSchema = mongoose.Schema({
 	token: {
 		type: String,
 	},
+	passResetKey: { type: String },
+	passKeyExpires: { type: Number },
+	verificationKey: { type: String },
+	verificationKeyExpires: { type: Number },
+	isEmailVerified: { type: Boolean ,default:false},
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -2,7 +2,7 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 // const GooglePlusTokenStrategy = require('passport-google-plus-token')
 // const JwtStrategy = require('passport-jwt').Strategy;
-const User = require('../models/user');
+const Admin = require('../models/admin');
 const jwt = require('jsonwebtoken')
 const mongoose = require('mongoose')
 require('dotenv').config()
@@ -12,7 +12,7 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-    User.findById(id).then((user) => {
+    Admin.findById(id).then((user) => {
         done(null, user);
     }).catch((err)=>{
 		console.log(err)
@@ -24,14 +24,13 @@ passport.deserializeUser((id, done) => {
 
 
 
-passport.use(new GoogleStrategy({
-	clientID :process.env.clientID,
-	clientSecret: process.env.clientSecret,
-	callbackURL: '/auth/google/redirect'
+passport.use('googleAdmin',new GoogleStrategy({
+	clientID :process.env.AdminclientID,
+	clientSecret: process.env.AdminclientSecret,
+	callbackURL: '/auth/admin/google/redirect'
 },async(accessToken,refreshToken,profile,done)=>{
-  
 	// check if user already exists in our own db
-	User.findOne({email:profile.emails[0].value}).then((currentUser) => {
+	Admin.findOne({email:profile.emails[0].value}).then((currentUser) => {
 		if(currentUser){
 			// already have this user
 			const token = jwt.sign(
@@ -49,7 +48,7 @@ passport.use(new GoogleStrategy({
 			);
 
 
-			User.findById(currentUser._id).then((result7)=>{
+			Admin.findById(currentUser._id).then((result7)=>{
         result7.token = token
         result7.googleId = profile.id
         result7.isEmailVerified=true
@@ -63,7 +62,7 @@ passport.use(new GoogleStrategy({
 
 		} else {
 			// if not, create user in our db
-			new User({
+			new Admin({
 				_id: new mongoose.Types.ObjectId(),
 				googleId: profile.id,
 				name: profile.displayName,
@@ -84,7 +83,7 @@ passport.use(new GoogleStrategy({
 						expiresIn: "1d",
 					}
 				);
-				User.findById(newUser._id).then((result7)=>{
+				Admin.findById(newUser._id).then((result7)=>{
 					result7.token = token
 					result7.save().then((user)=>{
             console.log(user)

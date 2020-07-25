@@ -13,8 +13,6 @@ const User = require("../models/user");
 const querystring = require("querystring");
 const cookieParser = require("cookie-parser");
 
-
-
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
@@ -25,10 +23,9 @@ const router = express.Router();
 
 router.use(cookieParser());
 
-
 router.get(
 	"/google",
-	passport.authenticate("google", {
+	passport.authenticate("googleAdmin", {
 		scope: ["profile", "email"],
 	})
 );
@@ -36,8 +33,8 @@ router.get(
 ///Callback route for google to redirect
 router.get(
 	"/google/redirect",
-	passport.authenticate("google"),
-	(req, res, next) =>{
+	passport.authenticate("googleAdmin"),
+	(req, res, next) => {
 		const x = req.user;
 		var token = encodeURIComponent(req.user.token);
 		var name = encodeURIComponent(req.user.name);
@@ -47,7 +44,5 @@ router.get(
 		);
 	}
 );
-
-
 
 module.exports = router;

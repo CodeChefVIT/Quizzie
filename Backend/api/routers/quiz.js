@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
-const session = require("express-session");
 const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 //const sharp = require('sharp');
@@ -25,17 +24,6 @@ const client = redis.createClient(REDIS_PORT);
 const router = express.Router();
 
 router.use(cookieParser());
-router.use(
-	session({
-		secret: "mySecret",
-		resave: false,
-		saveUninitialized: false,
-		cookie: {
-			maxAge: 60 * 60 * 1000,
-			expires: 40 * 60 * 1000,
-		},
-	})
-);
 
 ////Create and Innitialise the quiz
 router.post(
@@ -51,7 +39,8 @@ router.post(
 				scheduledFor: req.body.scheduledFor,
 				quizDuration: req.body.quizDuration,
 				quizType: req.body.quizType.toLowerCase(),
-				quizCode: shortid.generate(),
+        quizCode: shortid.generate(),
+        quizRestart:0
 			});
 			quiz
 				.save()
@@ -95,7 +84,6 @@ router.post(
 					)
 						.then(async (result1) => {
 							const date = new Date(Number(result.scheduledFor));
-							console.log(date.toLocaleString());
 							res.status(201).json({
 								message: "created",
 								result,
@@ -119,6 +107,10 @@ router.get("/all", checkAuth, async (req, res, next) => {
 		.select("-__v")
 		.exec()
 		.then(async (result) => {
+			const remover = (result) => {
+				return result.quizStatus <= 1;
+			};
+			result = result.filter(remover);
 			await res.status(200).json({
 				message: "Successfully retrieved",
 				result,
@@ -271,25 +263,30 @@ router.patch(
 	}
 );
 
-router.get("/checkAdmin/:quizId", checkAuth, checkAuthAdmin, async (req, res, next) => {
-	await Quiz.findOne({ _id: req.params.quizId })
-		.then(async (result) => {
-			if (result.adminId == req.user.userId) {
-				return res.status(200).json({
-					message: "This is your quiz",
+router.get(
+	"/checkAdmin/:quizId",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		await Quiz.findOne({ _id: req.params.quizId })
+			.then(async (result) => {
+				if (result.adminId == req.user.userId) {
+					return res.status(200).json({
+						message: "This is your quiz",
+					});
+				} else {
+					return res.status(401).json({
+						message: "This is not your quiz",
+					});
+				}
+			})
+			.catch((err) => {
+				res.status(400).json({
+					message: "Please enter a correct quizId",
 				});
-			} else {
-				return res.status(401).json({
-					message: "This is not your quiz",
-				});
-			}
-		})
-		.catch((err) => {
-			res.status(400).json({
-				message: "Please enter a correct quizId",
 			});
-		});
-});
+	}
+);
 
 router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 	await User.findById(req.user.userId)
@@ -348,9 +345,94 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-					console.log(result);
-					if (result0.quizStatus == 0) {
-						if (Date.now() >= result0.scheduledFor) {
+          if (result0.quizRestart == 1) {
+						await User.findById(req.user.userId)
+							.then(async (result2) => {
+								for (let i = result.length - 1; i > 0; i--) {
+									const j = Math.floor(Math.random() * (i + 1));
+									[result[i], result[j]] = [result[j], result[i]];
+								}
+								var flag = 0;
+								var numQuiz = result2.quizzesStarted.length;
+								var numEnrolled = result2.quizzesEnrolled.length;
+								for (i = 0; i < numEnrolled; i++) {
+									if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+										flag = 1;
+									}
+								}
+
+								for (i = 0; i < numQuiz; i++) {
+									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+										return res.status(405).json({
+											message: "Quiz already started",
+										});
+									}
+								}
+								if (flag === 0) {
+									return res.status(409).json({
+										message: "You are not enrolled in this quiz",
+									});
+								}
+								// var clientId = questions+req.user.userId
+								client.setex(req.user.userId, 3600, JSON.stringify(result));
+								var quizId = req.body.quizId;
+								await User.updateOne(
+									{ _id: req.user.userId },
+									{ $push: { quizzesStarted: { quizId } } }
+								)
+									.exec()
+									.then(async (result1) => {
+										var data = [];
+										for (i = 0; i < result.length; i++) {
+											object = {
+												quizId: result[i].quizId,
+												description: result[i].description,
+												options: result[i].options,
+												questionId: result[i]._id,
+											};
+											data.push(object);
+										}
+										await res.status(200).json({
+											message: "Quiz started for " + req.user.name,
+											data,
+											duration: result0.quizDuration,
+											scheduledFor: result0.scheduledFor,
+										});
+									})
+									.catch(async (err) => {
+										await res.status(400).json({
+											message: "some error occurred",
+											error: err.toString(),
+										});
+									});
+							})
+							.catch(async (err) => {
+								await res.status(400).json({
+									message: "Some error Occurred",
+								});
+							});
+					}
+					else if (result0.quizStatus == 0) {
+						if (
+							Date.now() >=
+							Number(result0.scheduledFor) +
+								Number(result0.quizDuration * 60 * 1000)
+						) {
+							await Quiz.updateOne(
+								{ _id: req.body.quizId },
+								{ $set: { quizStatus: 2 } }
+							)
+								.then((result) => {
+									res.status(402).json({
+										message: "Quiz time elapsed",
+									});
+								})
+								.catch((err) => {
+									res.status(400).json({
+										message: err.toString(),
+									});
+								});
+						} else if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
 								.then(async (result2) => {
 									for (let i = result.length - 1; i > 0; i--) {
@@ -381,7 +463,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									// var clientId = questions+req.user.userId
 									client.setex(req.user.userId, 3600, JSON.stringify(result));
 									var quizId = req.body.quizId;
-									req.session.questions = result;
 									await User.updateOne(
 										{ _id: req.user.userId },
 										{ $push: { quizzesStarted: { quizId } } }
@@ -428,6 +509,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									});
 								});
 						}
+
 						return res.status(401).json({
 							message: "Quiz hasn't started yet",
 						});
@@ -462,7 +544,6 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 								// var clientId = questions+req.user.userId
 								client.setex(req.user.userId, 3600, JSON.stringify(result));
 								var quizId = req.body.quizId;
-								req.session.questions = result;
 								await User.updateOne(
 									{ _id: req.user.userId },
 									{ $push: { quizzesStarted: { quizId } } }
@@ -550,21 +631,21 @@ router.patch("/finish", checkAuth, async (req, res) => {
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
+	const timeEnded = req.body.timeEnded;
+	const timeStarted = req.body.timeStarted;
 	var responses = [];
 	var score = 0;
 	Quiz.findById(req.body.quizId)
 		.then(async (result9) => {
-			console.log(Date.now());
-			console.log(
-				Number(result9.scheduledFor) +
-					Number(Number(result9.quizDuration) * 60 * 1000)
-			);
 			if (
 				Date.now() >=
 				Number(result9.scheduledFor) +
 					Number(Number(result9.quizDuration) * 60 * 1000)
 			) {
-				await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
+				await Quiz.updateOne(
+					{ _id: req.body.quizId },
+					{ $set: { quizStatus: 2 } }
+				)
 					.then((result) => {
 						console.log("updated quiz status");
 					})
@@ -587,7 +668,6 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 			});
 		}
 		dataQues = JSON.parse(data);
-		console.log(dataQues);
 		if (data != null) {
 			for (i = 0; i < dataQues.length; i++) {
 				if (que_data[i].selectedOption == dataQues[i].correctAnswer) {
@@ -598,35 +678,54 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 					selected: que_data[i].selectedOption,
 					quesId: que_data[i].quesId,
 					correctAnswer: dataQues[i].correctAnswer,
-					options:dataQues[i].options
+					options: dataQues[i].options,
 				};
 				responses.push(object);
 			}
 			User.updateOne(
 				{ _id: req.user.userId },
-				{ $push: { quizzesGiven: { quizId, marks: score, responses } } }
+				{
+					$push: {
+						quizzesGiven: {
+							quizId,
+							marks: score,
+							responses,
+							timeEnded,
+							timeStarted,
+						},
+					},
+				}
 			)
 				.then(async (result) => {
 					await Quiz.updateOne(
 						{ _id: req.body.quizId },
 						{
 							$push: {
-								usersParticipated: { userId: req.user.userId, marks: score, responses },
+								usersParticipated: {
+									userId: req.user.userId,
+									marks: score,
+									responses,
+									timeEnded,
+									timeStarted,
+								},
 							},
 						}
-					).then((result7)=>{
-						res.status(200).json({
-							message: "Updated",
-							quizId,
-							marks: score,
-							responses,
-						});
-					}).catch((err)=>{
-						res.status(400).json({
-							message:"Unexpected Error"
+					)
+						.then((result7) => {
+							res.status(200).json({
+								message: "Updated",
+								quizId,
+								marks: score,
+								responses,
+								timeEnded,
+								timeStarted,
+							});
 						})
-					})
-
+						.catch((err) => {
+							res.status(400).json({
+								message: "Unexpected Error",
+							});
+						});
 				})
 				.catch((err) => {
 					res.status(400).json({
@@ -716,6 +815,50 @@ router.patch(
 	}
 );
 
+router.patch(
+	"/restart",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		const quiz = await Quiz.findById(req.body.quizId);
+    quiz.quizStatus = 1;
+    quiz.quizRestart =1
+		await quiz
+			.save()
+			.then((result) => {
+        res.status(200).json({
+          message:"Quiz restarted"
+        })
+      })
+			.catch((err) => {
+        res.status(400).json({
+          message:"error"
+        })
+      });
+	}
+);
 
+router.patch(
+	"/close",
+	checkAuth,
+	checkAuthAdmin,
+	async (req, res, next) => {
+		const quiz = await Quiz.findById(req.body.quizId);
+    quiz.quizStatus = 2;
+    quiz.quizRestart = 0 ;
+		await quiz
+			.save()
+			.then((result) => {
+        res.status(200).json({
+          message:"Quiz restarted"
+        })
+      })
+			.catch((err) => {
+        res.status(400).json({
+          message:"error"
+        })
+      });
+	}
+);
 
 module.exports = router;
