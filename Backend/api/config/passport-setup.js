@@ -52,6 +52,7 @@ passport.use(new GoogleStrategy({
 			User.findById(currentUser._id).then((result7)=>{
         result7.token = token
         result7.googleId = profile.id
+        result7.isEmailVerified=true
 				result7.save().then((user)=>{
 					done(null,user)
 				}).catch((err)=>{
