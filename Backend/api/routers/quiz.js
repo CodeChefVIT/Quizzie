@@ -39,7 +39,8 @@ router.post(
 				scheduledFor: req.body.scheduledFor,
 				quizDuration: req.body.quizDuration,
 				quizType: req.body.quizType.toLowerCase(),
-				quizCode: shortid.generate(),
+        quizCode: shortid.generate(),
+        quizRestart:0
 			});
 			quiz
 				.save()
@@ -344,7 +345,74 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-					if (result0.quizStatus == 0) {
+          if (result0.quizRestart == 1) {
+						await User.findById(req.user.userId)
+							.then(async (result2) => {
+								for (let i = result.length - 1; i > 0; i--) {
+									const j = Math.floor(Math.random() * (i + 1));
+									[result[i], result[j]] = [result[j], result[i]];
+								}
+								var flag = 0;
+								var numQuiz = result2.quizzesStarted.length;
+								var numEnrolled = result2.quizzesEnrolled.length;
+								for (i = 0; i < numEnrolled; i++) {
+									if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+										flag = 1;
+									}
+								}
+
+								for (i = 0; i < numQuiz; i++) {
+									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+										return res.status(405).json({
+											message: "Quiz already started",
+										});
+									}
+								}
+								if (flag === 0) {
+									return res.status(409).json({
+										message: "You are not enrolled in this quiz",
+									});
+								}
+								// var clientId = questions+req.user.userId
+								client.setex(req.user.userId, 3600, JSON.stringify(result));
+								var quizId = req.body.quizId;
+								await User.updateOne(
+									{ _id: req.user.userId },
+									{ $push: { quizzesStarted: { quizId } } }
+								)
+									.exec()
+									.then(async (result1) => {
+										var data = [];
+										for (i = 0; i < result.length; i++) {
+											object = {
+												quizId: result[i].quizId,
+												description: result[i].description,
+												options: result[i].options,
+												questionId: result[i]._id,
+											};
+											data.push(object);
+										}
+										await res.status(200).json({
+											message: "Quiz started for " + req.user.name,
+											data,
+											duration: result0.quizDuration,
+											scheduledFor: result0.scheduledFor,
+										});
+									})
+									.catch(async (err) => {
+										await res.status(400).json({
+											message: "some error occurred",
+											error: err.toString(),
+										});
+									});
+							})
+							.catch(async (err) => {
+								await res.status(400).json({
+									message: "Some error Occurred",
+								});
+							});
+					}
+					else if (result0.quizStatus == 0) {
 						if (
 							Date.now() >=
 							Number(result0.scheduledFor) +
@@ -753,7 +821,8 @@ router.patch(
 	checkAuthAdmin,
 	async (req, res, next) => {
 		const quiz = await Quiz.findById(req.body.quizId);
-		quiz.quizStatus = 1;
+    quiz.quizStatus = 1;
+    quiz.quizRestart =1
 		await quiz
 			.save()
 			.then((result) => {
@@ -775,7 +844,8 @@ router.patch(
 	checkAuthAdmin,
 	async (req, res, next) => {
 		const quiz = await Quiz.findById(req.body.quizId);
-		quiz.quizStatus = 2;
+    quiz.quizStatus = 2;
+    quiz.quizRestart = 0 ;
 		await quiz
 			.save()
 			.then((result) => {
