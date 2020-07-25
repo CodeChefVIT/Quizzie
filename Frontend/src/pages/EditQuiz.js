@@ -476,13 +476,13 @@ function EditQuiz(props) {
 					<Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
 					<div className="quiz-students-list">
 						<div className="add-question-bar">
-							<Button className="add-question-btn stats-btn" component={Link}
+							<Button className="add-question-btn stats-btn" component={responses.length !== 0? Link: Button}
 								to={{pathname: "/quizStats", state: {responses: responses}}}	
 							>
 								<BarChart />View Stats
 							</Button>
 						</div>
-						{responses.length === 0? <p style={{ textAlign: 'center' }}>No responses yet!</p>
+						{responses.length === 0? <p style={{ textAlign: 'center', margin: '0', paddingTop: '3%', paddingBottom: '3%' }}>No responses yet!</p>
 						: 
 						<List aria-label="responses list">
 							{responses.map((response) => (
