@@ -49,7 +49,8 @@ passport.use('googleAdmin',new GoogleStrategy({
 
 
 			Admin.findById(currentUser._id).then((result7)=>{
-				result7.token = token
+        result7.token = token
+        result7.googleId = profile.id
 				result7.save().then((user)=>{
 					done(null,user)
 				}).catch((err)=>{
