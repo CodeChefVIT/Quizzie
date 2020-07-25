@@ -5,7 +5,7 @@ import {
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
 	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
 } from "@material-ui/core";
-import { Create, ExpandMore, Adjust, Delete, BarChart } from "@material-ui/icons";
+import { Create, ExpandMore, Adjust, Delete, BarChart, Replay } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
@@ -40,6 +40,9 @@ function EditQuiz(props) {
 
 	const [deleteModal, setDeleteModal] = useState(false);
 	const [deleteQuestionModal, setDeleteQuestionModal] = useState(false);
+
+	const [quizRestartModal, setQuizRestartModal] = useState(false);
+	const [closeQuizModal, setCloseQuizModal] = useState(false);
 
 	const [responses, setResponses] = useState([]);
 
@@ -86,6 +89,52 @@ function EditQuiz(props) {
 		setOption4Error(false);
 		setCorrectOption(-1);
 		setCorrectOptionError(false);
+	}
+
+	const handleRestart = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/restart`;
+
+		let data = {
+			quizId: quizId
+		}
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				setQuizRestartModal(false);
+				getQuizDetails();
+			})
+		} catch(error) {
+			console.log(error);
+		}
+	}
+
+	const handleQuizClose = async () => {
+		let token = localStorage.getItem("authToken");
+		let url = `https://quizzie-api.herokuapp.com/quiz/close`;
+
+		let data = {
+			quizId: quizId
+		}
+
+		try {
+			await axios.patch(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				setCloseQuizModal(false);
+				getQuizDetails();
+			})
+		} catch(error) {
+			console.log(error);
+		}
 	}
 
 	const handleQuestionEditBtn = (question) => {
@@ -291,6 +340,7 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then((res) => {
+				console.log(res.data.result);
 				setQuizDetails(res.data.result);
 			})
 		} catch (error) {
@@ -360,6 +410,16 @@ function EditQuiz(props) {
 					<Button className="edit-details-btn delete-btn" onClick={handleDeleteBtn}>
 						<Delete className="edit-icon" />Delete Quiz
 					</Button>
+					{quizDetails.quizStatus === 1? 
+						(<Button className="edit-details-btn" style={{marginLeft: '3%'}} onClick={() => setCloseQuizModal(true)}>
+							<Replay className="edit-quiz" />Close Quiz
+						</Button>)
+						:quizDetails.quizStatus === 2?
+							(<Button className="edit-details-btn" style={{marginLeft: '3%'}} onClick={() => setQuizRestartModal(true)}>
+								<Replay className="edit-quiz" />Restart Quiz
+							</Button>)
+						:null
+					}
 				</div>
 				<div className="quiz-details-sec">
 					<Typography variant="h6" className="quiz-detail-param">Name: <span className="quiz-detail-text">{quizDetails.quizName}</span></Typography>
@@ -531,6 +591,22 @@ function EditQuiz(props) {
 					<div className="btn-div">
 						<Button className="logout-btn m-right bg-red-btn" onClick={handleDeleteQuestion}>Yes</Button>
 						<Button className="cancel-btn m-left" onClick={handleQuestionModalClose}>No</Button>
+					</div>
+				</Dialog>
+				<Dialog open={quizRestartModal} onClose={() => setQuizRestartModal(false)} aria-labelledby="restart-quiz-modal"
+					PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
+					<DialogTitle>Are you sure you want to restart this quiz?</DialogTitle>
+					<div className="btn-div">
+						<Button className="logout-btn m-right bg-green-btn" onClick={handleRestart}>Yes</Button>
+						<Button className="cancel-btn m-left bg-red-btn" onClick={() => setQuizRestartModal(false)}>No</Button>
+					</div>
+				</Dialog>
+				<Dialog open={closeQuizModal} onClose={() => setCloseQuizModal(false)} aria-labelledby="restart-quiz-modal"
+					PaperProps={{ style: { backgroundColor: 'white', color: 'black', minWidth: '10%' } }}>
+					<DialogTitle>Are you sure you want to close this quiz?</DialogTitle>
+					<div className="btn-div">
+						<Button className="logout-btn m-right bg-green-btn" onClick={handleQuizClose}>Yes</Button>
+						<Button className="cancel-btn m-left bg-red-btn" onClick={() => setCloseQuizModal(false)}>No</Button>
 					</div>
 				</Dialog>
 			</Container>
