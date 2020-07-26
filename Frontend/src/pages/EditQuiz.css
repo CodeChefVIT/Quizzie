@@ -150,3 +150,10 @@
 .stats-btn {
 	background-color: blueviolet !important;
 }
+
+.bg-green-btn {
+	background-color: green !important;
+}
+.bg-green-btn:hover {
+	background-color: rgb(0, 95, 0) !important;
+}

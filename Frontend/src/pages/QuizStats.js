@@ -41,7 +41,7 @@ function QuizStats(props) {
 				obj[response.marks]++;
 			}
 			
-			let time = response.timeTaken/(1000*60);
+			let time = (response.timeEnded-response.timeStarted)/(1000*60);
 
 			obj2["labels"].push(response.userId.name);
 			obj2["data"].push(time);
@@ -88,9 +88,6 @@ function QuizStats(props) {
 			<div className="result-head">
 				<Typography variant="h4" className="result-title">Stats</Typography>
 			</div>
-			{/* <div className="quiz-stats-div">
-				<Typography variant="p">Quiz</Typography>
-			</div> */}
 			<div className="charts-container" style={{paddingBottom: '3%'}}>
 				<div className="pie-chart" style={{marginBottom: '3%'}}>
 					<Pie data={{
