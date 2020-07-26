@@ -28,6 +28,7 @@ function Quiz(props) {
 
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
+	const [resultRedirect, setResultRedirect] = useState(false);
 
 	const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -56,7 +57,7 @@ function Quiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				setRedirect(true);
+				setResultRedirect(true);
 			})
 		} catch(error) {
 			console.log(error);
@@ -233,7 +234,12 @@ function Quiz(props) {
 				state: {blocked: tabChange, timeUp: timeUp, emptyQuiz: empty}
 			}} />
 		)
-	} else if(submitLoading) {
+	} else if(resultRedirect) {
+		return (
+			<Redirect to={`/results/${quizId}`} />
+		)
+	}
+	else if(submitLoading) {
 		return (
 			<SubmitLoading />
 		)

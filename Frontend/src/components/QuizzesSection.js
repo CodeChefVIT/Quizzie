@@ -228,7 +228,6 @@ function QuizzesSection(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setRedirectId(data.quizId);
 				setQuizDetails(res.data);
 				setQuizStarted(true);
