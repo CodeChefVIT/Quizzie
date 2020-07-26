@@ -38,7 +38,7 @@ mongoose.Promise = global.Promise;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+console.log(Date.now())
 // app.use(cookieSession({
 //     maxAge: 24 * 60 * 60 * 1000,
 //     keys: [keys.cookieSession]

@@ -396,7 +396,9 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 											message: "Quiz started for " + req.user.name,
 											data,
 											duration: result0.quizDuration,
-											scheduledFor: result0.scheduledFor,
+                      scheduledFor: result0.scheduledFor,
+                      quizRestart:result0.quizRestart,
+                      quizStatus:result0.quizStatus
 										});
 									})
 									.catch(async (err) => {
@@ -485,10 +487,12 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 														data.push(object);
 													}
 													await res.status(200).json({
-														message: "Quiz started for " + req.user.name,
-														data,
-														duration: result0.quizDuration,
-														scheduledFor: result0.scheduledFor,
+                            message: "Quiz started for " + req.user.name,
+                            data,
+                            duration: result0.quizDuration,
+                            scheduledFor: result0.scheduledFor,
+                            quizRestart:result0.quizRestart,
+                            quizStatus:result0.quizStatus
 													});
 												})
 												.catch(async (err) => {
@@ -564,7 +568,9 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 											message: "Quiz started for " + req.user.name,
 											data,
 											duration: result0.quizDuration,
-											scheduledFor: result0.scheduledFor,
+                      scheduledFor: result0.scheduledFor,
+                      quizRestart:result0.quizRestart,
+                      quizStatus:result0.quizStatus
 										});
 									})
 									.catch(async (err) => {
