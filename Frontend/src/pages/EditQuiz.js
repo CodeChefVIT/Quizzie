@@ -204,6 +204,8 @@ function EditQuiz(props) {
 	}
 
 	const handleQuestionUpdate = async () => {
+		if(!validate()) return;
+
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
 
