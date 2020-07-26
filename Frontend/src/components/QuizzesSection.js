@@ -320,7 +320,8 @@ function QuizzesSection(props) {
 					duration: quizDetails.duration,
 					start: quizDetails.scheduledFor,
 					id: enrollQuizId,
-					timeStarted: Date.now()
+					timeStarted: Date.now(),
+					restartStatus: quizDetails.quizRestart
 				}
 			}} />
 	}

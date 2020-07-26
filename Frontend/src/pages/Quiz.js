@@ -21,18 +21,20 @@ function Quiz(props) {
 
 	const [duration, setDuration] = useState(-1);
 	const [startTime, setStartTime] = useState(-1);
-	const [timeRemaining, setTimeRemaining] = useState(false);
+	const [timeRemaining, setTimeRemaining] = useState("");
 	const [timeUp, setTimeUp] = useState(false);
 
 	const [tabChange, setTabChange] = useState(false);
 
 	const [allChosenAns, setAllAns] = useState(null);
 	const [redirect, setRedirect] = useState(false);
+	const [resultRedirect, setResultRedirect] = useState(false);
 
 	const [submitLoading, setSubmitLoading] = useState(false);
 
 	const [confirmModal, setConfirmModal] = useState(false);
 	const [empty, setEmpty] = useState(false);
+	const [restartStatus, setRestartStatus] = useState(-1);
 
 	const pageVisible = usePageVisibility();
 
@@ -55,7 +57,7 @@ function Quiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				setRedirect(true);
+				setResultRedirect(true);
 			})
 		} catch(error) {
 			console.log(error);
@@ -192,14 +194,16 @@ function Quiz(props) {
 	}, [pageVisible])
 
 	useEffect(() => {
-		let endTime = Number(startTime) + (duration*60*1000);
-		if(!loading && endTime > 0 && Number(endTime) < Number(Date.now())) {
-			timesUp();
-			return;
-		} else {
-			setTimeout(() => {
-				setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
-			}, 1000);
+		if(restartStatus !== 1) {
+			let endTime = Number(startTime) + (duration*60*1000);
+			if(!loading && endTime > 0 && Number(endTime) < Number(Date.now())) {
+				timesUp();
+				return;
+			} else {
+				setTimeout(() => {
+					setTimeRemaining(countdown(new Date(), new Date(Number(endTime)), countdown.MINUTES | countdown.SECONDS).toString());
+				}, 1000);
+			}
 		}
 	});
 
@@ -219,6 +223,7 @@ function Quiz(props) {
 			setStartTime(props.location.state.start);
 			setQuestions(props.location.state.questions);
 			setupQuiz(props.location.state.questions);
+			setRestartStatus(props.location.state.restartStatus);
 		}
 	}, [])
 
@@ -229,7 +234,12 @@ function Quiz(props) {
 				state: {blocked: tabChange, timeUp: timeUp, emptyQuiz: empty}
 			}} />
 		)
-	} else if(submitLoading) {
+	} else if(resultRedirect) {
+		return (
+			<Redirect to={`/results/${quizId}`} />
+		)
+	}
+	else if(submitLoading) {
 		return (
 			<SubmitLoading />
 		)
@@ -244,7 +254,7 @@ function Quiz(props) {
 							<h2 style={{ padding: 0 }}>QUESTION {currentStep} OF {allQuestions.length}</h2>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} className="timer">
-							<p style={{margin: 0}}>Time Remaining <h2 className="rem-time-display">{timeRemaining}</h2></p>
+							<p style={{margin: 0}}>Time Remaining <h2 className="rem-time-display">{restartStatus !== 1? timeRemaining: "Until organizer closes the quiz"}</h2></p>
 						</Grid>
 						<Grid item xs={10} md={8} lg={7} style={{ margin: 0, padding: '2%',  borderBottom: '3px solid #222', minHeight: '30vh' }}>
 							<FormControl style={{ margin: 'auto', width: "100%" }} component="fieldset">
