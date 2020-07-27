@@ -66,6 +66,7 @@
 .quiz-questions-sec {
 	margin: 0 5% !important;
 	margin-top: 7% !important;
+	padding-bottom: 10% !important;
 
 }
 
@@ -156,4 +157,17 @@
 }
 .bg-green-btn:hover {
 	background-color: rgb(0, 95, 0) !important;
+}
+
+.search-bar {
+	margin-top: 3% !important;
+	width: 100%;
+	display: flex;
+	flex-grow: 1;
+
+	align-items: flex-end !important;
+}
+
+.search-input {
+	width: 100% !important;
 }

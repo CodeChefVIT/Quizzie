@@ -3,7 +3,7 @@ import './EditQuiz.css';
 import {
 	Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem,
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
-	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle, Input, TextField
 } from "@material-ui/core";
 import { Create, ExpandMore, Adjust, Delete, BarChart, Replay } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
@@ -45,6 +45,9 @@ function EditQuiz(props) {
 	const [closeQuizModal, setCloseQuizModal] = useState(false);
 
 	const [responses, setResponses] = useState([]);
+
+	const [searchData, setSearchData] = useState(responses);
+	const [searchText, setSearchText] = useState("");
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -89,6 +92,14 @@ function EditQuiz(props) {
 		setOption4Error(false);
 		setCorrectOption(-1);
 		setCorrectOptionError(false);
+	}
+
+	const handleSearchChange = (event) => {
+		setSearchText(event.target.value);
+		
+		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1);
+		
+		setSearchData(newRes);
 	}
 
 	const handleRestart = async () => {
@@ -370,6 +381,7 @@ function EditQuiz(props) {
 				}
 			}).then(res => {
 				setResponses(res.data.userResults);
+				setSearchData(res.data.userResults);
 				setLoading(false);
 			})
 		} catch(error) {
@@ -485,14 +497,27 @@ function EditQuiz(props) {
 							</Button>
 						</div>
 						{responses.length === 0? <p style={{ textAlign: 'center', margin: '0', paddingTop: '3%', paddingBottom: '3%' }}>No responses yet!</p>
-						: 
-						<List aria-label="responses list">
-							{responses.map((response) => (
-								<ListItem button key={response._id} component={Link} to={{pathname: `/studentResponse`, state: {response: response}}} >
-									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
-								</ListItem>
-							))}
-						</List>
+						:
+						<> 
+							<div className="search-bar">
+								<TextField placeholder="Search" type="text" onChange={handleSearchChange} className="search-input" value={searchText}/>
+								<div style={{marginLeft: '3%'}}>
+									<InputLabel id="sort-by">Sort by</InputLabel>
+									<Select labelId="sort-by" id="sort-select" value="recent">
+										<MenuItem value="recent">Recent</MenuItem>
+										<MenuItem value="score">Score</MenuItem>
+										<MenuItem value="name">Name</MenuItem>
+									</Select>
+								</div>
+							</div>
+							<List aria-label="responses list">
+								{searchData.map((response) => (
+									<ListItem button key={response._id} component={Link} to={{pathname: `/studentResponse`, state: {response: response}}} >
+										<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
+									</ListItem>
+								))}
+							</List>
+						</>
 						}
 					</div>
 				</div>
