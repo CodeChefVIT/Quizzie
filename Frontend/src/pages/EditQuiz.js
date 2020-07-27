@@ -48,6 +48,7 @@ function EditQuiz(props) {
 
 	const [searchData, setSearchData] = useState(responses);
 	const [searchText, setSearchText] = useState("");
+	const [sortBy, setSortBy] = useState(-1);
 
 	const onCloseHandle = () => {
 		setQuestionModal(false);
@@ -98,8 +99,35 @@ function EditQuiz(props) {
 		setSearchText(event.target.value);
 		
 		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1);
+		let sorted = sortByFunc(sortBy, newRes);
+
+		setSearchData(sorted);
+	}
+
+	const handleSortChange = (event) => {
+		setSortBy(event.target.value);
+
+		let newRes = sortByFunc(event.target.value, searchData);
 		
 		setSearchData(newRes);
+	}
+
+	const sortByFunc = (by, array) => {
+		if(by === "score") {
+			return array.sort(function(a,b) {
+				return a.marks - b.marks;
+			})
+		} else if(by === "name") {
+			return array.sort(function(a,b) {
+				return a.userId.name - b.userId.name;
+			})
+		} else if(by === "recent") {
+			return array.sort(function(a,b) {
+				return b.timeEnded - a.timeEnded;
+			});
+		} else {
+			return array;
+		}
 	}
 
 	const handleRestart = async () => {
@@ -380,6 +408,7 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
+				console.log(res);
 				setResponses(res.data.userResults);
 				setSearchData(res.data.userResults);
 				setLoading(false);
@@ -503,7 +532,8 @@ function EditQuiz(props) {
 								<TextField placeholder="Search" type="text" onChange={handleSearchChange} className="search-input" value={searchText}/>
 								<div style={{marginLeft: '3%'}}>
 									<InputLabel id="sort-by">Sort by</InputLabel>
-									<Select labelId="sort-by" id="sort-select" value="recent">
+									<Select labelId="sort-by" id="sort-select" value={sortBy} onChange={handleSortChange}>
+										<MenuItem value={-1}><em>None</em></MenuItem>
 										<MenuItem value="recent">Recent</MenuItem>
 										<MenuItem value="score">Score</MenuItem>
 										<MenuItem value="name">Name</MenuItem>
