@@ -98,7 +98,7 @@ function EditQuiz(props) {
 	const handleSearchChange = (event) => {
 		setSearchText(event.target.value);
 		
-		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1);
+		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1 || String(response.marks).search(event.target.value.trim().toLowerCase()) !== -1);
 		let sorted = sortByFunc(sortBy, newRes);
 
 		setSearchData(sorted);
@@ -408,7 +408,6 @@ function EditQuiz(props) {
 					"auth-token": token
 				}
 			}).then(res => {
-				console.log(res);
 				setResponses(res.data.userResults);
 				setSearchData(res.data.userResults);
 				setLoading(false);
@@ -529,7 +528,7 @@ function EditQuiz(props) {
 						:
 						<> 
 							<div className="search-bar">
-								<TextField placeholder="Search" type="text" onChange={handleSearchChange} className="search-input" value={searchText}/>
+								<TextField placeholder="Search by name or score" type="text" onChange={handleSearchChange} className="search-input" value={searchText}/>
 								<div style={{marginLeft: '3%'}}>
 									<InputLabel id="sort-by">Sort by</InputLabel>
 									<Select labelId="sort-by" id="sort-select" value={sortBy} onChange={handleSortChange}>
