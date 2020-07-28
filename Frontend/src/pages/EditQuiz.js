@@ -11,6 +11,7 @@ import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
 import Dropzone from "react-dropzone";
+import csv from "csv";
 
 function EditQuiz(props) {
 	const quizId = props.match.params.id;
@@ -105,6 +106,21 @@ function EditQuiz(props) {
 		setOption4Error(false);
 		setCorrectOption(-1);
 		setCorrectOptionError(false);
+	}
+
+	const handleFileDrop = (files) => {
+		const reader = new FileReader();
+
+		reader.onabort = () => console.log("File reading aborted");
+		reader.onerror = () => console.log("File reading aborted");
+
+		reader.onload = () => {
+			csv.parse(reader.result, (err, data) => {
+				console.log(data);
+			})
+		}
+
+		reader.readAsBinaryString(files[0]);
 	}
 
 	const handleSearchChange = (event) => {
@@ -583,7 +599,7 @@ function EditQuiz(props) {
 							PaperProps={{style: {maxWidth: '400px'}}}
 						>
 							<p className="popover-text">
-								You can upload a .csv file with questions. The format should be: the <strong>first column should contain the
+								You can upload a <strong>.csv</strong> file with questions. The format should be: the <strong>first column should contain the
 								question text.</strong> The next 4 columns must contain the <strong>four options.</strong> And the fifth column
 								should contain <strong>the correct answer (it should match one of the four options)</strong>. <br /><br/>
 								<strong>NOTE: THE FILE SHOULD EXACTLY MATCH THE GIVEN FORMAT.</strong> You will be able to see and edit all the
@@ -592,12 +608,12 @@ function EditQuiz(props) {
 						</Popover>
 					</div>
 					<div className="dropzone">
-						<AddCircle className="drop-icon"/>
-						<Dropzone onDrop={acceptedFiles => console.log(acceptedFiles)}>
+						<Dropzone onDrop={acceptedFiles => handleFileDrop(acceptedFiles)}>
 							{({ getRootProps, getInputProps }) => (
 								<section>
 									<div {...getRootProps()}>
 										<input {...getInputProps()} />
+										<AddCircle className="drop-icon"/>
 										<p style={{color: "rgb(110, 110, 110)"}}>Drag 'n' drop or click to select files</p>
 									</div>
 								</section>
