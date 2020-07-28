@@ -188,7 +188,7 @@ function EditQuiz(props) {
 	const handleSearchChange = (event) => {
 		setSearchText(event.target.value);
 
-		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1 || String(response.marks).search(event.target.value.trim().toLowerCase()) !== -1);
+		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1 || String(response.marks) === (event.target.value.trim().toLowerCase()));
 		let sorted = sortByFunc(sortBy, newRes);
 
 		setSearchData(sorted);
@@ -205,7 +205,7 @@ function EditQuiz(props) {
 	const sortByFunc = (by, array) => {
 		if (by === "score") {
 			return array.sort(function (a, b) {
-				return a.marks - b.marks;
+				return b.marks - a.marks;
 			})
 		} else if (by === "name") {
 			return array.sort(function (a, b) {
