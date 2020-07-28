@@ -20,6 +20,7 @@
     "react": "^16.13.1",
     "react-chartjs-2": "^2.9.0",
     "react-dom": "^16.13.1",
+    "react-dropzone": "^11.0.2",
     "react-page-visibility": "^6.2.0",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
