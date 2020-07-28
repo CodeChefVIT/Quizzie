@@ -3,7 +3,7 @@ import './EditQuiz.css';
 import {
 	Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem,
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
-	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle, Input, TextField, Divider, Popover
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle, Input, TextField, Divider, Popover, Snackbar
 } from "@material-ui/core";
 import { Create, ExpandMore, Adjust, Delete, BarChart, Replay, AddCircle, Info } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
@@ -12,6 +12,7 @@ import Loading from "./Loading";
 import TextInput from "../components/TextInput";
 import Dropzone from "react-dropzone";
 import csv from "csv";
+import { Alert } from "@material-ui/lab";
 
 function EditQuiz(props) {
 	const quizId = props.match.params.id;
@@ -22,6 +23,8 @@ function EditQuiz(props) {
 	const [quizDetails, setQuizDetails] = useState({});
 	const [quizQuestions, setQuizQuestions] = useState([]);
 
+	const [fileError, setFileError] = useState(false);
+	const [serverError, setServerError] = useState(false);
 	const [popoverAnchor, setPopoverAnchor] = useState(null);
 	const popoverOpen = Boolean(popoverAnchor);
 
@@ -111,16 +114,75 @@ function EditQuiz(props) {
 	const handleFileDrop = (files) => {
 		const reader = new FileReader();
 
-		reader.onabort = () => console.log("File reading aborted");
-		reader.onerror = () => console.log("File reading aborted");
+		let questions = []
+
+		reader.onabort = () => {
+			setFileError(true);
+			return;
+		}
+		reader.onerror = () => {
+			setFileError(true);
+			return;
+		}
 
 		reader.onload = () => {
 			csv.parse(reader.result, (err, data) => {
-				console.log(data);
+				if(data === undefined) {
+					setFileError(true);
+					return;
+				}
+				data.map((question) => {
+					if(question[0].trim() === "") {
+						return null;
+					}
+					let obj = {
+						"quizId": quizId,
+						"description": question[0],
+						"options": [
+							{"text": question[1]}, 
+							{"text": question[2]}, 
+							{"text": question[3]}, 
+							{"text": question[4]}, 
+						],
+						"correctAnswer": question[5]
+					}
+
+					questions.push(obj);
+				})
+				submitCSV(questions);
 			})
 		}
 
 		reader.readAsBinaryString(files[0]);
+	}
+
+	const submitCSV = async (questions) => {
+		setLoading(true);
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/question/csv";
+
+		let data = {
+			"questions": questions
+		}
+
+		console.log(questions);
+
+		try {
+			await axios.post(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				setLoading(false);
+				clearModal();
+				onCloseHandle();
+				getQuizDetails();
+			})
+		} catch(error) {
+			setServerError(true);
+			console.log(error);
+		}
 	}
 
 	const handleSearchChange = (event) => {
@@ -583,9 +645,11 @@ function EditQuiz(props) {
 					style={{ width: '100%' }}>
 					<div className="add-ques-heading">
 						<Typography variant="h6" style={{ textAlign: 'center', margin: '2% 5%' }} >New Question </Typography>
-						<IconButton onClick={handlePopover}>
-							<Info className="add-info-icon" />
-						</IconButton>
+						{!update ? 
+							<IconButton onClick={handlePopover}>
+								<Info className="add-info-icon" />
+							</IconButton>
+						:null}
 						<Popover id="file-upload-popover" 
 							open={popoverOpen} 
 							anchorEl={popoverAnchor}
@@ -600,27 +664,31 @@ function EditQuiz(props) {
 						>
 							<p className="popover-text">
 								You can upload a <strong>.csv</strong> file with questions. The format should be: the <strong>first column should contain the
-								question text.</strong> The next 4 columns must contain the <strong>four options.</strong> And the fifth column
+								question text.</strong> The next 4 columns must contain the <strong>four options.</strong> And the sixth column
 								should contain <strong>the correct answer (it should match one of the four options)</strong>. <br /><br/>
 								<strong>NOTE: THE FILE SHOULD EXACTLY MATCH THE GIVEN FORMAT.</strong> You will be able to see and edit all the
 								question though.
 							</p>
 						</Popover>
 					</div>
-					<div className="dropzone">
-						<Dropzone onDrop={acceptedFiles => handleFileDrop(acceptedFiles)}>
-							{({ getRootProps, getInputProps }) => (
-								<section>
-									<div {...getRootProps()}>
-										<input {...getInputProps()} />
-										<AddCircle className="drop-icon"/>
-										<p style={{color: "rgb(110, 110, 110)"}}>Drag 'n' drop or click to select files</p>
-									</div>
-								</section>
-							)}
-						</Dropzone>
-					</div>
-					<p className="manual-head"><span>Or manually add the question</span></p>
+					{!update?
+						<>
+							<div className="dropzone">
+								<Dropzone onDrop={acceptedFiles => handleFileDrop(acceptedFiles)}>
+									{({ getRootProps, getInputProps }) => (
+										<section>
+											<div {...getRootProps()}>
+												<input {...getInputProps()} />
+												<AddCircle className="drop-icon"/>
+												<p style={{color: "rgb(110, 110, 110)"}}>Drag 'n' drop or click to select files</p>
+											</div>
+										</section>
+									)}
+								</Dropzone>
+							</div>
+							<p className="manual-head"><span>Or manually add the question</span></p>
+						</>
+					:null}
 					<div className="new-question-form">
 						<TextInput
 							error={newQuestionError}
@@ -729,6 +797,12 @@ function EditQuiz(props) {
 						<Button className="cancel-btn m-left bg-red-btn" onClick={() => setCloseQuizModal(false)}>No</Button>
 					</div>
 				</Dialog>
+				<Snackbar open={fileError} autoHideDuration={3000} onClose={() => setFileError(false)} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
+					<Alert variant="filled" severity="error" onClose={() => setFileError(false)}>There was some problem with the file. Try again...</Alert>
+				</Snackbar>
+				<Snackbar open={serverError} autoHideDuration={3000} onClose={() => setServerError(false)} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
+					<Alert variant="filled" severity="error" onClose={() => setServerError(false)}>There was some problem with the server. Try again...</Alert>
+				</Snackbar>
 			</Container>
 		)
 	}
