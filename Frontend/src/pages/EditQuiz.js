@@ -3,13 +3,16 @@ import './EditQuiz.css';
 import {
 	Container, Typography, Button, Dialog, Grid, InputLabel, Select, MenuItem,
 	ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, List,
-	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle
+	ListItem, ListItemText, ListItemIcon, FormControlLabel, IconButton, DialogTitle, Input, TextField, Divider, Popover, Snackbar
 } from "@material-ui/core";
-import { Create, ExpandMore, Adjust, Delete, BarChart, Replay } from "@material-ui/icons";
+import { Create, ExpandMore, Adjust, Delete, BarChart, Replay, AddCircle, Info } from "@material-ui/icons";
 import { Link, Redirect } from "react-router-dom";
 import axios from "axios";
 import Loading from "./Loading";
 import TextInput from "../components/TextInput";
+import Dropzone from "react-dropzone";
+import csv from "csv";
+import { Alert } from "@material-ui/lab";
 
 function EditQuiz(props) {
 	const quizId = props.match.params.id;
@@ -19,6 +22,11 @@ function EditQuiz(props) {
 
 	const [quizDetails, setQuizDetails] = useState({});
 	const [quizQuestions, setQuizQuestions] = useState([]);
+
+	const [fileError, setFileError] = useState(false);
+	const [serverError, setServerError] = useState(false);
+	const [popoverAnchor, setPopoverAnchor] = useState(null);
+	const popoverOpen = Boolean(popoverAnchor);
 
 	const [questionModal, setQuestionModal] = useState(false);
 	const [newQuestion, setNewQuestion] = useState("");
@@ -46,6 +54,10 @@ function EditQuiz(props) {
 
 	const [responses, setResponses] = useState([]);
 
+	const [searchData, setSearchData] = useState(responses);
+	const [searchText, setSearchText] = useState("");
+	const [sortBy, setSortBy] = useState(-1);
+
 	const onCloseHandle = () => {
 		setQuestionModal(false);
 		if (update) {
@@ -53,6 +65,14 @@ function EditQuiz(props) {
 			setUpdateId(null);
 			clearModal();
 		}
+	}
+
+	const handlePopover = (event) => {
+		setPopoverAnchor(event.currentTarget);
+	}
+
+	const handlePopoverClose = () => {
+		setPopoverAnchor(null);
 	}
 
 	const onQuestionChange = (event) => {
@@ -91,6 +111,115 @@ function EditQuiz(props) {
 		setCorrectOptionError(false);
 	}
 
+	const handleFileDrop = (files) => {
+		const reader = new FileReader();
+
+		let questions = []
+
+		reader.onabort = () => {
+			setFileError(true);
+			return;
+		}
+		reader.onerror = () => {
+			setFileError(true);
+			return;
+		}
+
+		reader.onload = () => {
+			csv.parse(reader.result, (err, data) => {
+				if(data === undefined) {
+					setFileError(true);
+					return;
+				}
+				data.map((question) => {
+					if(question[0].trim() === "") {
+						return null;
+					}
+					let obj = {
+						"quizId": quizId,
+						"description": question[0],
+						"options": [
+							{"text": question[1]}, 
+							{"text": question[2]}, 
+							{"text": question[3]}, 
+							{"text": question[4]}, 
+						],
+						"correctAnswer": question[5]
+					}
+
+					questions.push(obj);
+				})
+				submitCSV(questions);
+			})
+		}
+
+		reader.readAsBinaryString(files[0]);
+	}
+
+	const submitCSV = async (questions) => {
+		setLoading(true);
+		let token = localStorage.getItem("authToken");
+		let url = "https://quizzie-api.herokuapp.com/question/csv";
+
+		let data = {
+			"questions": questions
+		}
+
+		console.log(questions);
+
+		try {
+			await axios.post(url, data, {
+				headers: {
+					"auth-token": token
+				}
+			}).then(res => {
+				console.log(res);
+				setLoading(false);
+				clearModal();
+				onCloseHandle();
+				getQuizDetails();
+			})
+		} catch(error) {
+			setServerError(true);
+			console.log(error);
+		}
+	}
+
+	const handleSearchChange = (event) => {
+		setSearchText(event.target.value);
+
+		let newRes = responses.filter(response => response.userId.name.toLowerCase().search(event.target.value.trim().toLowerCase()) !== -1 || String(response.marks) === (event.target.value.trim().toLowerCase()));
+		let sorted = sortByFunc(sortBy, newRes);
+
+		setSearchData(sorted);
+	}
+
+	const handleSortChange = (event) => {
+		setSortBy(event.target.value);
+
+		let newRes = sortByFunc(event.target.value, searchData);
+
+		setSearchData(newRes);
+	}
+
+	const sortByFunc = (by, array) => {
+		if (by === "score") {
+			return array.sort(function (a, b) {
+				return b.marks - a.marks;
+			})
+		} else if (by === "name") {
+			return array.sort(function (a, b) {
+				return a.userId.name - b.userId.name;
+			})
+		} else if (by === "recent") {
+			return array.sort(function (a, b) {
+				return b.timeEnded - a.timeEnded;
+			});
+		} else {
+			return array;
+		}
+	}
+
 	const handleRestart = async () => {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/restart`;
@@ -108,7 +237,7 @@ function EditQuiz(props) {
 				setQuizRestartModal(false);
 				getQuizDetails();
 			})
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 		}
 	}
@@ -130,7 +259,7 @@ function EditQuiz(props) {
 				setCloseQuizModal(false);
 				getQuizDetails();
 			})
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 		}
 	}
@@ -175,7 +304,7 @@ function EditQuiz(props) {
 				setDeleteQuestionModal(false);
 				getQuizDetails();
 			})
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 		}
 
@@ -204,6 +333,8 @@ function EditQuiz(props) {
 	}
 
 	const handleQuestionUpdate = async () => {
+		if (!validate()) return;
+
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
 
@@ -320,7 +451,7 @@ function EditQuiz(props) {
 			}).then(res => {
 				return true;
 			})
-		} catch(error) {
+		} catch (error) {
 			setRedirect(true);
 			return;
 		}
@@ -368,9 +499,10 @@ function EditQuiz(props) {
 				}
 			}).then(res => {
 				setResponses(res.data.userResults);
+				setSearchData(res.data.userResults);
 				setLoading(false);
 			})
-		} catch(error) {
+		} catch (error) {
 			console.log(error);
 		}
 	}
@@ -395,7 +527,7 @@ function EditQuiz(props) {
 		return (
 			<Redirect to="/dashboard" />
 		)
-	} 
+	}
 	else {
 		return (
 			<Container className="edit-quiz-page">
@@ -407,15 +539,15 @@ function EditQuiz(props) {
 					<Button className="edit-details-btn delete-btn" onClick={handleDeleteBtn}>
 						<Delete className="edit-icon" />Delete Quiz
 					</Button>
-					{quizDetails.quizStatus === 1? 
-						(<Button className="edit-details-btn" style={{marginLeft: '3%'}} onClick={() => setCloseQuizModal(true)}>
+					{quizDetails.quizStatus === 1 ?
+						(<Button className="edit-details-btn" style={{ marginLeft: '3%' }} onClick={() => setCloseQuizModal(true)}>
 							<Replay className="edit-quiz" />Close Quiz
 						</Button>)
-						:quizDetails.quizStatus === 2?
-							(<Button className="edit-details-btn" style={{marginLeft: '3%'}} onClick={() => setQuizRestartModal(true)}>
+						: quizDetails.quizStatus === 2 ?
+							(<Button className="edit-details-btn" style={{ marginLeft: '3%' }} onClick={() => setQuizRestartModal(true)}>
 								<Replay className="edit-quiz" />Restart Quiz
 							</Button>)
-						:null
+							: null
 					}
 				</div>
 				<div className="quiz-details-sec">
@@ -476,28 +608,87 @@ function EditQuiz(props) {
 					<Typography variant="h4" className="quiz-questions-head m-top">Submissions</Typography>
 					<div className="quiz-students-list">
 						<div className="add-question-bar">
-							<Button className="add-question-btn stats-btn" component={responses.length !== 0? Link: Button}
-								to={{pathname: "/quizStats", state: {responses: responses}}}	
+							<Button className="add-question-btn stats-btn" component={responses.length !== 0 ? Link : Button}
+								to={{ pathname: "/quizStats", state: { responses: responses } }}
 							>
 								<BarChart />View Stats
 							</Button>
 						</div>
-						{responses.length === 0? <p style={{ textAlign: 'center', margin: '0', paddingTop: '3%', paddingBottom: '3%' }}>No responses yet!</p>
-						: 
-						<List aria-label="responses list">
-							{responses.map((response) => (
-								<ListItem button key={response._id} component={Link} to={{pathname: `/studentResponse`, state: {response: response}}} >
-									<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
-								</ListItem>
-							))}
-						</List>
+						{responses.length === 0 ? <p style={{ textAlign: 'center', margin: '0', paddingTop: '3%', paddingBottom: '3%' }}>No responses yet!</p>
+							:
+							<>
+								<div className="search-bar">
+									<TextField placeholder="Search by name or score" type="text" onChange={handleSearchChange} className="search-input" value={searchText} />
+									<div style={{ marginLeft: '3%' }}>
+										<InputLabel id="sort-by">Sort by</InputLabel>
+										<Select labelId="sort-by" id="sort-select" value={sortBy} onChange={handleSortChange}>
+											<MenuItem value={-1}><em>None</em></MenuItem>
+											<MenuItem value="recent">Recent</MenuItem>
+											<MenuItem value="score">Score</MenuItem>
+											<MenuItem value="name">Name</MenuItem>
+										</Select>
+									</div>
+								</div>
+								<List aria-label="responses list">
+									{searchData.map((response) => (
+										<ListItem button key={response._id} component={Link} to={{ pathname: `/studentResponse`, state: { response: response } }} >
+											<ListItemText primary={response.userId.name} secondary={`Scored: ${response.marks}`} />
+										</ListItem>
+									))}
+								</List>
+							</>
 						}
 					</div>
 				</div>
 				<Dialog open={questionModal} onClose={onCloseHandle} aria-labelledby="add-question-modal"
 					PaperProps={{ style: { backgroundColor: 'white', color: '#333', minWidth: '50%' } }}
 					style={{ width: '100%' }}>
-					<Typography variant="h6" style={{ textAlign: 'center', margin: '2% 5%' }}>New Question</Typography>
+					<div className="add-ques-heading">
+						<Typography variant="h6" style={{ textAlign: 'center', margin: '2% 5%' }} >New Question </Typography>
+						{!update ? 
+							<IconButton onClick={handlePopover}>
+								<Info className="add-info-icon" />
+							</IconButton>
+						:null}
+						<Popover id="file-upload-popover" 
+							open={popoverOpen} 
+							anchorEl={popoverAnchor}
+							onClose={handlePopoverClose}
+							anchorOrigin={{
+								'vertical': 'bottom',
+								'horizontal': 'left'
+							}}
+							disableRestoreFocus
+							useLayerForClickAway={false}
+							PaperProps={{style: {maxWidth: '400px'}}}
+						>
+							<p className="popover-text">
+								You can upload a <strong>.csv</strong> file with questions. The format should be: the <strong>first column should contain the
+								question text.</strong> The next 4 columns must contain the <strong>four options.</strong> And the sixth column
+								should contain <strong>the correct answer (it should match one of the four options)</strong>. <br /><br/>
+								<strong>NOTE: THE FILE SHOULD EXACTLY MATCH THE GIVEN FORMAT.</strong> You will be able to see and edit all the
+								question though.
+							</p>
+						</Popover>
+					</div>
+					{!update?
+						<>
+							<div className="dropzone">
+								<Dropzone onDrop={acceptedFiles => handleFileDrop(acceptedFiles)}>
+									{({ getRootProps, getInputProps }) => (
+										<section>
+											<div {...getRootProps()}>
+												<input {...getInputProps()} />
+												<AddCircle className="drop-icon"/>
+												<p style={{color: "rgb(110, 110, 110)"}}>Drag 'n' drop or click to select files</p>
+											</div>
+										</section>
+									)}
+								</Dropzone>
+							</div>
+							<p className="manual-head"><span>Or manually add the question</span></p>
+						</>
+					:null}
 					<div className="new-question-form">
 						<TextInput
 							error={newQuestionError}
@@ -606,6 +797,12 @@ function EditQuiz(props) {
 						<Button className="cancel-btn m-left bg-red-btn" onClick={() => setCloseQuizModal(false)}>No</Button>
 					</div>
 				</Dialog>
+				<Snackbar open={fileError} autoHideDuration={3000} onClose={() => setFileError(false)} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
+					<Alert variant="filled" severity="error" onClose={() => setFileError(false)}>There was some problem with the file. Try again...</Alert>
+				</Snackbar>
+				<Snackbar open={serverError} autoHideDuration={3000} onClose={() => setServerError(false)} anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}>
+					<Alert variant="filled" severity="error" onClose={() => setServerError(false)}>There was some problem with the server. Try again...</Alert>
+				</Snackbar>
 			</Container>
 		)
 	}
