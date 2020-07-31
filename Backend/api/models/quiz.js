@@ -31,7 +31,11 @@ const QuizSchema = new mongoose.Schema({
 	quizStatus: {
 		type: Number,
 		default: 0,
-	},
+  },
+  quizRestart:{
+    type:Number,
+    default:0
+  }
 });
 
 module.exports = mongoose.model("Quiz", QuizSchema);

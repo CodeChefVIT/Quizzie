@@ -102,4 +102,19 @@ router.patch(
 	}
 );
 
+router.post('/csv',checkAuth,checkAuthAdmin,async(req,res,next)=>{
+  const {questions}= req.body
+  await Question.insertMany(questions).then((result)=>{
+    res.status(200).json({
+      message:"Success",
+      result
+    })
+  }).catch((err)=>{
+    res.status(400).json({
+      message:"Error",
+      error:err.toString()
+    })
+  })
+})
+
 module.exports = router;
