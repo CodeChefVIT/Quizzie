@@ -39,7 +39,7 @@ function VerifyMail(props) {
 
 		try {
 			await axios.post(url, data).then(res => {
-				console.log(res);
+				console.log("Email successfully sent");
 			})
 		} catch(error) {
 			console.log(error);

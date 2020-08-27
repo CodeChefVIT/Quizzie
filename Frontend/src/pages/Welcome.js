@@ -22,9 +22,9 @@ function Welcome(props) {
 
 		vars.map(det => {
 			const sp = det.split("=");
-			if(sp[0] == "name") {
+			if(sp[0] === "name") {
 				name = decodeURIComponent(sp[1]);
-			} else if(sp[0] == "token") {
+			} else if(sp[0] === "token") {
 				token = sp[1];
 			}
 		})
