@@ -44,7 +44,7 @@ console.log(Date.now())
 //     keys: [keys.cookieSession]
 // }));
 
-const ips = ['172.67.176.16','104.24.123.191','104.24.122.191']
+const ips = ['172.67.176.16','104.24.123.191','104.24.122.191','10.41.141.207','10.63.249.212']
  
 // Create the server
 app.use(ipfilter(ips, { mode: 'allow' }))
