@@ -44,10 +44,10 @@ console.log(Date.now())
 //     keys: [keys.cookieSession]
 // }));
 
-const ips = ['172.67.176.16','104.24.123.191','104.24.122.191','10.41.141.207','10.63.249.212','10.69.232.242']
+// const ips = ['172.67.176.16','104.24.123.191','104.24.122.191','10.41.141.207','10.63.249.212','10.69.232.242']
  
-// Create the server
-app.use(ipfilter(ips, { mode: 'allow' }))
+// // Create the server
+// app.use(ipfilter(ips, { mode: 'allow' }))
 
 // initialize passport
 app.use(passport.initialize());
