@@ -245,9 +245,6 @@ router.get("/google", (req, res, next) => {
 	res.send("Welcome you are logged in as " + req.user);
 });
 
-router.get("/hello", (req, res, next) => {
-	res.send("HELLO");
-});
 
 ////Get Profile
 
