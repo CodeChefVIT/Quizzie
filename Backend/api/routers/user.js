@@ -326,9 +326,12 @@ router.get(
 router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 	const id = req.user.userId;
 	const updateOps = {};
+	const updatableFields = ["name","mobileNumber"]
 	var flag = 0;
 	for (const ops of req.body) {
-		updateOps[ops.propName] = ops.value;
+		if(updatableFields.includes(ops.propName)){
+			updateOps[ops.propName] = ops.value;
+		}
 	}
 	User.updateOne({ _id: id }, { $set: updateOps })
 		.exec()
