@@ -1205,7 +1205,7 @@ const emails = {
                                 <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;" width="100%">
                                   <tr>
                                     <td align="center" style="font-size:0px;padding:10px 25px;padding-top:0;padding-bottom:0px;word-break:break-word;">
-                                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1;text-align:center;color:#000000;"> <span style="font-size: 30px; color: #4390B1;"><b>Quizzie</b></span> </div>
+                                      <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1;text-align:center;color:#000000;"> <span style="font-size: 30px; color: #4390B1;"><b>Quiz portal</b></span> </div>
                                     </td>
                                   </tr>
                                 </table>
@@ -1367,7 +1367,7 @@ const emails = {
                     
                   </span><br /><br /><br /> <span style="font-weight: bold; font-size: 15px; color: grey">Hey ${userData.name}!<br/><br/>
                                     Lost your password? Don't worry, it happens to the best of us :)
-        Use the code below and start enjoying Quizzie again by generating a new password.
+        Use the code below and start enjoying Quiz portal again by generating a new password.
                                     <br>
                                     <br>
                                     <br>
@@ -1724,7 +1724,7 @@ const emails = {
                             <table border="0" cellpadding="0" cellspacing="0" role="presentation" style="vertical-align:middle;" width="100%">
                               <tr>
                                 <td align="center" style="font-size:0px;padding:10px 25px;padding-top:0;padding-bottom:0px;word-break:break-word;">
-                                  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1;text-align:center;color:#000000;"> <span style="font-size: 30px; color: #4390B1;"><b>Quizzie</b></span> </div>
+                                  <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:1;text-align:center;color:#000000;"> <span style="font-size: 30px; color: #4390B1;"><b>Quiz portal</b></span> </div>
                                 </td>
                               </tr>
                             </table>
@@ -1885,7 +1885,7 @@ const emails = {
                           <div style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;line-height:1;text-align:center;color:#000000;"> <span style="font-weight: bold; font-size: 21px; color: #45474e">
                 
               </span><br /><br /><br /> <span style="font-weight: bold; font-size: 15px; color: grey">Hey ${userData.name}!<br/><br/>
-                                We are very excited to have you with us! Use the code below to verify your email, and start using Quizzie!
+                                We are very excited to have you with us! Use the code below to verify your email, and start using Quiz portal!
                                 <br>
                                 <br>
                                 <br>
@@ -2108,4 +2108,3 @@ const emails = {
 };
 
 module.exports = emails;
-
