@@ -41,14 +41,11 @@ router.get(
 		const x = req.user;
 		var token = encodeURIComponent(req.user.token);
 		var name = encodeURIComponent(req.user.name);
-		// res.redirect(
-		// 	303,
-		// 	"https://quizzie.codechefvit.com/?name=" + name + "&token=" + token
-		// );
 		res.redirect(
 			303,
-			"http://localhost:3000/?name=" + name + "&token=" + token
+			"https://quizzie.codechefvit.com/?name=" + name + "&token=" + token
 		);
+		
 	}
 );
 
