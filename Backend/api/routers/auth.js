@@ -45,6 +45,7 @@ router.get(
 			303,
 			"https://quizzie.codechefvit.com/?name=" + name + "&token=" + token
 		);
+		
 	}
 );
 

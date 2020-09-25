@@ -7,7 +7,7 @@ const passportSetupAdmin = require("./Backend/api/config/passport-setup-admin");
 const passport = require("passport");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
-
+const ipfilter = require('express-ipfilter').IpFilter
 const rateLimit = require("express-rate-limit");
 
 ////routers
@@ -43,6 +43,10 @@ console.log(Date.now())
 //     maxAge: 24 * 60 * 60 * 1000,
 //     keys: [keys.cookieSession]
 // }));
+
+// const ips = ['172.67.176.16','104.24.123.191','104.24.122.191','10.41.141.207','10.63.249.212','10.69.232.242','108.162.194.81','162.159.38.81','172.64.34.81','172.64.33.140','173.245.59.140','108.162.193.140','162.243.166.170','157.245.130.6']
+// // // Create the server
+// app.use(ipfilter(ips, { mode: 'allow' }))
 
 // initialize passport
 app.use(passport.initialize());
