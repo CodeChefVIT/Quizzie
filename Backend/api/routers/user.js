@@ -425,7 +425,7 @@ router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 	const updateOps = {};
 	const updatableFields = ["name", "mobileNumber"];
 	var flag = 0;
-	for (const ops of req.body) {
+	for (const ops of req.body.updateOps) {
 		if (updatableFields.includes(ops.propName)) {
 			updateOps[ops.propName] = ops.value;
 		}

@@ -316,7 +316,7 @@ router.patch(
 				const id = req.params.quizId;
 				const updateOps = {};
 				var flag = 0;
-				for (const ops of req.body) {
+				for (const ops of req.body.updateOps) {
 					updateOps[ops.propName] = ops.value;
 				}
 				Quiz.updateOne({ _id: id }, { $set: updateOps })

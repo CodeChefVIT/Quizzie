@@ -360,7 +360,7 @@ router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 	const id = req.user.userId;
 	const updateOps = {};
 	var flag = 0;
-	for (const ops of req.body) {
+	for (const ops of req.body.updateOps) {
 		updateOps[ops.propName] = ops.value;
 	}
 	Admin.updateOne({ _id: id }, { $set: updateOps })

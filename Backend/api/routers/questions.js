@@ -144,7 +144,7 @@ router.patch(
 		});
 		const updateOps = {};
 		var flag = 0;
-		for (const ops of req.body) {
+		for (const ops of req.body.updateOps) {
 			updateOps[ops.propName] = ops.value;
 		}
 		await Question.updateOne(
