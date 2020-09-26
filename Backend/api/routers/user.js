@@ -140,7 +140,10 @@ router.post("/signup", async (req, res, next) => {
 			return res.status(401).json({
 				message: "Something went wrong",
 			});
-		}
+    }
+    if(err){
+      return err
+    }
 	});
 	User.find({ email: req.body.email })
 		.exec()
