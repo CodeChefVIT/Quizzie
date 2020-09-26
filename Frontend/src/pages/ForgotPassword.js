@@ -1,12 +1,13 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Button, Typography } from "@material-ui/core";
-import TextInput from '../components/TextInput';
+import TextInput from "../components/TextInput";
 import EmailValidator from "email-validator";
-import './ForgotPassword.css';
+import "./ForgotPassword.css";
 import axios from "axios";
 import Loading from "./Loading";
 import { Alert } from "@material-ui/lab";
 import { Redirect } from "react-router";
+import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 function ForgotPassword(props) {
 	const [userType] = useState(props.match.params.type);
@@ -21,11 +22,10 @@ function ForgotPassword(props) {
 	const [confirmPassword, setConfirmedPassword] = useState("");
 	const [confirmPasswordError, setConfirmedPasswordError] = useState("");
 
-	const [reset, setReset] =useState(true)
+	const [reset, setReset] = useState(true);
 	const [resetCode, setResetCode] = useState("");
 	const [resetCodeError, setResetCodeError] = useState("");
 	const [resetCodeChanged, setResetCodeChanged] = useState(false);
-
 
 	const [tokenSent, setTokenSent] = useState(false);
 	const [invalidKey, setInvalidKey] = useState(false);
@@ -36,34 +36,36 @@ function ForgotPassword(props) {
 	const [redirect, setRedirect] = useState(false);
 	const [loginRedirect, setLoginRedirect] = useState(false);
 
+	const { executeRecaptcha } = useGoogleReCaptcha();
+
 	const handleEmailChange = (event) => {
 		setEmailChanged(true);
 		changeEmail(event.target.value);
-	}
+	};
 
 	const handlePasswordChange = (event) => {
 		setPasswordChanged(true);
 		changePassword(event.target.value);
-	}
+	};
 
 	const handleConfirmPasswordChange = (event) => {
 		setConfirmedPassword(event.target.value);
-	}
+	};
 
 	const handleResetCodeChange = (event) => {
 		setResetCodeChanged(true);
 		setResetCode(event.target.value);
-	}
+	};
 
 	const keyPress = (event) => {
 		if (event.key === "Enter") {
-			if(tokenSent){
+			if (tokenSent) {
 				handleSubmit();
-			}else {
+			} else {
 				handleReset();
 			}
 		}
-	}
+	};
 
 	const mailErrorText = "Email cannot be empty!";
 	const resetCodeErrorText = "Enter the reset code.";
@@ -77,77 +79,82 @@ function ForgotPassword(props) {
 
 		let errors = false;
 
-		if(email.length === 0) {
+		if (email.length === 0) {
 			setEmailError(mailErrorText);
 			errors = true;
-		} else if(!EmailValidator.validate(email)) {
+		} else if (!EmailValidator.validate(email)) {
 			setEmailError("Invalid email address!");
 			errors = true;
 		}
 
-		if(!errors && emailError.length === 0) {
+		if (!errors && emailError.length === 0) {
 			setLoading(true);
+			let captcha = executeRecaptcha("forgot_pass");
+
 			let url = null;
-			if(userType === "organizer") {
+			if (userType === "organizer") {
 				url = `https://quizzie-api.herokuapp.com/admin/forgot`;
-			} else if(userType === "user") {
+			} else if (userType === "user") {
 				url = `https://quizzie-api.herokuapp.com/user/forgot`;
 			}
 
 			let data = {
 				email: email,
-			}
+				captcha: captcha,
+			};
 
 			try {
-				await axios.post(url, data).then(res => {
+				await axios.post(url, data).then((res) => {
 					setTokenSent(true);
-				})
-			} catch(error) {
-				if(error.response.status === 400){
+				});
+			} catch (error) {
+				if (error.response.status === 400) {
 					setNotSent(true);
 				}
 				console.log(error);
 			}
 		}
 		setLoading(false);
-	}
+	};
 
 	const handleSubmit = async (event) => {
 		// event.preventDefault();
 
 		let errors = false;
 
-		if(confirmPassword !== password) {
+		if (confirmPassword !== password) {
 			errors = true;
 			setConfirmedPasswordError(confirmPasswordErrorText);
 		}
 
-		if(!errors) {
+		if (!errors) {
 			setLoading(true);
 			let url = null;
 
-			if(userType === "organizer") {
+			if (userType === "organizer") {
 				url = `https://quizzie-api.herokuapp.com/admin/resetpass`;
-			} else if(userType === "user") {
+			} else if (userType === "user") {
 				url = `https://quizzie-api.herokuapp.com/user/resetpass`;
 			}
+			let captcha = executeRecaptcha("reset_pass");
 
 			let data = {
 				resetKey: resetCode,
 				newPassword: password,
-			}
+				captcha: captcha,
+			};
 
 			let response = null;
 			try {
-				await axios.post(url, data).then(res => {
+				await axios.post(url, data).then((res) => {
 					setReset(false);
 					setPasswordConfirmed(true);
 				});
-			} catch(error) {
+			} catch (error) {
 				setReset(false);
-				if(error.response.status === 400){
+				if (error.response.status === 400) {
 					setInvalidKey(true);
-				} else if(error.response.status === 401) {
+				} else if (error.response.status === 401) {
 					setExpiredKey(true);
 				}
 				console.log(error);
@@ -160,107 +167,186 @@ function ForgotPassword(props) {
 			setResetCodeChanged(false);
 		}
 		setLoading(false);
-	}
+	};
 
 	useEffect(() => {
-		if(props.match.params.type !== "user" && props.match.params.type !== "organizer") {
+		if (
+			props.match.params.type !== "user" &&
+			props.match.params.type !== "organizer"
+		) {
 			setRedirect(true);
 			return;
 		}
-		if(email.length === 0) setEmailError(mailErrorText);
+		if (email.length === 0) setEmailError(mailErrorText);
 		else setEmailError("");
 
-		if(password.length === 0) setPasswordError(passwordErrorText);
+		if (password.length === 0) setPasswordError(passwordErrorText);
 		else setPasswordError("");
 
-		if(resetCode.length === 0) setResetCodeError(resetCodeErrorText);
+		if (resetCode.length === 0) setResetCodeError(resetCodeErrorText);
 		else setResetCodeError("");
 	}, [email, password, resetCode]);
 
-	
 	useEffect(() => {
-		if(passwordConfirmed) {
+		if (passwordConfirmed) {
 			setTimeout(() => {
 				setLoginRedirect(true);
-			}, 1500)
+			}, 1500);
 		}
-	}, [passwordConfirmed])
+	}, [passwordConfirmed]);
 
-	if(loading) return <Loading />
-	else if(redirect) return <Redirect to="/" />
-	else if(loginRedirect) return <Redirect to={`/login/${userType}`} />
-	else if(!tokenSent) {
-		return (
-				<Container className="login-page">
-					<div className="login-form">
-						<Typography variant="h3" color="primary" className="login-head forgot-head">Forgot Password</Typography><br />
-						{notSent ? <Alert severity="error" color="warning">Couldn't send Reset code</Alert>: null}
-						<form className="form">
-							<TextInput
-								error={emailChanged? (emailError.length === 0? false: true): false}
-								helperText={emailChanged? (emailError.length === 0? null: emailError): null}
-								id="email"
-								label="Email"
-								type="email"
-								className="form-input"
-								variant="outlined"
-								value={email}
-								onChange={handleEmailChange}
-								onKeyPress={keyPress}></TextInput>
-						</form>
-						<Button className="login-btn" onClick={handleReset}>Send mail</Button>
-					</div>
-				</Container>
-		)
-	}
-	else if(tokenSent) {
+	if (loading) return <Loading />;
+	else if (redirect) return <Redirect to="/" />;
+	else if (loginRedirect) return <Redirect to={`/login/${userType}`} />;
+	else if (!tokenSent) {
 		return (
 			<Container className="login-page">
-					<div className="login-form">
-						<Typography variant="h3" color="primary" className="login-head forgot-head">Forgot Password</Typography><br />
-						{reset ? <Alert severity="info">Reset code sent!</Alert> : null }
-						{invalidKey? <Alert severity="error" color="warning">Invalid reset Code</Alert>: null}
-						{expiredKey? <Alert severity="error" color="warning">Reset Code expired!</Alert>: null}
-						{passwordConfirmed? <Alert severity="success" color="warning">Password reset successful! Redirecting...</Alert>: null}
-						<form className="form">
-							<TextInput
-								error={resetCodeChanged? (resetCodeError.length === 0? false: true): false}
-								helperText={resetCodeChanged? (resetCodeError.length === 0? null: resetCodeError): null}
-								id="reset-code"
-								label="Reset Code"
-								type="text"
-								className="form-input"
-								variant="outlined"
-								value={resetCode}
-								onChange={handleResetCodeChange}
-								onKeyPress={keyPress}></TextInput>
-							<TextInput
-								error={passwordChanged? (passwordError.length === 0? false: true): false}
-								helperText={passwordChanged? (passwordError.length === 0? null: passwordError): null}
-								id="password"
-								label="New Password"
-								type="password"
-								className="form-input"
-								variant="outlined"
-								value={password}
-								onChange={handlePasswordChange}
-								onKeyPress={keyPress}></TextInput>
-							<TextInput
-								error={confirmPasswordError.length === 0? false: true}
-								helperText={confirmPasswordError}
-								id="confirm-password"
-								label="Confirm Password"
-								type="password"
-								className="form-input"
-								variant="outlined"
-								value={confirmPassword}
-								onChange={handleConfirmPasswordChange}
-								onKeyPress={keyPress}></TextInput>
-						</form>
-						<Button className="login-btn" onClick={handleSubmit}>Reset Password</Button>
-					</div>
-				</Container>
-		)
+				<div className="login-form">
+					<Typography
+						variant="h3"
+						color="primary"
+						className="login-head forgot-head"
+					>
+						Forgot Password
+					</Typography>
+					<br />
+					{notSent ? (
+						<Alert severity="error" color="warning">
+							Couldn't send Reset code
+						</Alert>
+					) : null}
+					<form className="form">
+						<TextInput
+							error={
+								emailChanged
+									? emailError.length === 0
+										? false
+										: true
+									: false
+							}
+							helperText={
+								emailChanged
+									? emailError.length === 0
+										? null
+										: emailError
+									: null
+							}
+							id="email"
+							label="Email"
+							type="email"
+							className="form-input"
+							variant="outlined"
+							value={email}
+							onChange={handleEmailChange}
+							onKeyPress={keyPress}
+						></TextInput>
+					</form>
+					<Button className="login-btn" onClick={handleReset}>
+						Send mail
+					</Button>
+				</div>
+			</Container>
+		);
+	} else if (tokenSent) {
+		return (
+			<Container className="login-page">
+				<div className="login-form">
+					<Typography
+						variant="h3"
+						color="primary"
+						className="login-head forgot-head"
+					>
+						Forgot Password
+					</Typography>
+					<br />
+					{reset ? (
+						<Alert severity="info">Reset code sent!</Alert>
+					) : null}
+					{invalidKey ? (
+						<Alert severity="error" color="warning">
+							Invalid reset Code
+						</Alert>
+					) : null}
+					{expiredKey ? (
+						<Alert severity="error" color="warning">
+							Reset Code expired!
+						</Alert>
+					) : null}
+					{passwordConfirmed ? (
+						<Alert severity="success" color="warning">
+							Password reset successful! Redirecting...
+						</Alert>
+					) : null}
+					<form className="form">
+						<TextInput
+							error={
+								resetCodeChanged
+									? resetCodeError.length === 0
+										? false
+										: true
+									: false
+							}
+							helperText={
+								resetCodeChanged
+									? resetCodeError.length === 0
+										? null
+										: resetCodeError
+									: null
+							}
+							id="reset-code"
+							label="Reset Code"
+							type="text"
+							className="form-input"
+							variant="outlined"
+							value={resetCode}
+							onChange={handleResetCodeChange}
+							onKeyPress={keyPress}
+						></TextInput>
+						<TextInput
+							error={
+								passwordChanged
+									? passwordError.length === 0
+										? false
+										: true
+									: false
+							}
+							helperText={
+								passwordChanged
+									? passwordError.length === 0
+										? null
+										: passwordError
+									: null
+							}
+							id="password"
+							label="New Password"
+							type="password"
+							className="form-input"
+							variant="outlined"
+							value={password}
+							onChange={handlePasswordChange}
+							onKeyPress={keyPress}
+						></TextInput>
+						<TextInput
+							error={
+								confirmPasswordError.length === 0 ? false : true
+							}
+							helperText={confirmPasswordError}
+							id="confirm-password"
+							label="Confirm Password"
+							type="password"
+							className="form-input"
+							variant="outlined"
+							value={confirmPassword}
+							onChange={handleConfirmPasswordChange}
+							onKeyPress={keyPress}
+						></TextInput>
+					</form>
+					<Button className="login-btn" onClick={handleSubmit}>
+						Reset Password
+					</Button>
+				</div>
+			</Container>
+		);
 	}
 }
 

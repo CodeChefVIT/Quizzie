@@ -1,5 +1,5 @@
 Backend/node_modules
-.env
+**/.env
 node_modules
 Frontend/node_modules
 Frontend/.DS_Store
