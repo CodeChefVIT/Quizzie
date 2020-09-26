@@ -359,9 +359,12 @@ router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 	});
 	const id = req.user.userId;
 	const updateOps = {};
+	const updatableFields = ["name", "mobileNumber"];
 	var flag = 0;
 	for (const ops of req.body.updateOps) {
-		updateOps[ops.propName] = ops.value;
+		if (updatableFields.includes(ops.propName)) {
+			updateOps[ops.propName] = ops.value;
+		}
 	}
 	Admin.updateOne({ _id: id }, { $set: updateOps })
 		.exec()
