@@ -395,7 +395,9 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
 
-		let data = [
+		let captcha = executeRecaptcha("question_update");
+
+		let updateOps = [
 			{ propName: "description", value: newQuestion },
 			{
 				propName: "options",
@@ -416,6 +418,11 @@ function EditQuiz(props) {
 			},
 			{ propName: "correctAnswer", value: correctOption },
 		];
+
+		let data = {
+			updateOps: updateOps,
+			captcha: captcha,
+		};
 
 		try {
 			await axios

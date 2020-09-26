@@ -54,10 +54,15 @@ function UpdateProfile(props) {
 
 		setLoading(true);
 
-		let data = [
+		let updateOps = [
 			{ propName: "name", value: name },
 			{ propName: "mobileNumber", value: phoneNumber },
 		];
+
+		let data = {
+			updateOps,
+			captcha,
+		};
 
 		try {
 			await axios

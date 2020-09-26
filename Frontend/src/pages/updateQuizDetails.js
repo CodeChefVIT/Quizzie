@@ -59,11 +59,16 @@ function UpdateQuizDetails(props) {
 
 		let captcha = executeRecaptcha("update_quiz_details");
 
-		let data = [
+		let updateOps = [
 			{ propName: "quizName", value: quizName },
 			{ propName: "scheduledFor", value: quizDate.getTime() },
 			{ propName: "quizDuration", value: duration },
 		];
+
+		let data = {
+			updateOps,
+			captcha,
+		};
 
 		try {
 			await axios
