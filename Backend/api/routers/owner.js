@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
+const request = require("request");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const shortid = require("shortid");
@@ -22,6 +23,20 @@ const router = express.Router();
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
 router.post("/signup", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+	}
+	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+	request(verifyURL, (err, response, body) => {
+		body = JSON.parse(body);
+		if (!body.success || body.score < 0.4) {
+			return res.status(401).json({
+				message: "Something went wrong",
+			});
+		}
+	});
 	Owner.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -79,6 +94,20 @@ router.post("/signup", async (req, res, next) => {
 });
 
 router.post("/login", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+	}
+	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+	request(verifyURL, (err, response, body) => {
+		body = JSON.parse(body);
+		if (!body.success || body.score < 0.4) {
+			return res.status(401).json({
+				message: "Something went wrong",
+			});
+		}
+	});
 	Owner.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -155,6 +184,20 @@ router.delete(
 	checkAuth,
 	checkAuthOwner,
 	async (req, res, next) => {
+		if (!req.body.captcha) {
+			res.status(400).json({
+				message: "No recaptcha token",
+			});
+		}
+		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+		request(verifyURL, (err, response, body) => {
+			body = JSON.parse(body);
+			if (!body.success || body.score < 0.4) {
+				res.status(401).json({
+					message: "Something went wrong",
+				});
+			}
+		});
 		await Quiz.findById(req.params.quizId)
 			.then(async (result) => {
 				var numUsers = result.usersEnrolled.length;
@@ -266,6 +309,20 @@ router.delete(
 	checkAuth,
 	checkAuthOwner,
 	async (req, res, next) => {
+		if (!req.body.captcha) {
+			res.status(400).json({
+				message: "No recaptcha token",
+			});
+		}
+		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+		request(verifyURL, (err, response, body) => {
+			body = JSON.parse(body);
+			if (!body.success || body.score < 0.4) {
+				res.status(401).json({
+					message: "Something went wrong",
+				});
+			}
+		});
 		await Admin.findById(req.params.adminId)
 			.exec()
 			.then(async (result) => {
@@ -333,6 +390,20 @@ router.patch(
 	checkAuth,
 	checkAuthOwner,
 	async (req, res, next) => {
+		if (!req.body.captcha) {
+			res.status(400).json({
+				message: "No recaptcha token",
+			});
+		}
+		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+		request(verifyURL, (err, response, body) => {
+			body = JSON.parse(body);
+			if (!body.success || body.score < 0.4) {
+				res.status(401).json({
+					message: "Something went wrong",
+				});
+			}
+		});
 		await Owner.findOne({ _id: req.user.userId })
 			.then(async (result) => {
 				bcrypt.compare(req.body.password, result.password, (err, result1) => {
@@ -348,7 +419,10 @@ router.patch(
 									err,
 								});
 							}
-							Owner.updateOne({ _id: req.user.userId }, { $set: { password: hash } })
+							Owner.updateOne(
+								{ _id: req.user.userId },
+								{ $set: { password: hash } }
+							)
 								.then((result) => {
 									res.status(200).json({
 										message: "Password changed",
