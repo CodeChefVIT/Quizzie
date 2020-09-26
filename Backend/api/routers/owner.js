@@ -36,6 +36,11 @@ router.post("/signup", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	Owner.find({ email: req.body.email })
 		.exec()
@@ -107,6 +112,11 @@ router.post("/login", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	Owner.find({ email: req.body.email })
 		.exec()
@@ -197,6 +207,11 @@ router.delete(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await Quiz.findById(req.params.quizId)
 			.then(async (result) => {
@@ -322,6 +337,11 @@ router.delete(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await Admin.findById(req.params.adminId)
 			.exec()
@@ -403,6 +423,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await Owner.findOne({ _id: req.user.userId })
 			.then(async (result) => {

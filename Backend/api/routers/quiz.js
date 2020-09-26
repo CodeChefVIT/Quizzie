@@ -45,6 +45,11 @@ router.post(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		if (req.body.quizType.toLowerCase() == "private") {
 			const quiz = new Quiz({
@@ -153,6 +158,11 @@ router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	Quiz.findById(req.body.quizId)
 		.exec()
@@ -218,6 +228,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		Quiz.findOne({ quizCode: req.body.quizCode })
 			.exec()
@@ -284,6 +299,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await Quiz.findById(req.params.quizId)
 			.exec()
@@ -359,6 +379,11 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	await User.findById(req.user.userId)
 		.then(async (result) => {
@@ -423,6 +448,11 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	await Quiz.findById(req.body.quizId)
 		.then(async (result0) => {
@@ -718,6 +748,11 @@ router.patch("/finish", checkAuth, async (req, res) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
 		.then((result) => {
@@ -746,6 +781,11 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
@@ -870,6 +910,11 @@ router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	await Quiz.findById(req.body.quizId)
 		.then(async (result) => {
@@ -932,6 +977,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await Quiz.updateOne(
 			{ _id: req.body.quizId },
@@ -975,6 +1025,11 @@ router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 1;
@@ -1007,6 +1062,11 @@ router.patch("/close", checkAuth, checkAuthAdmin, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 2;

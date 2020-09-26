@@ -35,6 +35,11 @@ router.delete("/:questionId", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	await Question.deleteOne({ _id: req.params.questionId })
 		.exec()
@@ -81,6 +86,11 @@ router.post("/add", checkAuth, checkAuthAdmin, async (req, res, next) => {
 						message: "Something went wrong",
 					});
 				}
+        if(err){
+          return res.status(500).json({
+            message: "Google error",
+          });
+        }
 			});
 			new Question({
 				_id: new mongoose.Types.ObjectId(),
@@ -126,6 +136,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		const updateOps = {};
 		var flag = 0;
@@ -159,6 +174,11 @@ router.post("/csv", checkAuth, checkAuthAdmin, async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const { questions } = req.body;
 	await Question.insertMany(questions)

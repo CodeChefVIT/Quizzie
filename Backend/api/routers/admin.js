@@ -35,6 +35,11 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const { email } = req.body;
 	const user = await Admin.findOne({ email });
@@ -89,6 +94,11 @@ router.patch("/verifyEmail", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const { verificationKey } = req.body;
 	await Admin.findOne({ verificationKey })
@@ -138,6 +148,11 @@ router.post("/signup", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -237,6 +252,11 @@ router.post("/login", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	Admin.find({ email: req.body.email })
 		.exec()
@@ -331,6 +351,11 @@ router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const id = req.user.userId;
 	const updateOps = {};
@@ -419,6 +444,11 @@ router.patch(
 							message: "Something went wrong",
 						});
 					}
+          if(err){
+            return res.status(500).json({
+              message: "Google error",
+            });
+          }
 				});
 				bcrypt.compare(req.body.password, result.password, (err, result1) => {
 					if (err) {
@@ -499,6 +529,11 @@ router.post("/forgot", (req, res) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	var email = req.body.email;
 	Admin.findOne({ email: email }, (err, userData) => {
@@ -553,6 +588,11 @@ router.post("/resetpass", async (req, res) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	let resetKey = req.body.resetKey;
 	let newPassword = req.body.newPassword;

@@ -36,6 +36,11 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 				message: "Something went wrong",
 			});
     }
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const user = await User.findOne({ email });
 	if (user) {
@@ -91,6 +96,11 @@ router.patch("/verifyEmail", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const { verificationKey } = req.body;
 	await User.findOne({ verificationKey })
@@ -135,14 +145,15 @@ router.post("/signup", async (req, res, next) => {
 	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
 	request(verifyURL, (err, response, body) => {
     body = JSON.parse(body);
-    console.log(body)
 		if (!body.success || body.score < 0.4) {
 			return res.status(401).json({
 				message: "Something went wrong",
 			});
     }
     if(err){
-      return err
+      return res.status(500).json({
+				message: "Google error",
+			});
     }
 	});
 	User.find({ email: req.body.email })
@@ -245,6 +256,11 @@ router.post("/login", async (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	User.find({ email: req.body.email })
 		.exec()
@@ -399,6 +415,11 @@ router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	const id = req.user.userId;
 	const updateOps = {};
@@ -441,6 +462,11 @@ router.patch(
 					message: "Something went wrong",
 				});
 			}
+      if(err){
+        return res.status(500).json({
+          message: "Google error",
+        });
+      }
 		});
 		await User.findOne({ _id: req.user.userId })
 			.then(async (result) => {
@@ -502,6 +528,11 @@ router.post("/forgot", (req, res) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	var email = req.body.email;
 	User.findOne({ email: email }, (err, userData) => {
@@ -554,6 +585,11 @@ router.post("/resetpass", async (req, res) => {
 				message: "Something went wrong",
 			});
 		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
 	});
 	let resetKey = req.body.resetKey;
 	let newPassword = req.body.newPassword;
