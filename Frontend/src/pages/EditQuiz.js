@@ -266,8 +266,11 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/restart`;
 
+		let captcha = executeRecaptcha("restart_quiz");
+
 		let data = {
 			quizId: quizId,
+			captcha: captcha,
 		};
 
 		try {
@@ -290,8 +293,11 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/close`;
 
+		let captcha = executeRecaptcha("quiz_close");
+
 		let data = {
 			quizId: quizId,
+			captcha: captcha,
 		};
 
 		try {
@@ -339,6 +345,8 @@ function EditQuiz(props) {
 	const handleDeleteQuestion = async () => {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/${updateId}`;
+
+		// let captcha = executeRecaptcha("delete_quiz");
 
 		try {
 			await axios
