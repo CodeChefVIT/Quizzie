@@ -897,25 +897,6 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 });
 
 router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
-	if (!req.body.captcha) {
-		return res.status(400).json({
-			message: "No recaptcha token",
-		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
-      return res.status(500).json({
-				message: "Google error",
-			});
-    }
-	});
 	await Quiz.findById(req.body.quizId)
 		.then(async (result) => {
 			var numUsers = result.usersEnrolled.length;
