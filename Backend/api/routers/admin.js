@@ -87,6 +87,7 @@ router.patch("/verifyEmail", async (req, res, next) => {
 		});
   }
   const flag = 0;
+  console.log(verifyURL)
 	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
 	request(verifyURL, (err, response, body) => {
     body = JSON.parse(body);
