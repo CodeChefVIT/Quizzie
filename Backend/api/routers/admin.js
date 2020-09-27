@@ -100,6 +100,11 @@ router.patch("/verifyEmail", async (req, res, next) => {
           message: "Something went wrong",
         });
       }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
     }catch(err){
       return res.status(500).json({
         error: err
