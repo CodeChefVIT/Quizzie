@@ -26,21 +26,33 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	const { email } = req.body;
 	const user = await Admin.findOne({ email });
 	if (user) {
@@ -86,7 +98,7 @@ router.patch("/verifyEmail", async (req, res, next) => {
 			message: "No recaptcha token",
 		});
   }
-  const flag = 0;
+  var flag = 0;
   const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
   console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
@@ -111,9 +123,7 @@ router.patch("/verifyEmail", async (req, res, next) => {
       })
     }
   });
-  if(flag = 1){
-
-  
+  console.log(flag)
 	const { verificationKey } = req.body;
 	await Admin.findOne({ verificationKey })
 		.then(async (user) => {
@@ -145,7 +155,6 @@ router.patch("/verifyEmail", async (req, res, next) => {
 				error: err.toString(),
 			});
     });
-  }
 });
 
 //signup
@@ -154,21 +163,33 @@ router.post("/signup", async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	Admin.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -259,21 +280,33 @@ router.post("/login", async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	Admin.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -450,25 +483,37 @@ router.patch(
 	async (req, res, next) => {
 		await Admin.findOne({ _id: req.user.userId })
 			.then(async (result) => {
-				if (!req.body.captcha) {
-					res.status(400).json({
-						message: "No recaptcha token",
-					});
-				}
-				const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-				request(verifyURL, (err, response, body) => {
-					body = JSON.parse(body);
-					if (!body.success || body.score < 0.4) {
-						res.status(401).json({
-							message: "Something went wrong",
-						});
-					}
-          if(err){
+        if (!req.body.captcha) {
+          return res.status(400).json({
+            message: "No recaptcha token",
+          });
+        }
+        var flag = 0;
+        const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+        console.log(verifyURL)
+        request(verifyURL, (err, response, body) => {
+          body = JSON.parse(body);
+          console.log(err)
+          console.log(body)
+          try{
+            if (!body.success || body.score < 0.4) {
+              flag = 1
+              return res.status(401).json({
+                message: "Something went wrong",
+              });
+            }
+            if(err){
+              return res.status(401).json({
+                message: err.toString(),
+              });
+            }
+          }catch(err){
             return res.status(500).json({
-              message: "Google error",
-            });
+              error: err
+            })
           }
-				});
+        });
+        console.log(flag)
 				bcrypt.compare(req.body.password, result.password, (err, result1) => {
 					if (err) {
 						return res.status(401).json({
@@ -535,25 +580,37 @@ router.get(
 );
 
 router.post("/forgot", (req, res) => {
-	if (!req.body.captcha) {
-		return res.status(400).json({
-			message: "No recaptcha token",
-		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
-      return res.status(500).json({
-				message: "Google error",
-			});
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
     }
-	});
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 	var email = req.body.email;
 	Admin.findOne({ email: email }, (err, userData) => {
 		if (!err && userData != null) {
@@ -598,21 +655,33 @@ router.post("/resetpass", async (req, res) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	let resetKey = req.body.resetKey;
 	let newPassword = req.body.newPassword;
 

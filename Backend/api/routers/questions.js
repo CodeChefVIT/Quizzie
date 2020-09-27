@@ -54,25 +54,37 @@ router.post("/add", checkAuth, checkAuthAdmin, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.exec()
 		.then(async (result1) => {
-			if (!req.body.captcha) {
-				res.status(400).json({
-					message: "No recaptcha token",
-				});
-			}
-			const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-			request(verifyURL, (err, response, body) => {
-				body = JSON.parse(body);
-				if (!body.success || body.score < 0.4) {
-					res.status(401).json({
-						message: "Something went wrong",
-					});
-				}
-        if(err){
+      if (!req.body.captcha) {
+        return res.status(400).json({
+          message: "No recaptcha token",
+        });
+      }
+      var flag = 0;
+      const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+      console.log(verifyURL)
+      request(verifyURL, (err, response, body) => {
+        body = JSON.parse(body);
+        console.log(err)
+        console.log(body)
+        try{
+          if (!body.success || body.score < 0.4) {
+            flag = 1
+            return res.status(401).json({
+              message: "Something went wrong",
+            });
+          }
+          if(err){
+            return res.status(401).json({
+              message: err.toString(),
+            });
+          }
+        }catch(err){
           return res.status(500).json({
-            message: "Google error",
-          });
+            error: err
+          })
         }
-			});
+      });
+      console.log(flag)
 			new Question({
 				_id: new mongoose.Types.ObjectId(),
 				quizId: req.body.quizId,
@@ -104,25 +116,37 @@ router.patch(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			if (!body.success || body.score < 0.4) {
-				res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-      if(err){
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
         return res.status(500).json({
-          message: "Google error",
-        });
+          error: err
+        })
       }
-		});
+    });
+    console.log(flag)
 		const updateOps = {};
 		var flag = 0;
 		for (const ops of req.body.updateOps) {
@@ -146,21 +170,33 @@ router.post("/csv", checkAuth, checkAuthAdmin, async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	const { questions } = req.body;
 	await Question.insertMany(questions)
 		.then((result) => {

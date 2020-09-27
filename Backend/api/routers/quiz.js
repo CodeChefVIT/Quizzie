@@ -32,25 +32,37 @@ router.post(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			if (!body.success || body.score < 0.4) {
-				res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-      if(err){
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
         return res.status(500).json({
-          message: "Google error",
-        });
+          error: err
+        })
       }
-		});
+    });
+    console.log(flag)
 		if (req.body.quizType.toLowerCase() == "private") {
 			const quiz = new Quiz({
 				_id: new mongoose.Types.ObjectId(),
@@ -149,21 +161,33 @@ router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	Quiz.findById(req.body.quizId)
 		.exec()
 		.then(async (result2) => {
@@ -215,25 +239,37 @@ router.patch(
 	checkAuth,
 	checkAuthUser,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			if (!body.success || body.score < 0.4) {
-				res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-      if(err){
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
         return res.status(500).json({
-          message: "Google error",
-        });
+          error: err
+        })
       }
-		});
+    });
+    console.log(flag)
 		Quiz.findOne({ quizCode: req.body.quizCode })
 			.exec()
 			.then(async (result2) => {
@@ -286,25 +322,37 @@ router.patch(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			if (!body.success || body.score < 0.4) {
-				res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-      if(err){
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
         return res.status(500).json({
-          message: "Google error",
-        });
+          error: err
+        })
       }
-		});
+    });
+    console.log(flag)
 		await Quiz.findById(req.params.quizId)
 			.exec()
 			.then(async (result1) => {
@@ -370,21 +418,33 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	await User.findById(req.user.userId)
 		.then(async (result) => {
 			var numQuiz = result.quizzesEnrolled.length;
@@ -439,21 +499,33 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	await Quiz.findById(req.body.quizId)
 		.then(async (result0) => {
 			await Question.find({ quizId: req.body.quizId })
@@ -739,21 +811,33 @@ router.patch("/finish", checkAuth, async (req, res) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
 		.then((result) => {
 			res.status(200).json({
@@ -772,21 +856,33 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
 	const timeEnded = req.body.timeEnded;
@@ -945,25 +1041,37 @@ router.patch(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			if (!body.success || body.score < 0.4) {
-				res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-      if(err){
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
         return res.status(500).json({
-          message: "Google error",
-        });
+          error: err
+        })
       }
-		});
+    });
+    console.log(flag)
 		await Quiz.updateOne(
 			{ _id: req.body.quizId },
 			{ $pull: { usersEnrolled: { userId: req.body.userId } } }
@@ -994,24 +1102,36 @@ router.patch(
 
 router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
 	if (!req.body.captcha) {
-		res.status(400).json({
+		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 1;
 	quiz.quizRestart = 1;
@@ -1031,24 +1151,36 @@ router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
 
 router.patch("/close", checkAuth, checkAuthAdmin, async (req, res, next) => {
 	if (!req.body.captcha) {
-		res.status(400).json({
+		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: err
+      })
     }
-	});
+  });
+  console.log(flag)
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 2;
 	quiz.quizRestart = 0;
