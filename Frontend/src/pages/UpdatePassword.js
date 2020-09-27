@@ -85,7 +85,7 @@ function UpdateProfile(props) {
 		if (!validate()) return;
 
 		setLoading(true);
-		let captcha = executeRecaptcha("update_password");
+		let captcha = await executeRecaptcha("update_password");
 
 		let data = {
 			password: oldPass,

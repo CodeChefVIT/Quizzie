@@ -111,7 +111,7 @@ function LoginPage(props) {
 			if (type === "organizer") lType = "admin";
 
 			let url = `https://quizzie-api.herokuapp.com/${lType}/login`;
-			let token = executeRecaptcha("login_page");
+			let token = await executeRecaptcha("login_page");
 
 			let data = {
 				email: email,
