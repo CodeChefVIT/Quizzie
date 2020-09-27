@@ -88,7 +88,8 @@ router.patch("/verifyEmail", async (req, res, next) => {
 	}
 	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
 	request(verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
+    body = JSON.parse(body);
+    console.log(body)
 		if (!body.success || body.score < 0.4) {
 			return res.status(401).json({
 				message: "Something went wrong",
