@@ -245,9 +245,6 @@ router.get("/google", (req, res, next) => {
 	res.send("Welcome you are logged in as " + req.user);
 });
 
-router.get("/hello", (req, res, next) => {
-	res.send("HELLO");
-});
 
 ////Get Profile
 
@@ -329,9 +326,12 @@ router.get(
 router.patch("/updateProfile", checkAuth, checkAuthUser, (req, res, next) => {
 	const id = req.user.userId;
 	const updateOps = {};
+	const updatableFields = ["name","mobileNumber"]
 	var flag = 0;
 	for (const ops of req.body) {
-		updateOps[ops.propName] = ops.value;
+		if(updatableFields.includes(ops.propName)){
+			updateOps[ops.propName] = ops.value;
+		}
 	}
 	User.updateOne({ _id: id }, { $set: updateOps })
 		.exec()
