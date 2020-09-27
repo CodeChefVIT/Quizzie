@@ -55,7 +55,7 @@ function Quiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/check";
 
-		let captcha = executeRecaptcha("submit_token");
+		let captcha = await executeRecaptcha("submit_token");
 
 		let data = {
 			quizId: quizId,

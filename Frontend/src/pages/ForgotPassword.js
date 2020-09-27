@@ -89,7 +89,7 @@ function ForgotPassword(props) {
 
 		if (!errors && emailError.length === 0) {
 			setLoading(true);
-			let captcha = executeRecaptcha("forgot_pass");
+			let captcha = await executeRecaptcha("forgot_pass");
 
 			let url = null;
 			if (userType === "organizer") {
@@ -136,7 +136,7 @@ function ForgotPassword(props) {
 			} else if (userType === "user") {
 				url = `https://quizzie-api.herokuapp.com/user/resetpass`;
 			}
-			let captcha = executeRecaptcha("reset_pass");
+			let captcha = await executeRecaptcha("reset_pass");
 
 			let data = {
 				resetKey: resetCode,

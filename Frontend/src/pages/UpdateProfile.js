@@ -40,7 +40,7 @@ function UpdateProfile(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/${type}/updateProfile`;
 
-		let captcha = executeRecaptcha("update_profile");
+		let captcha = await executeRecaptcha("update_profile");
 
 		if (name.trim().length === 0) {
 			setNameError(true);
