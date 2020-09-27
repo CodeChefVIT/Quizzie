@@ -94,12 +94,12 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 ///Verify email
 router.patch("/verifyEmail", async (req, res, next) => {
 	if (!req.body.captcha) {
-    console.log(req.body.captcha)
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
+  console.log(req.body.captcha)
   const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
   console.log(verifyURL)
 	request(verifyURL, (err, response, body) => {
