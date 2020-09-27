@@ -94,6 +94,7 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 ///Verify email
 router.patch("/verifyEmail", async (req, res, next) => {
 	if (!req.body.captcha) {
+    console.log(req.body.captcha)
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
