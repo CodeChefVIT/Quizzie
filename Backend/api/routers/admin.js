@@ -85,22 +85,28 @@ router.patch("/verifyEmail", async (req, res, next) => {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
+  }
+  const flag = 0;
 	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
 	request(verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(body)
-		if (!body.success || body.score < 0.4) {
-			return res.status(401).json({
-				message: "Something went wrong",
-			});
-		}
-    if(err){
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+    }catch(e){
       return res.status(500).json({
-				message: "Google error",
-			});
+        error: e
+      })
     }
-	});
+  });
+  if(flag = 1){
+
+  
 	const { verificationKey } = req.body;
 	await Admin.findOne({ verificationKey })
 		.then(async (user) => {
@@ -131,7 +137,8 @@ router.patch("/verifyEmail", async (req, res, next) => {
 				message: "Invalid verification key",
 				error: err.toString(),
 			});
-		});
+    });
+  }
 });
 
 //signup
@@ -235,7 +242,8 @@ router.post("/signup", async (req, res, next) => {
 			res.status(500).json({
 				error: err.toString(),
 			});
-		});
+    });
+  
 });
 
 //login
