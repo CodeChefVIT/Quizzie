@@ -8,12 +8,12 @@ const nodemailer = require("nodemailer");
 const passport = require("passport");
 //const sharp = require('sharp');
 const User = require("../models/user");
+const request = require("request");
 const Quiz = require("../models/quiz");
 const Admin = require("../models/admin");
 const Owner = require("../models/owner");
 
 const checkAuth = require("../middleware/checkAuth");
-
 const router = express.Router();
 
 router.get("/checkUser", checkAuth, async (req, res) => {
@@ -62,6 +62,26 @@ router.get("/checkUser", checkAuth, async (req, res) => {
 				});
 			});
 	}
+});
+
+router.post("/verifyReCaptcha", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+	}
+	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+	request(verifyURL, (err, response, body) => {
+		body = JSON.parse(body);
+		if (!body.success || body.score < 0.4) {
+			return res.status(401).json({
+				message: "Something went wrong",
+			});
+		}
+		res.status(200).json({
+			message: "Verified",
+		});
+	});
 });
 
 module.exports = router;

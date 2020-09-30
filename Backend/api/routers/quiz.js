@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
+const request = require("request");
 const shortid = require("shortid");
 const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
@@ -31,6 +32,37 @@ router.post(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		if (req.body.quizType.toLowerCase() == "private") {
 			const quiz = new Quiz({
 				_id: new mongoose.Types.ObjectId(),
@@ -39,8 +71,8 @@ router.post(
 				scheduledFor: req.body.scheduledFor,
 				quizDuration: req.body.quizDuration,
 				quizType: req.body.quizType.toLowerCase(),
-        quizCode: shortid.generate(),
-        quizRestart:0
+				quizCode: shortid.generate(),
+				quizRestart: 0,
 			});
 			quiz
 				.save()
@@ -125,6 +157,37 @@ router.get("/all", checkAuth, async (req, res, next) => {
 
 ///Enroll/get access to a quiz
 router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	Quiz.findById(req.body.quizId)
 		.exec()
 		.then(async (result2) => {
@@ -176,6 +239,37 @@ router.patch(
 	checkAuth,
 	checkAuthUser,
 	async (req, res, next) => {
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		Quiz.findOne({ quizCode: req.body.quizCode })
 			.exec()
 			.then(async (result2) => {
@@ -228,6 +322,37 @@ router.patch(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		await Quiz.findById(req.params.quizId)
 			.exec()
 			.then(async (result1) => {
@@ -239,7 +364,7 @@ router.patch(
 				const id = req.params.quizId;
 				const updateOps = {};
 				var flag = 0;
-				for (const ops of req.body) {
+				for (const ops of req.body.updateOps) {
 					updateOps[ops.propName] = ops.value;
 				}
 				Quiz.updateOne({ _id: id }, { $set: updateOps })
@@ -289,6 +414,37 @@ router.get(
 );
 
 router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	await User.findById(req.user.userId)
 		.then(async (result) => {
 			var numQuiz = result.quizzesEnrolled.length;
@@ -339,13 +495,44 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 });
 
 router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	await Quiz.findById(req.body.quizId)
 		.then(async (result0) => {
 			await Question.find({ quizId: req.body.quizId })
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
-          if (result0.quizRestart == 1) {
+					if (result0.quizRestart == 1) {
 						await User.findById(req.user.userId)
 							.then(async (result2) => {
 								for (let i = result.length - 1; i > 0; i--) {
@@ -396,9 +583,9 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 											message: "Quiz started for " + req.user.name,
 											data,
 											duration: result0.quizDuration,
-                      scheduledFor: result0.scheduledFor,
-                      quizRestart:result0.quizRestart,
-                      quizStatus:result0.quizStatus
+											scheduledFor: result0.scheduledFor,
+											quizRestart: result0.quizRestart,
+											quizStatus: result0.quizStatus,
 										});
 									})
 									.catch(async (err) => {
@@ -413,8 +600,7 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 									message: "Some error Occurred",
 								});
 							});
-					}
-					else if (result0.quizStatus == 0) {
+					} else if (result0.quizStatus == 0) {
 						if (
 							Date.now() >=
 							Number(result0.scheduledFor) +
@@ -487,12 +673,12 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 														data.push(object);
 													}
 													await res.status(200).json({
-                            message: "Quiz started for " + req.user.name,
-                            data,
-                            duration: result0.quizDuration,
-                            scheduledFor: result0.scheduledFor,
-                            quizRestart:result0.quizRestart,
-                            quizStatus:result0.quizStatus
+														message: "Quiz started for " + req.user.name,
+														data,
+														duration: result0.quizDuration,
+														scheduledFor: result0.scheduledFor,
+														quizRestart: result0.quizRestart,
+														quizStatus: result0.quizStatus,
 													});
 												})
 												.catch(async (err) => {
@@ -568,9 +754,9 @@ router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
 											message: "Quiz started for " + req.user.name,
 											data,
 											duration: result0.quizDuration,
-                      scheduledFor: result0.scheduledFor,
-                      quizRestart:result0.quizRestart,
-                      quizStatus:result0.quizStatus
+											scheduledFor: result0.scheduledFor,
+											quizRestart: result0.quizRestart,
+											quizStatus: result0.quizStatus,
 										});
 									})
 									.catch(async (err) => {
@@ -621,6 +807,37 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 });
 
 router.patch("/finish", checkAuth, async (req, res) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
 		.then((result) => {
 			res.status(200).json({
@@ -635,6 +852,37 @@ router.patch("/finish", checkAuth, async (req, res) => {
 });
 
 router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
 	const timeEnded = req.body.timeEnded;
@@ -793,6 +1041,37 @@ router.patch(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		await Quiz.updateOne(
 			{ _id: req.body.quizId },
 			{ $pull: { usersEnrolled: { userId: req.body.userId } } }
@@ -821,53 +1100,102 @@ router.patch(
 	}
 );
 
-router.patch(
-	"/restart",
-	checkAuth,
-	checkAuthAdmin,
-	async (req, res, next) => {
-		const quiz = await Quiz.findById(req.body.quizId);
-    quiz.quizStatus = 1;
-    quiz.quizRestart =1
-		await quiz
-			.save()
-			.then((result) => {
-        res.status(200).json({
-          message:"Quiz restarted"
-        })
+router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
       })
-			.catch((err) => {
-        res.status(400).json({
-          message:"error"
-        })
-      });
-	}
-);
+    }
+  });
+  console.log(flag)
+	const quiz = await Quiz.findById(req.body.quizId);
+	quiz.quizStatus = 1;
+	quiz.quizRestart = 1;
+	await quiz
+		.save()
+		.then((result) => {
+			res.status(200).json({
+				message: "Quiz restarted",
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "error",
+			});
+		});
+});
 
-router.patch(
-	"/close",
-	checkAuth,
-	checkAuthAdmin,
-	async (req, res, next) => {
-		const quiz = await Quiz.findById(req.body.quizId);
-    quiz.quizStatus = 2;
-    quiz.quizRestart = 0 ;
-		await quiz
-			.save()
-			.then((result) => {
-        res.status(200).json({
-          message:"Quiz restarted"
-        })
+router.patch("/close", checkAuth, checkAuthAdmin, async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
       })
-			.catch((err) => {
-        res.status(400).json({
-          message:"error"
-        })
-      });
-	}
-);
-
-
-
+    }
+  });
+  console.log(flag)
+	const quiz = await Quiz.findById(req.body.quizId);
+	quiz.quizStatus = 2;
+	quiz.quizRestart = 0;
+	await quiz
+		.save()
+		.then((result) => {
+			res.status(200).json({
+				message: "Quiz restarted",
+			});
+		})
+		.catch((err) => {
+			res.status(400).json({
+				message: "error",
+			});
+		});
+});
 
 module.exports = router;

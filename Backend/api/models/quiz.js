@@ -33,7 +33,7 @@ const QuizSchema = new mongoose.Schema({
 		default: 0,
   },
   quizRestart:{
-    type:Number,
+    type: Number,
     default:0
   }
 });
