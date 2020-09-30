@@ -212,7 +212,7 @@ function ForgotPassword(props) {
 					<br />
 					{notSent ? (
 						<Alert severity="error" color="warning">
-							Couldn't send Reset code
+							We can't find a user with that e-mail address.
 						</Alert>
 					) : null}
 					<form className="form">
