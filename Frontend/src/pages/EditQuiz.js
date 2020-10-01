@@ -193,7 +193,7 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/question/csv";
 
-		let captcha = executeRecaptcha("submit_csv");
+		let captcha = await executeRecaptcha("submit_csv");
 
 		let data = {
 			questions: questions,
@@ -266,7 +266,7 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/restart`;
 
-		let captcha = executeRecaptcha("restart_quiz");
+		let captcha = await executeRecaptcha("restart_quiz");
 
 		let data = {
 			quizId: quizId,
@@ -293,7 +293,7 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/close`;
 
-		let captcha = executeRecaptcha("quiz_close");
+		let captcha = await executeRecaptcha("quiz_close");
 
 		let data = {
 			quizId: quizId,
@@ -395,7 +395,7 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/update/${updateId}`;
 
-		let captcha = executeRecaptcha("question_update");
+		let captcha = await executeRecaptcha("question_update");
 
 		let updateOps = [
 			{ propName: "description", value: newQuestion },
@@ -479,7 +479,7 @@ function EditQuiz(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/question/add`;
 
-		let captcha = executeRecaptcha("submit_question");
+		let captcha = await executeRecaptcha("submit_question");
 
 		let options = [
 			{ text: option1 },

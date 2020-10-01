@@ -89,7 +89,7 @@ function ForgotPassword(props) {
 
 		if (!errors && emailError.length === 0) {
 			setLoading(true);
-			let captcha = executeRecaptcha("forgot_pass");
+			let captcha = await executeRecaptcha("forgot_pass");
 
 			let url = null;
 			if (userType === "organizer") {
@@ -136,7 +136,7 @@ function ForgotPassword(props) {
 			} else if (userType === "user") {
 				url = `https://quizzie-api.herokuapp.com/user/resetpass`;
 			}
-			let captcha = executeRecaptcha("reset_pass");
+			let captcha = await executeRecaptcha("reset_pass");
 
 			let data = {
 				resetKey: resetCode,
@@ -212,7 +212,7 @@ function ForgotPassword(props) {
 					<br />
 					{notSent ? (
 						<Alert severity="error" color="warning">
-							Couldn't send Reset code
+							We couldn't find a user with that e-mail address.
 						</Alert>
 					) : null}
 					<form className="form">

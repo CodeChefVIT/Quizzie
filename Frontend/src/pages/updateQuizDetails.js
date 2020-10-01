@@ -57,7 +57,7 @@ function UpdateQuizDetails(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/updateDetails/${quizId}`;
 
-		let captcha = executeRecaptcha("update_quiz_details");
+		let captcha = await executeRecaptcha("update_quiz_details");
 
 		let updateOps = [
 			{ propName: "quizName", value: quizName },

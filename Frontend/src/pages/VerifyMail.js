@@ -67,7 +67,7 @@ function VerifyMail(props) {
 				url = `https://quizzie-api.herokuapp.com/user/verifyEmail`;
 			}
 
-			let captcha = executeRecaptcha("email_verify");
+			let captcha = await executeRecaptcha("email_verify");
 
 			let data = {
 				verificationKey: code,

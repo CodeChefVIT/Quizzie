@@ -64,7 +64,7 @@ function CreateQuiz() {
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/createQuiz";
 
-		let captcha = executeRecaptcha("create_quiz");
+		let captcha = await executeRecaptcha("create_quiz");
 
 		let data = {
 			quizName: quizName,

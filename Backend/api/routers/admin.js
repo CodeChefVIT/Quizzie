@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const multer = require("multer");
+const request = require("request");
 const shortid = require("shortid");
 const nodemailer = require("nodemailer");
 const sgMail = require("@sendgrid/mail");
@@ -21,6 +22,37 @@ const router = express.Router();
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
 router.post("/resendVerificationEmail", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const { email } = req.body;
 	const user = await Admin.findOne({ email });
 	if (user) {
@@ -61,6 +93,38 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 });
 ///Verify email
 router.patch("/verifyEmail", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  console.log(req.body.captcha)
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const { verificationKey } = req.body;
 	await Admin.findOne({ verificationKey })
 		.then(async (user) => {
@@ -91,11 +155,42 @@ router.patch("/verifyEmail", async (req, res, next) => {
 				message: "Invalid verification key",
 				error: err.toString(),
 			});
-		});
+    });
 });
 
 //signup
 router.post("/signup", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	Admin.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -122,7 +217,8 @@ router.post("/signup", async (req, res, next) => {
 							.save()
 							.then(async (result) => {
 								result.verificationKey = shortid.generate();
-								result.verificationKeyExpires = new Date().getTime() + 20 * 60 * 1000;
+								result.verificationKeyExpires =
+									new Date().getTime() + 20 * 60 * 1000;
 								await result
 									.save()
 									.then((result1) => {
@@ -175,11 +271,43 @@ router.post("/signup", async (req, res, next) => {
 			res.status(500).json({
 				error: err.toString(),
 			});
-		});
+    });
+  
 });
 
 //login
 router.post("/login", async (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	Admin.find({ email: req.body.email })
 		.exec()
 		.then((user) => {
@@ -260,11 +388,33 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 
 ////Update admin profile
 router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+	}
+	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+	request(verifyURL, (err, response, body) => {
+		body = JSON.parse(body);
+		if (!body.success || body.score < 0.4) {
+			return res.status(401).json({
+				message: "Something went wrong",
+			});
+		}
+    if(err){
+      return res.status(500).json({
+				message: "Google error",
+			});
+    }
+	});
 	const id = req.user.userId;
 	const updateOps = {};
+	const updatableFields = ["name", "mobileNumber"];
 	var flag = 0;
-	for (const ops of req.body) {
-		updateOps[ops.propName] = ops.value;
+	for (const ops of req.body.updateOps) {
+		if (updatableFields.includes(ops.propName)) {
+			updateOps[ops.propName] = ops.value;
+		}
 	}
 	Admin.updateOne({ _id: id }, { $set: updateOps })
 		.exec()
@@ -334,6 +484,37 @@ router.patch(
 	async (req, res, next) => {
 		await Admin.findOne({ _id: req.user.userId })
 			.then(async (result) => {
+        if (!req.body.captcha) {
+          return res.status(400).json({
+            message: "No recaptcha token",
+          });
+        }
+        var flag = 0;
+        const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+        console.log(verifyURL)
+        request(verifyURL, (err, response, body) => {
+          body = JSON.parse(body);
+          console.log(err)
+          console.log(body)
+          try{
+            if (!body.success || body.score < 0.4) {
+              flag = 1
+              return res.status(401).json({
+                message: "Something went wrong",
+              });
+            }
+            if(err){
+              return res.status(401).json({
+                message: err.toString(),
+              });
+            }
+          }catch(err){
+            return res.status(500).json({
+              error: err
+            })
+          }
+        });
+        console.log(flag)
 				bcrypt.compare(req.body.password, result.password, (err, result1) => {
 					if (err) {
 						return res.status(401).json({
@@ -347,7 +528,10 @@ router.patch(
 									err,
 								});
 							}
-							Admin.updateOne({ _id: req.user.userId }, { $set: { password: hash } })
+							Admin.updateOne(
+								{ _id: req.user.userId },
+								{ $set: { password: hash } }
+							)
 								.then((result) => {
 									res.status(200).json({
 										message: "Password changed",
@@ -397,6 +581,37 @@ router.get(
 );
 
 router.post("/forgot", (req, res) => {
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+    console.log(verifyURL)
+    request(verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 	var email = req.body.email;
 	Admin.findOne({ email: email }, (err, userData) => {
 		if (!err && userData != null) {
@@ -404,15 +619,15 @@ router.post("/forgot", (req, res) => {
 
 			userData.passKeyExpires = new Date().getTime() + 20 * 60 * 1000; // pass reset key only valid for 20 minutes
 			userData.save().then((x) => {
-				const html = emailTemplates.FORGOT_PASSWORD(x)
-				console.log(html)
+				const html = emailTemplates.FORGOT_PASSWORD(x);
+				console.log(html);
 				if (!err) {
 					const msg = {
 						to: email,
 						from: process.env.sendgridEmail,
 						subject: "Quizzie: Password Reset Request",
 						text: " ",
-						html: html
+						html: html,
 					};
 
 					sgMail
@@ -437,6 +652,37 @@ router.post("/forgot", (req, res) => {
 });
 
 router.post("/resetpass", async (req, res) => {
+	if (!req.body.captcha) {
+		return res.status(400).json({
+			message: "No recaptcha token",
+		});
+  }
+  var flag = 0;
+  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
+  console.log(verifyURL)
+	request(verifyURL, (err, response, body) => {
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	let resetKey = req.body.resetKey;
 	let newPassword = req.body.newPassword;
 

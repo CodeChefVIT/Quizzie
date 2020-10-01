@@ -152,7 +152,7 @@ function QuizzesSection(props) {
 		let url = "https://quizzie-api.herokuapp.com/quiz/enrollPrivate";
 		let token = localStorage.getItem("authToken");
 
-		let captcha = executeRecaptcha("join_private");
+		let captcha = await executeRecaptcha("join_private");
 
 		let data = {
 			quizCode: quizCode,
@@ -188,7 +188,7 @@ function QuizzesSection(props) {
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/enroll";
 
-		let captcha = executeRecaptcha("quiz_enroll");
+		let captcha = await executeRecaptcha("quiz_enroll");
 
 		let data = {
 			quizId: enrollQuizId,
@@ -218,7 +218,7 @@ function QuizzesSection(props) {
 		let token = localStorage.getItem("authToken");
 		let url = "https://quizzie-api.herokuapp.com/quiz/unenroll";
 
-		let captcha = executeRecaptcha("quiz_unenroll");
+		let captcha = await executeRecaptcha("quiz_unenroll");
 
 		let data = {
 			quizId: currQuiz._id,
@@ -246,7 +246,7 @@ function QuizzesSection(props) {
 		let token = localStorage.getItem("authToken");
 		let url = `https://quizzie-api.herokuapp.com/quiz/start`;
 
-		let captcha = executeRecaptcha("quiz_start");
+		let captcha = await executeRecaptcha("quiz_start");
 
 		let data = {
 			quizId: enrollQuizId,
