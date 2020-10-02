@@ -39,7 +39,23 @@
 		"shortid": "^2.2.15"
 	},
 	"devDependencies": {
+		"eslint": "^7.10.0",
+		"eslint-config-prettier": "^6.12.0",
+		"eslint-plugin-prettier": "^3.1.4",
+		"husky": "^4.3.0",
+		"lint-staged": "^10.4.0",
+		"node-pre-gyp": "0.12.0",
 		"nodemon": "^2.0.4",
-		"node-pre-gyp": "0.12.0"
+		"prettier": "^2.1.2"
+	},
+	"lint-staged": {
+		"Backend/**/*.js": [
+			"eslint --fix"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
 	}
 }
