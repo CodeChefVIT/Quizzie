@@ -16,6 +16,7 @@ const Question = require("../models/question");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
+const verifyURL = require("../middleware/verifyURL");
 
 const router = express.Router();
 
@@ -50,7 +51,7 @@ router.get("/all/:quizId", checkAuth, async (req, res, next) => {
 		});
 });
 
-router.post("/add", checkAuth, checkAuthAdmin, async (req, res, next) => {
+router.post("/add", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.exec()
 		.then(async (result1) => {
@@ -60,9 +61,8 @@ router.post("/add", checkAuth, checkAuthAdmin, async (req, res, next) => {
         });
       }
       var flag = 0;
-      const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-      console.log(verifyURL)
-      request(verifyURL, (err, response, body) => {
+      console.log(req.verifyURL)
+      request(req.verifyURL, (err, response, body) => {
         body = JSON.parse(body);
         console.log(err)
         console.log(body)
@@ -115,6 +115,7 @@ router.patch(
 	"/update/:questionId",
 	checkAuth,
 	checkAuthAdmin,
+	verifyURL,
 	async (req, res, next) => {
     if (!req.body.captcha) {
       return res.status(400).json({
@@ -122,9 +123,8 @@ router.patch(
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -165,16 +165,15 @@ router.patch(
 	}
 );
 
-router.post("/csv", checkAuth, checkAuthAdmin, async (req, res, next) => {
+router.post("/csv", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)

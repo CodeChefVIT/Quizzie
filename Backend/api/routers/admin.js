@@ -16,21 +16,21 @@ const emailTemplates = require("../../emails/email");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 const checkAuthUser = require("../middleware/checkAuthUser");
+const verifyURL = require("../middleware/verifyURL");
 
 const router = express.Router();
 
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
-router.post("/resendVerificationEmail", async (req, res, next) => {
+router.post("/resendVerificationEmail",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -92,7 +92,7 @@ router.post("/resendVerificationEmail", async (req, res, next) => {
 	}
 });
 ///Verify email
-router.patch("/verifyEmail", async (req, res, next) => {
+router.patch("/verifyEmail",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
@@ -100,9 +100,8 @@ router.patch("/verifyEmail", async (req, res, next) => {
   }
   var flag = 0;
   console.log(req.body.captcha)
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -159,16 +158,15 @@ router.patch("/verifyEmail", async (req, res, next) => {
 });
 
 //signup
-router.post("/signup", async (req, res, next) => {
+router.post("/signup",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -276,16 +274,15 @@ router.post("/signup", async (req, res, next) => {
 });
 
 //login
-router.post("/login", async (req, res, next) => {
+router.post("/login",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -387,14 +384,13 @@ router.get("/", checkAuthAdmin, checkAuth, async (req, res, next) => {
 });
 
 ////Update admin profile
-router.patch("/updateProfile", checkAuth, checkAuthAdmin, (req, res, next) => {
+router.patch("/updateProfile", checkAuth, checkAuthAdmin,verifyURL, (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
 	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-	request(verifyURL, (err, response, body) => {
+	request(req.verifyURL, (err, response, body) => {
 		body = JSON.parse(body);
 		if (!body.success || body.score < 0.4) {
 			return res.status(401).json({
@@ -480,7 +476,7 @@ router.get(
 router.patch(
 	"/changePassword",
 	checkAuth,
-	checkAuthAdmin,
+	checkAuthAdmin,verifyURL,
 	async (req, res, next) => {
 		await Admin.findOne({ _id: req.user.userId })
 			.then(async (result) => {
@@ -490,9 +486,8 @@ router.patch(
           });
         }
         var flag = 0;
-        const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-        console.log(verifyURL)
-        request(verifyURL, (err, response, body) => {
+        console.log(req.verifyURL)
+        request(req.verifyURL, (err, response, body) => {
           body = JSON.parse(body);
           console.log(err)
           console.log(body)
@@ -580,16 +575,15 @@ router.get(
 	}
 );
 
-router.post("/forgot", (req, res) => {
+router.post("/forgot",verifyURL, (req, res) => {
     if (!req.body.captcha) {
       return res.status(400).json({
         message: "No recaptcha token",
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -651,16 +645,15 @@ router.post("/forgot", (req, res) => {
 	});
 });
 
-router.post("/resetpass", async (req, res) => {
+router.post("/resetpass",verifyURL, async (req, res) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)

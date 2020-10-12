@@ -17,6 +17,7 @@ const redis = require("redis");
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
+const verifyURL = require("../middleware/verifyURL");
 
 const REDIS_PORT = process.env.REDISTOGO_URL || 6379 || process.env.REDIS_URL;
 
@@ -31,6 +32,7 @@ router.post(
 	"/createQuiz",
 	checkAuth,
 	checkAuthAdmin,
+	verifyURL,
 	async (req, res, next) => {
     if (!req.body.captcha) {
       return res.status(400).json({
@@ -38,9 +40,8 @@ router.post(
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -156,16 +157,15 @@ router.get("/all", checkAuth, async (req, res, next) => {
 });
 
 ///Enroll/get access to a quiz
-router.patch("/enroll", checkAuth, checkAuthUser, async (req, res, next) => {
+router.patch("/enroll", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -238,6 +238,7 @@ router.patch(
 	"/enrollPrivate",
 	checkAuth,
 	checkAuthUser,
+	verifyURL,
 	async (req, res, next) => {
     if (!req.body.captcha) {
       return res.status(400).json({
@@ -245,9 +246,8 @@ router.patch(
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -321,6 +321,7 @@ router.patch(
 	"/updateDetails/:quizId",
 	checkAuth,
 	checkAuthAdmin,
+	verifyURL,
 	async (req, res, next) => {
     if (!req.body.captcha) {
       return res.status(400).json({
@@ -328,9 +329,8 @@ router.patch(
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -413,16 +413,15 @@ router.get(
 	}
 );
 
-router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
+router.patch("/unenroll", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -494,16 +493,15 @@ router.patch("/unenroll", checkAuth, checkAuthUser, async (req, res, next) => {
 		});
 });
 
-router.patch("/start", checkAuth, checkAuthUser, async (req, res, next) => {
+router.patch("/start", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -806,16 +804,15 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 		});
 });
 
-router.patch("/finish", checkAuth, async (req, res) => {
+router.patch("/finish", checkAuth,verifyURL, async (req, res) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -851,16 +848,15 @@ router.patch("/finish", checkAuth, async (req, res) => {
 		});
 });
 
-router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
+router.post("/check", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -992,7 +988,7 @@ router.post("/check", checkAuth, checkAuthUser, async (req, res, next) => {
 	});
 });
 
-router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
+router.delete("/delete", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.then(async (result) => {
 			var numUsers = result.usersEnrolled.length;
@@ -1039,7 +1035,7 @@ router.delete("/delete", checkAuth, checkAuthAdmin, async (req, res, next) => {
 router.patch(
 	"/removeUser",
 	checkAuth,
-	checkAuthAdmin,
+	checkAuthAdmin,verifyURL,
 	async (req, res, next) => {
     if (!req.body.captcha) {
       return res.status(400).json({
@@ -1047,9 +1043,8 @@ router.patch(
       });
     }
     var flag = 0;
-    const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-    console.log(verifyURL)
-    request(verifyURL, (err, response, body) => {
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
       body = JSON.parse(body);
       console.log(err)
       console.log(body)
@@ -1100,16 +1095,15 @@ router.patch(
 	}
 );
 
-router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
+router.patch("/restart", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
@@ -1149,16 +1143,15 @@ router.patch("/restart", checkAuth, checkAuthAdmin, async (req, res, next) => {
 		});
 });
 
-router.patch("/close", checkAuth, checkAuthAdmin, async (req, res, next) => {
+router.patch("/close", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
   }
   var flag = 0;
-  const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-  console.log(verifyURL)
-	request(verifyURL, (err, response, body) => {
+  console.log(req.verifyURL)
+	request(req.verifyURL, (err, response, body) => {
     body = JSON.parse(body);
     console.log(err)
     console.log(body)
