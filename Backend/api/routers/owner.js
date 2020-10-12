@@ -17,19 +17,19 @@ const Question = require("../models/question");
 
 const checkAuth = require("../middleware/checkAuth");
 const checkAuthOwner = require("../middleware/checkAuthOwner");
+const verifyURL = require("../middleware/verifyURL");
 
 const router = express.Router();
 
 sgMail.setApiKey(process.env.SendgridAPIKey);
 
-router.post("/signup", async (req, res, next) => {
+router.post("/signup",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
 	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-	request(verifyURL, (err, response, body) => {
+	request(req.verifyURL, (err, response, body) => {
 		body = JSON.parse(body);
 		if (!body.success || body.score < 0.4) {
 			return res.status(401).json({
@@ -98,14 +98,13 @@ router.post("/signup", async (req, res, next) => {
 		});
 });
 
-router.post("/login", async (req, res, next) => {
+router.post("/login",verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
 	}
-	const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-	request(verifyURL, (err, response, body) => {
+	request(req.verifyURL, (err, response, body) => {
 		body = JSON.parse(body);
 		if (!body.success || body.score < 0.4) {
 			return res.status(401).json({
@@ -370,15 +369,14 @@ router.delete(
 router.patch(
 	"/changePassword",
 	checkAuth,
-	checkAuthOwner,
+	checkAuthOwner,verifyURL,
 	async (req, res, next) => {
 		if (!req.body.captcha) {
 			res.status(400).json({
 				message: "No recaptcha token",
 			});
 		}
-		const verifyURL = `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.reCaptchaSecret}&response=${req.body.captcha}`;
-		request(verifyURL, (err, response, body) => {
+		request(req.verifyURL, (err, response, body) => {
 			body = JSON.parse(body);
 			if (!body.success || body.score < 0.4) {
 				res.status(401).json({
