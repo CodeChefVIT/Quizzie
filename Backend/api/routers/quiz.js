@@ -662,6 +662,11 @@ router.patch('/start1', checkAuth, checkAuthUser, verifyURL, async (req, res) =>
 					} else if (result0.quizStatus == 0) {
 						var numericsChanged = Number(result0.quizDuration*60*100)
 						var stringtobeGenerated = '1-' + numericsChanged.toString() + ' * * * *';
+						// Explaination 
+						// The Strings Generated makes it possible for scheduling a task to recheck if the process 
+						// is still holding true for the route. If the negation of Boolean Operator helps us to generate the First True 
+						// as well as the Second and More False Cases, Which allows not to change the same status again and again 
+						// The Code is generative to 3 Test Cases and can fail if some edge cases are generated. 
 						if (
 							// Date.now() >= Number(result0.scheduledFor) + Number(result0.quizDuration * 60 * 1000)
 							cron.schedule(stringtobeGenerated, async () => {
