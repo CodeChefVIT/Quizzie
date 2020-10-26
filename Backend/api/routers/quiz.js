@@ -18,7 +18,6 @@ const checkAuth = require("../middleware/checkAuth");
 const checkAuthUser = require("../middleware/checkAuthUser");
 const checkAuthAdmin = require("../middleware/checkAuthAdmin");
 const verifyURL = require("../middleware/verifyURL");
-const cron = require('node-cron')
 
 const REDIS_PORT = process.env.REDISTOGO_URL || 6379 || process.env.REDIS_URL;
 
@@ -35,36 +34,36 @@ router.post(
 	checkAuthAdmin,
 	verifyURL,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			return res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		var flag = 0;
-		console.log(req.verifyURL)
-		request(req.verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			console.log(err)
-			console.log(body)
-			try {
-				if (!body.success || body.score < 0.4) {
-					flag = 1
-					return res.status(401).json({
-						message: "Something went wrong",
-					});
-				}
-				if (err) {
-					return res.status(401).json({
-						message: err.toString(),
-					});
-				}
-			} catch (err) {
-				return res.status(500).json({
-					error: err
-				})
-			}
-		});
-		console.log(flag)
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		if (req.body.quizType.toLowerCase() == "private") {
 			const quiz = new Quiz({
 				_id: new mongoose.Types.ObjectId(),
@@ -80,15 +79,10 @@ router.post(
 				.save()
 				.then(async (result) => {
 					const quizId = result._id;
-					Admin.updateOne({
-							_id: req.user.userId
-						}, {
-							$push: {
-								quizzes: {
-									quizId
-								}
-							}
-						})
+					Admin.updateOne(
+						{ _id: req.user.userId },
+						{ $push: { quizzes: { quizId } } }
+					)
 						.then(async (result1) => {
 							res.status(201).json({
 								message: "created",
@@ -96,15 +90,11 @@ router.post(
 							});
 						})
 						.catch(async (err) => {
-							res.status(400).json({
-								error: "err1"
-							});
+							res.status(400).json({ error: "err1" });
 						});
 				})
 				.catch((err) => {
-					res.status(400).json({
-						error: "err"
-					});
+					res.status(400).json({ error: "err" });
 				});
 		} else {
 			const quiz = new Quiz({
@@ -121,15 +111,10 @@ router.post(
 				.save()
 				.then(async (result) => {
 					const quizId = result._id;
-					Admin.updateOne({
-							_id: req.user.userId
-						}, {
-							$push: {
-								quizzes: {
-									quizId
-								}
-							}
-						})
+					Admin.updateOne(
+						{ _id: req.user.userId },
+						{ $push: { quizzes: { quizId } } }
+					)
 						.then(async (result1) => {
 							const date = new Date(Number(result.scheduledFor));
 							res.status(201).json({
@@ -138,15 +123,11 @@ router.post(
 							});
 						})
 						.catch(async (err) => {
-							res.status(400).json({
-								error: "err1"
-							});
+							res.status(400).json({ error: "err1" });
 						});
 				})
 				.catch((err) => {
-					res.status(400).json({
-						error: "err"
-					});
+					res.status(400).json({ error: "err" });
 				});
 		}
 	}
@@ -154,9 +135,7 @@ router.post(
 
 ///Get all quiz for student dashboard
 router.get("/all", checkAuth, async (req, res, next) => {
-	Quiz.find({
-			quizType: "public"
-		})
+	Quiz.find({ quizType: "public" })
 		.populate("adminId")
 		.select("-__v")
 		.exec()
@@ -178,69 +157,57 @@ router.get("/all", checkAuth, async (req, res, next) => {
 });
 
 ///Enroll/get access to a quiz
-router.patch("/enroll", checkAuth, checkAuthUser, verifyURL, async (req, res, next) => {
+router.patch("/enroll", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	Quiz.findById(req.body.quizId)
 		.exec()
 		.then(async (result2) => {
 			for (i = 0; i < result2.usersEnrolled.length; i++) {
 				if (result2.usersEnrolled[i].userId == req.user.userId) {
-					return res.status(409).json({
-						message: "Already enrolled"
-					});
+					return res.status(409).json({ message: "Already enrolled" });
 				}
 			}
 			const userId = req.user.userId;
 			const quizId = req.body.quizId;
-			await Quiz.updateOne({
-					_id: quizId
-				}, {
-					$push: {
-						usersEnrolled: {
-							userId
-						}
-					}
-				})
+			await Quiz.updateOne(
+				{ _id: quizId },
+				{ $push: { usersEnrolled: { userId } } }
+			)
 				.exec()
 				.then(async (result) => {
-					await User.updateOne({
-							_id: userId
-						}, {
-							$push: {
-								quizzesEnrolled: {
-									quizId
-								}
-							}
-						})
+					await User.updateOne(
+						{ _id: userId },
+						{ $push: { quizzesEnrolled: { quizId } } }
+					)
 						.then(async (result1) => {
 							await res.status(200).json({
 								message: "Enrolled",
@@ -273,70 +240,56 @@ router.patch(
 	checkAuthUser,
 	verifyURL,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			return res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		var flag = 0;
-		console.log(req.verifyURL)
-		request(req.verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			console.log(err)
-			console.log(body)
-			try {
-				if (!body.success || body.score < 0.4) {
-					flag = 1
-					return res.status(401).json({
-						message: "Something went wrong",
-					});
-				}
-				if (err) {
-					return res.status(401).json({
-						message: err.toString(),
-					});
-				}
-			} catch (err) {
-				return res.status(500).json({
-					error: err
-				})
-			}
-		});
-		console.log(flag)
-		Quiz.findOne({
-				quizCode: req.body.quizCode
-			})
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
+		Quiz.findOne({ quizCode: req.body.quizCode })
 			.exec()
 			.then(async (result2) => {
 				for (i = 0; i < result2.usersEnrolled.length; i++) {
 					if (result2.usersEnrolled[i].userId == req.user.userId) {
-						return res.status(409).json({
-							message: "Already enrolled"
-						});
+						return res.status(409).json({ message: "Already enrolled" });
 					}
 				}
 				const userId = req.user.userId;
-				await Quiz.updateOne({
-						quizCode: req.body.quizCode
-					}, {
-						$push: {
-							usersEnrolled: {
-								userId
-							}
-						}
-					})
+				await Quiz.updateOne(
+					{ quizCode: req.body.quizCode },
+					{ $push: { usersEnrolled: { userId } } }
+				)
 					.exec()
 					.then(async (result) => {
 						const quizId = result2._id;
-						await User.updateOne({
-								_id: userId
-							}, {
-								$push: {
-									quizzesEnrolled: {
-										quizId
-									}
-								}
-							})
+						await User.updateOne(
+							{ _id: userId },
+							{ $push: { quizzesEnrolled: { quizId } } }
+						)
 							.then(async (result1) => {
 								await res.status(200).json({
 									message: "Enrolled",
@@ -370,36 +323,36 @@ router.patch(
 	checkAuthAdmin,
 	verifyURL,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			return res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		var flag = 0;
-		console.log(req.verifyURL)
-		request(req.verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			console.log(err)
-			console.log(body)
-			try {
-				if (!body.success || body.score < 0.4) {
-					flag = 1
-					return res.status(401).json({
-						message: "Something went wrong",
-					});
-				}
-				if (err) {
-					return res.status(401).json({
-						message: err.toString(),
-					});
-				}
-			} catch (err) {
-				return res.status(500).json({
-					error: err
-				})
-			}
-		});
-		console.log(flag)
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
 		await Quiz.findById(req.params.quizId)
 			.exec()
 			.then(async (result1) => {
@@ -414,11 +367,7 @@ router.patch(
 				for (const ops of req.body.updateOps) {
 					updateOps[ops.propName] = ops.value;
 				}
-				Quiz.updateOne({
-						_id: id
-					}, {
-						$set: updateOps
-					})
+				Quiz.updateOne({ _id: id }, { $set: updateOps })
 					.exec()
 					.then((result) => {
 						res.status(200).json({
@@ -444,9 +393,7 @@ router.get(
 	checkAuth,
 	checkAuthAdmin,
 	async (req, res, next) => {
-		await Quiz.findOne({
-				_id: req.params.quizId
-			})
+		await Quiz.findOne({ _id: req.params.quizId })
 			.then(async (result) => {
 				if (result.adminId == req.user.userId) {
 					return res.status(200).json({
@@ -466,37 +413,37 @@ router.get(
 	}
 );
 
-router.patch("/unenroll", checkAuth, checkAuthUser, verifyURL, async (req, res, next) => {
+router.patch("/unenroll", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	await User.findById(req.user.userId)
 		.then(async (result) => {
 			var numQuiz = result.quizzesEnrolled.length;
@@ -506,25 +453,15 @@ router.patch("/unenroll", checkAuth, checkAuthUser, verifyURL, async (req, res, 
 					flag = 1;
 					var currentUser = req.user.userId;
 
-					await User.updateOne({
-							_id: currentUser
-						}, {
-							$pull: {
-								quizzesEnrolled: {
-									quizId: req.body.quizId
-								}
-							}
-						})
+					await User.updateOne(
+						{ _id: currentUser },
+						{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+					)
 						.then((result) => {
-							Quiz.updateOne({
-									_id: req.body.quizId
-								}, {
-									$pull: {
-										usersEnrolled: {
-											userId: req.user.userId
-										}
-									}
-								})
+							Quiz.updateOne(
+								{ _id: req.body.quizId },
+								{ $pull: { usersEnrolled: { userId: req.user.userId } } }
+							)
 								.then((result3) => {
 									return res.status(200).json({
 										message: "Successfully un-enrolled",
@@ -556,370 +493,40 @@ router.patch("/unenroll", checkAuth, checkAuthUser, verifyURL, async (req, res, 
 		});
 });
 
-router.patch('/start1', checkAuth, checkAuthUser, verifyURL, async (req, res) => {
-	if (!req.body.captcha) {
-			return res.status(400).json({
-					message: "No recaptcha token"
-			});
-	}
-	var flag = 0;
-	request(req.verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			console.log(err)
-			console.log(body)
-			try {
-					if (!body.success || body.score < 0.4) {
-							flag = 1
-							return res.status(401).json({
-									message: "Something went wrong",
-							});
-					}
-					if (err) {
-							return res.status(401).json({
-									message: err.toString(),
-							});
-					}
-			} catch (err) {
-					return res.status(500).json({
-							error: err
-					})
-			}
-	});
-	await Quiz.findById(req.body.quizId)
-			.then(async (result0) => {
-					await Question.find({
-									quizId: req.body.quizId
-							})
-							.select("-__v")
-							.exec()
-							.then(async (result) => {
-									if (result0.quizRestart == 1) {
-											await User.findById(req.user.userId)
-													.then(async (result2) => {
-															for (let i = result.length - 1; i > 0; i--) {
-																	const j = Math.floor(Math.random() * (i + 1));
-																	[result[i], result[j]] = [result[j], result[i]];
-															}
-															var flag = 0;
-															var numQuiz = result2.quizzesStarted.length;
-															var numEnrolled = result2.quizzesEnrolled.length;
-															for (i = 0; i < numEnrolled; i++) {
-																	if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-																			flag = 1;
-																	}
-															}
-
-															for (i = 0; i < numQuiz; i++) {
-																	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-																			return res.status(405).json({
-																					message: "Quiz already started",
-																			});
-																	}
-															}
-															if (flag === 0) {
-																	return res.status(409).json({
-																			message: "You are not enrolled in this quiz",
-																	});
-															}
-															// var clientId = questions+req.user.userId
-															client.setex(req.user.userId, 3600, JSON.stringify(result));
-															var quizId = req.body.quizId;
-															await User.updateOne({
-																			_id: req.user.userId
-																	}, {
-																			$push: {
-																					quizzesStarted: {
-																							quizId
-																					}
-																			}
-																	})
-																	.exec()
-																	.then(async (result1) => {
-																			var data = [];
-																			for (i = 0; i < result.length; i++) {
-																					object = {
-																							quizId: result[i].quizId,
-																							description: result[i].description,
-																							options: result[i].options,
-																							questionId: result[i]._id,
-																					};
-																					data.push(object);
-																			}
-																			await res.status(200).json({
-																					message: "Quiz started for " + req.user.name,
-																					data,
-																					duration: result0.quizDuration,
-																					scheduledFor: result0.scheduledFor,
-																					quizRestart: result0.quizRestart,
-																					quizStatus: result0.quizStatus,
-																			});
-																	})
-																	.catch(async (err) => {
-																			await res.status(400).json({
-																					message: "some error occurred",
-																					error: err.toString(),
-																			});
-																	});
-													})
-													.catch(async (err) => {
-															await res.status(400).json({
-																	message: "Some error Occurred",
-															});
-													});
-									} else if (result0.quizStatus == 0) {
-											var numericsChanged = Number(result0.quizDuration * 60 * 100)
-											var stringtobeGenerated = '1-' + numericsChanged.toString() + ' * * * *';
-											// Explaination 
-											// The Strings Generated makes it possible for scheduling a task to recheck if the process 
-											// is still holding true for the route. If the negation of Boolean Operator helps us to generate the First True 
-											// as well as the Second and More False Cases, Which allows not to change the same status again and again 
-											// The Code is generative to 3 Test Cases and can fail if some edge cases are generated. 
-											if (
-													// Date.now() >= Number(result0.scheduledFor) + Number(result0.quizDuration * 60 * 1000)
-													cron.schedule(stringtobeGenerated, async () => {
-															console.log(`Running For Quiz Time : ${stringtobeGenerated}`)
-													})
-											) {
-													await Quiz.updateOne({
-																	_id: req.body.quizId
-															}, {
-																	$set: {
-																			quizStatus: 2
-																	}
-															})
-															.then((result) => {
-																	res.status(402).json({
-																			message: "Quiz time elapsed",
-																	});
-															})
-															.catch((err) => {
-																	res.status(400).json({
-																			message: err.toString(),
-																	});
-															});
-											} else {
-													var Numerics = Number(result0.scheduledFor * 60 * 1000)
-													var stringtobeGenerated = '1-' + Numerics.toString() + ' * * * *'
-
-													if (!cron.schedule(stringtobeGenerated, () => console(!true)) != Null) {
-															await User.findById(req.user.userId)
-																	.then(async (result2) => {
-																			for (let i = result.length - 1; i > 0; i--) {
-																					const j = Math.floor(Math.random() * (i + 1));
-																					[result[i], result[j]] = [result[j], result[i]];
-																			}
-																			var flag = 0;
-																			var numQuiz = result2.quizzesStarted.length;
-																			var numEnrolled = result2.quizzesEnrolled.length;
-																			for (i = 0; i < numEnrolled; i++) {
-																					if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-																							flag = 1;
-																					}
-																			}
-
-																			for (i = 0; i < numQuiz; i++) {
-																					if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-																							return res.status(405).json({
-																									message: "Quiz already started",
-																							});
-																					}
-																			}
-																			if (flag === 0) {
-																					return res.status(409).json({
-																							message: "You are not enrolled in this quiz",
-																					});
-																			}
-																			// var clientId = questions+req.user.userId
-																			client.setex(req.user.userId, 3600, JSON.stringify(result));
-																			var quizId = req.body.quizId;
-																			await User.updateOne({
-																							_id: req.user.userId
-																					}, {
-																							$push: {
-																									quizzesStarted: {
-																											quizId
-																									}
-																							}
-																					})
-																					.exec()
-																					.then(async (result1) => {
-																							await Quiz.updateOne({
-																											_id: req.body.quizId
-																									}, {
-																											$set: {
-																													quizStatus: 1
-																											}
-																									})
-																									.then(async (result1) => {
-																											var data = [];
-																											for (i = 0; i < result.length; i++) {
-																													object = {
-																															quizId: result[i].quizId,
-																															description: result[i].description,
-																															options: result[i].options,
-																															questionId: result[i]._id,
-																													};
-																													data.push(object);
-																											}
-																											await res.status(200).json({
-																													message: "Quiz started for " + req.user.name,
-																													data,
-																													duration: result0.quizDuration,
-																													scheduledFor: result0.scheduledFor,
-																													quizRestart: result0.quizRestart,
-																													quizStatus: result0.quizStatus,
-																											});
-																									})
-																									.catch(async (err) => {
-																											await res.status(400).json({
-																													err: err.toString(),
-																											});
-																									});
-																					})
-																					.catch(async (err) => {
-																							await res.status(400).json({
-																									message: "some error occurred",
-																							});
-																					});
-																	})
-																	.catch(async (err) => {
-																			await res.status(400).json({
-																					message: err.toString(),
-																			});
-																	});
-													}
-											}
-											return res.status(401).json({
-													message: "Quiz hasn't started yet",
-											});
-									} else if (result0.quizStatus == 1) {
-											await User.findById(req.user.userId)
-													.then(async (result2) => {
-															for (let i = result.length - 1; i > 0; i--) {
-																	const j = Math.floor(Math.random() * (i + 1));
-																	[result[i], result[j]] = [result[j], result[i]];
-															}
-															var flag = 0;
-															var numQuiz = result2.quizzesStarted.length;
-															var numEnrolled = result2.quizzesEnrolled.length;
-															for (i = 0; i < numEnrolled; i++) {
-																	if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-																			flag = 1;
-																	}
-															}
-
-															for (i = 0; i < numQuiz; i++) {
-																	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-																			return res.status(405).json({
-																					message: "Quiz already started",
-																			});
-																	}
-															}
-															if (flag === 0) {
-																	return res.status(409).json({
-																			message: "You are not enrolled in this quiz",
-																	});
-															}
-															// var clientId = questions+req.user.userId
-															client.setex(req.user.userId, 3600, JSON.stringify(result));
-															var quizId = req.body.quizId;
-															await User.updateOne({
-																			_id: req.user.userId
-																	}, {
-																			$push: {
-																					quizzesStarted: {
-																							quizId
-																					}
-																			}
-																	})
-																	.exec()
-																	.then(async (result1) => {
-																			var data = [];
-																			for (i = 0; i < result.length; i++) {
-																					object = {
-																							quizId: result[i].quizId,
-																							description: result[i].description,
-																							options: result[i].options,
-																							questionId: result[i]._id,
-																					};
-																					data.push(object);
-																			}
-																			await res.status(200).json({
-																					message: "Quiz started for " + req.user.name,
-																					data,
-																					duration: result0.quizDuration,
-																					scheduledFor: result0.scheduledFor,
-																					quizRestart: result0.quizRestart,
-																					quizStatus: result0.quizStatus,
-																			});
-																	})
-																	.catch(async (err) => {
-																			await res.status(400).json({
-																					message: "some error occurred",
-																					error: err.toString(),
-																			});
-																	});
-													})
-													.catch(async (err) => {
-															await res.status(400).json({
-																	message: "Some error Occurred",
-															});
-													});
-									} else {
-											res.status(402).json({
-													message: "Quiz time elapsed",
-											});
-									}
-							})
-							.catch(async (err) => {
-									await res.status(400).json({
-											message: err.toString(),
-									});
-							});
-			})
-			.catch(async (err) => {
-					await res.status(400).json({
-							message: err.toString(),
-					});
-			});
-})
-
-router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, next) => {
+router.patch("/start", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	await Quiz.findById(req.body.quizId)
 		.then(async (result0) => {
-			await Question.find({
-					quizId: req.body.quizId
-				})
+			await Question.find({ quizId: req.body.quizId })
 				.select("-__v")
 				.exec()
 				.then(async (result) => {
@@ -954,15 +561,10 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 								// var clientId = questions+req.user.userId
 								client.setex(req.user.userId, 3600, JSON.stringify(result));
 								var quizId = req.body.quizId;
-								await User.updateOne({
-										_id: req.user.userId
-									}, {
-										$push: {
-											quizzesStarted: {
-												quizId
-											}
-										}
-									})
+								await User.updateOne(
+									{ _id: req.user.userId },
+									{ $push: { quizzesStarted: { quizId } } }
+								)
 									.exec()
 									.then(async (result1) => {
 										var data = [];
@@ -997,18 +599,15 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 								});
 							});
 					} else if (result0.quizStatus == 0) {
-						var numericsChanged = Number(result0.quizDuration*60*100)
-						var stringtobeGenerated = '1-' + numericsChanged.toString() + ' * * * *';
 						if (
-							Date.now() >= Number(result0.scheduledFor) + Number(result0.quizDuration * 60 * 1000)
+							Date.now() >=
+							Number(result0.scheduledFor) +
+								Number(result0.quizDuration * 60 * 1000)
 						) {
-							await Quiz.updateOne({
-									_id: req.body.quizId
-								}, {
-									$set: {
-										quizStatus: 2
-									}
-								})
+							await Quiz.updateOne(
+								{ _id: req.body.quizId },
+								{ $set: { quizStatus: 2 } }
+							)
 								.then((result) => {
 									res.status(402).json({
 										message: "Quiz time elapsed",
@@ -1019,11 +618,7 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 										message: err.toString(),
 									});
 								});
-						} else{ 
-							var Numerics = Number(result0.scheduledFor*60*1000) 
-							var stringtobeGenerated = '1-'+Numerics.toString() + ' * * * *'
-							
-							if (!cron.schedule(stringtobeGenerated, () => console (!true)) != Null) {
+						} else if (Date.now() >= result0.scheduledFor) {
 							await User.findById(req.user.userId)
 								.then(async (result2) => {
 									for (let i = result.length - 1; i > 0; i--) {
@@ -1054,24 +649,16 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 									// var clientId = questions+req.user.userId
 									client.setex(req.user.userId, 3600, JSON.stringify(result));
 									var quizId = req.body.quizId;
-									await User.updateOne({
-											_id: req.user.userId
-										}, {
-											$push: {
-												quizzesStarted: {
-													quizId
-												}
-											}
-										})
+									await User.updateOne(
+										{ _id: req.user.userId },
+										{ $push: { quizzesStarted: { quizId } } }
+									)
 										.exec()
 										.then(async (result1) => {
-											await Quiz.updateOne({
-													_id: req.body.quizId
-												}, {
-													$set: {
-														quizStatus: 1
-													}
-												})
+											await Quiz.updateOne(
+												{ _id: req.body.quizId },
+												{ $set: { quizStatus: 1 } }
+											)
 												.then(async (result1) => {
 													var data = [];
 													for (i = 0; i < result.length; i++) {
@@ -1110,7 +697,7 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 									});
 								});
 						}
-					}
+
 						return res.status(401).json({
 							message: "Quiz hasn't started yet",
 						});
@@ -1145,15 +732,10 @@ router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, nex
 								// var clientId = questions+req.user.userId
 								client.setex(req.user.userId, 3600, JSON.stringify(result));
 								var quizId = req.body.quizId;
-								await User.updateOne({
-										_id: req.user.userId
-									}, {
-										$push: {
-											quizzesStarted: {
-												quizId
-											}
-										}
-									})
+								await User.updateOne(
+									{ _id: req.user.userId },
+									{ $push: { quizzesStarted: { quizId } } }
+								)
 									.exec()
 									.then(async (result1) => {
 										var data = [];
@@ -1222,44 +804,38 @@ router.get("/:quizId", checkAuth, async (req, res, next) => {
 		});
 });
 
-router.patch("/finish", checkAuth, verifyURL, async (req, res) => {
+router.patch("/finish", checkAuth,verifyURL, async (req, res) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
-	await Quiz.updateOne({
-			_id: req.body.quizId
-		}, {
-			$set: {
-				quizStatus: 2
-			}
-		})
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
+	await Quiz.updateOne({ _id: req.body.quizId }, { $set: { quizStatus: 2 } })
 		.then((result) => {
 			res.status(200).json({
 				message: "Updated Quiz Status",
@@ -1272,37 +848,37 @@ router.patch("/finish", checkAuth, verifyURL, async (req, res) => {
 		});
 });
 
-router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next) => {
+router.post("/check", checkAuth, checkAuthUser,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const que_data = req.body.questions;
 	var quizId = req.body.quizId;
 	const timeEnded = req.body.timeEnded;
@@ -1311,20 +887,15 @@ router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next
 	var score = 0;
 	Quiz.findById(req.body.quizId)
 		.then(async (result9) => {
-			var Numerics = Number(result9.scheduledFor)+Number(result9.quizDuration) * 60 * 1000;
-
-			var stringtobeGenerated = '1-'+Numerics.toString() + ' * * * *'
-				// Date.now() >=
-				// Number(result9.scheduledFor) +
-				// Number(Number(result9.quizDuration) * 60 * 1000)			
-			if (!cron.schedule(stringtobeGenerated, () => console.log('Working State of Quiz Check - 2 mins'))) {
-				await Quiz.updateOne({
-						_id: req.body.quizId
-					}, {
-						$set: {
-							quizStatus: 2
-						}
-					})
+			if (
+				Date.now() >=
+				Number(result9.scheduledFor) +
+					Number(Number(result9.quizDuration) * 60 * 1000)
+			) {
+				await Quiz.updateOne(
+					{ _id: req.body.quizId },
+					{ $set: { quizStatus: 2 } }
+				)
 					.then((result) => {
 						console.log("updated quiz status");
 					})
@@ -1361,9 +932,9 @@ router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next
 				};
 				responses.push(object);
 			}
-			User.updateOne({
-					_id: req.user.userId
-				}, {
+			User.updateOne(
+				{ _id: req.user.userId },
+				{
 					$push: {
 						quizzesGiven: {
 							quizId,
@@ -1373,11 +944,12 @@ router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next
 							timeStarted,
 						},
 					},
-				})
+				}
+			)
 				.then(async (result) => {
-					await Quiz.updateOne({
-							_id: req.body.quizId
-						}, {
+					await Quiz.updateOne(
+						{ _id: req.body.quizId },
+						{
 							$push: {
 								usersParticipated: {
 									userId: req.user.userId,
@@ -1387,7 +959,8 @@ router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next
 									timeStarted,
 								},
 							},
-						})
+						}
+					)
 						.then((result7) => {
 							res.status(200).json({
 								message: "Updated",
@@ -1415,21 +988,16 @@ router.post("/check", checkAuth, checkAuthUser, verifyURL, async (req, res, next
 	});
 });
 
-router.delete("/delete", checkAuth, checkAuthAdmin, verifyURL, async (req, res, next) => {
+router.delete("/delete", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	await Quiz.findById(req.body.quizId)
 		.then(async (result) => {
 			var numUsers = result.usersEnrolled.length;
 			for (i = 0; i < numUsers; i++) {
 				var currentUser = result.usersEnrolled[i].userId;
-				await User.updateOne({
-						_id: currentUser
-					}, {
-						$pull: {
-							quizzesEnrolled: {
-								quizId: req.body.quizId
-							}
-						}
-					})
+				await User.updateOne(
+					{ _id: currentUser },
+					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+				)
 					.then((result3) => {})
 					.catch((err) => {
 						res.status(400).json({
@@ -1437,13 +1005,9 @@ router.delete("/delete", checkAuth, checkAuthAdmin, verifyURL, async (req, res, 
 						});
 					});
 			}
-			await Question.deleteMany({
-					quizId: req.body.quizId
-				})
+			await Question.deleteMany({ quizId: req.body.quizId })
 				.then(async (result4) => {
-					await Quiz.deleteOne({
-							_id: req.body.quizId
-						})
+					await Quiz.deleteOne({ _id: req.body.quizId })
 						.then((result5) => {
 							res.status(200).json({
 								message: "Deleted successfully",
@@ -1471,57 +1035,47 @@ router.delete("/delete", checkAuth, checkAuthAdmin, verifyURL, async (req, res, 
 router.patch(
 	"/removeUser",
 	checkAuth,
-	checkAuthAdmin, verifyURL,
+	checkAuthAdmin,verifyURL,
 	async (req, res, next) => {
-		if (!req.body.captcha) {
-			return res.status(400).json({
-				message: "No recaptcha token",
-			});
-		}
-		var flag = 0;
-		console.log(req.verifyURL)
-		request(req.verifyURL, (err, response, body) => {
-			body = JSON.parse(body);
-			console.log(err)
-			console.log(body)
-			try {
-				if (!body.success || body.score < 0.4) {
-					flag = 1
-					return res.status(401).json({
-						message: "Something went wrong",
-					});
-				}
-				if (err) {
-					return res.status(401).json({
-						message: err.toString(),
-					});
-				}
-			} catch (err) {
-				return res.status(500).json({
-					error: err
-				})
-			}
-		});
-		console.log(flag)
-		await Quiz.updateOne({
-				_id: req.body.quizId
-			}, {
-				$pull: {
-					usersEnrolled: {
-						userId: req.body.userId
-					}
-				}
-			})
+    if (!req.body.captcha) {
+      return res.status(400).json({
+        message: "No recaptcha token",
+      });
+    }
+    var flag = 0;
+    console.log(req.verifyURL)
+    request(req.verifyURL, (err, response, body) => {
+      body = JSON.parse(body);
+      console.log(err)
+      console.log(body)
+      try{
+        if (!body.success || body.score < 0.4) {
+          flag = 1
+          return res.status(401).json({
+            message: "Something went wrong",
+          });
+        }
+        if(err){
+          return res.status(401).json({
+            message: err.toString(),
+          });
+        }
+      }catch(err){
+        return res.status(500).json({
+          error: err
+        })
+      }
+    });
+    console.log(flag)
+		await Quiz.updateOne(
+			{ _id: req.body.quizId },
+			{ $pull: { usersEnrolled: { userId: req.body.userId } } }
+		)
 			.then(async (result) => {
-				await User.updateOne({
-						_id: req.body.userId
-					}, {
-						$pull: {
-							quizzesEnrolled: {
-								quizId: req.body.quizId
-							}
-						}
-					})
+				await User.updateOne(
+					{ _id: req.body.userId },
+					{ $pull: { quizzesEnrolled: { quizId: req.body.quizId } } }
+				)
 					.then((result) => {
 						res.status(200).json({
 							message: "User removed successfully",
@@ -1541,37 +1095,37 @@ router.patch(
 	}
 );
 
-router.patch("/restart", checkAuth, checkAuthAdmin, verifyURL, async (req, res, next) => {
+router.patch("/restart", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 1;
 	quiz.quizRestart = 1;
@@ -1589,37 +1143,37 @@ router.patch("/restart", checkAuth, checkAuthAdmin, verifyURL, async (req, res, 
 		});
 });
 
-router.patch("/close", checkAuth, checkAuthAdmin, verifyURL, async (req, res, next) => {
+router.patch("/close", checkAuth, checkAuthAdmin,verifyURL, async (req, res, next) => {
 	if (!req.body.captcha) {
 		return res.status(400).json({
 			message: "No recaptcha token",
 		});
-	}
-	var flag = 0;
-	console.log(req.verifyURL)
+  }
+  var flag = 0;
+  console.log(req.verifyURL)
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({
-					message: "Something went wrong",
-				});
-			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),
-				});
-			}
-		} catch (err) {
-			return res.status(500).json({
-				error: err
-			})
-		}
-	});
-	console.log(flag)
+    body = JSON.parse(body);
+    console.log(err)
+    console.log(body)
+    try{
+      if (!body.success || body.score < 0.4) {
+        flag = 1
+        return res.status(401).json({
+          message: "Something went wrong",
+        });
+      }
+      if(err){
+        return res.status(401).json({
+          message: err.toString(),
+        });
+      }
+    }catch(err){
+      return res.status(500).json({
+        error: err
+      })
+    }
+  });
+  console.log(flag)
 	const quiz = await Quiz.findById(req.body.quizId);
 	quiz.quizStatus = 2;
 	quiz.quizRestart = 0;
