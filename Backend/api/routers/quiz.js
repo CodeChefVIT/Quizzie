@@ -558,323 +558,330 @@ router.patch("/unenroll", checkAuth, checkAuthUser, verifyURL, async (req, res, 
 
 router.patch('/start1', checkAuth, checkAuthUser, verifyURL, async (req, res) => {
 	if (!req.body.captcha) {
-		return res.status(400).json({message: "No recaptcha token"});
+			return res.status(400).json({
+					message: "No recaptcha token"
+			});
 	}
 	var flag = 0;
 	request(req.verifyURL, (err, response, body) => {
-		body = JSON.parse(body);
-		console.log(err)
-		console.log(body)
-		try {
-			if (!body.success || body.score < 0.4) {
-				flag = 1
-				return res.status(401).json({	message: "Something went wrong",});
+			body = JSON.parse(body);
+			console.log(err)
+			console.log(body)
+			try {
+					if (!body.success || body.score < 0.4) {
+							flag = 1
+							return res.status(401).json({
+									message: "Something went wrong",
+							});
+					}
+					if (err) {
+							return res.status(401).json({
+									message: err.toString(),
+							});
+					}
+			} catch (err) {
+					return res.status(500).json({
+							error: err
+					})
 			}
-			if (err) {
-				return res.status(401).json({
-					message: err.toString(),});
-			}
-		} catch (err) {
-			return res.status(500).json({error: err})
-		}
 	});
 	await Quiz.findById(req.body.quizId)
-		.then(async (result0) => {
-			await Question.find({
-					quizId: req.body.quizId
-				})
-				.select("-__v")
-				.exec()
-				.then(async (result) => {
-					if (result0.quizRestart == 1) {
-						await User.findById(req.user.userId)
-							.then(async (result2) => {
-								for (let i = result.length - 1; i > 0; i--) {
-									const j = Math.floor(Math.random() * (i + 1));
-									[result[i], result[j]] = [result[j], result[i]];
-								}
-								var flag = 0;
-								var numQuiz = result2.quizzesStarted.length;
-								var numEnrolled = result2.quizzesEnrolled.length;
-								for (i = 0; i < numEnrolled; i++) {
-									if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-										flag = 1;
-									}
-								}
+			.then(async (result0) => {
+					await Question.find({
+									quizId: req.body.quizId
+							})
+							.select("-__v")
+							.exec()
+							.then(async (result) => {
+									if (result0.quizRestart == 1) {
+											await User.findById(req.user.userId)
+													.then(async (result2) => {
+															for (let i = result.length - 1; i > 0; i--) {
+																	const j = Math.floor(Math.random() * (i + 1));
+																	[result[i], result[j]] = [result[j], result[i]];
+															}
+															var flag = 0;
+															var numQuiz = result2.quizzesStarted.length;
+															var numEnrolled = result2.quizzesEnrolled.length;
+															for (i = 0; i < numEnrolled; i++) {
+																	if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+																			flag = 1;
+																	}
+															}
 
-								for (i = 0; i < numQuiz; i++) {
-									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-										return res.status(405).json({
-											message: "Quiz already started",
-										});
-									}
-								}
-								if (flag === 0) {
-									return res.status(409).json({
-										message: "You are not enrolled in this quiz",
-									});
-								}
-								// var clientId = questions+req.user.userId
-								client.setex(req.user.userId, 3600, JSON.stringify(result));
-								var quizId = req.body.quizId;
-								await User.updateOne({
-										_id: req.user.userId
-									}, {
-										$push: {
-											quizzesStarted: {
-												quizId
+															for (i = 0; i < numQuiz; i++) {
+																	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+																			return res.status(405).json({
+																					message: "Quiz already started",
+																			});
+																	}
+															}
+															if (flag === 0) {
+																	return res.status(409).json({
+																			message: "You are not enrolled in this quiz",
+																	});
+															}
+															// var clientId = questions+req.user.userId
+															client.setex(req.user.userId, 3600, JSON.stringify(result));
+															var quizId = req.body.quizId;
+															await User.updateOne({
+																			_id: req.user.userId
+																	}, {
+																			$push: {
+																					quizzesStarted: {
+																							quizId
+																					}
+																			}
+																	})
+																	.exec()
+																	.then(async (result1) => {
+																			var data = [];
+																			for (i = 0; i < result.length; i++) {
+																					object = {
+																							quizId: result[i].quizId,
+																							description: result[i].description,
+																							options: result[i].options,
+																							questionId: result[i]._id,
+																					};
+																					data.push(object);
+																			}
+																			await res.status(200).json({
+																					message: "Quiz started for " + req.user.name,
+																					data,
+																					duration: result0.quizDuration,
+																					scheduledFor: result0.scheduledFor,
+																					quizRestart: result0.quizRestart,
+																					quizStatus: result0.quizStatus,
+																			});
+																	})
+																	.catch(async (err) => {
+																			await res.status(400).json({
+																					message: "some error occurred",
+																					error: err.toString(),
+																			});
+																	});
+													})
+													.catch(async (err) => {
+															await res.status(400).json({
+																	message: "Some error Occurred",
+															});
+													});
+									} else if (result0.quizStatus == 0) {
+											var numericsChanged = Number(result0.quizDuration * 60 * 100)
+											var stringtobeGenerated = '1-' + numericsChanged.toString() + ' * * * *';
+											// Explaination 
+											// The Strings Generated makes it possible for scheduling a task to recheck if the process 
+											// is still holding true for the route. If the negation of Boolean Operator helps us to generate the First True 
+											// as well as the Second and More False Cases, Which allows not to change the same status again and again 
+											// The Code is generative to 3 Test Cases and can fail if some edge cases are generated. 
+											if (
+													// Date.now() >= Number(result0.scheduledFor) + Number(result0.quizDuration * 60 * 1000)
+													cron.schedule(stringtobeGenerated, async () => {
+															console.log(`Running For Quiz Time : ${stringtobeGenerated}`)
+													})
+											) {
+													await Quiz.updateOne({
+																	_id: req.body.quizId
+															}, {
+																	$set: {
+																			quizStatus: 2
+																	}
+															})
+															.then((result) => {
+																	res.status(402).json({
+																			message: "Quiz time elapsed",
+																	});
+															})
+															.catch((err) => {
+																	res.status(400).json({
+																			message: err.toString(),
+																	});
+															});
+											} else {
+													var Numerics = Number(result0.scheduledFor * 60 * 1000)
+													var stringtobeGenerated = '1-' + Numerics.toString() + ' * * * *'
+
+													if (!cron.schedule(stringtobeGenerated, () => console(!true)) != Null) {
+															await User.findById(req.user.userId)
+																	.then(async (result2) => {
+																			for (let i = result.length - 1; i > 0; i--) {
+																					const j = Math.floor(Math.random() * (i + 1));
+																					[result[i], result[j]] = [result[j], result[i]];
+																			}
+																			var flag = 0;
+																			var numQuiz = result2.quizzesStarted.length;
+																			var numEnrolled = result2.quizzesEnrolled.length;
+																			for (i = 0; i < numEnrolled; i++) {
+																					if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+																							flag = 1;
+																					}
+																			}
+
+																			for (i = 0; i < numQuiz; i++) {
+																					if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+																							return res.status(405).json({
+																									message: "Quiz already started",
+																							});
+																					}
+																			}
+																			if (flag === 0) {
+																					return res.status(409).json({
+																							message: "You are not enrolled in this quiz",
+																					});
+																			}
+																			// var clientId = questions+req.user.userId
+																			client.setex(req.user.userId, 3600, JSON.stringify(result));
+																			var quizId = req.body.quizId;
+																			await User.updateOne({
+																							_id: req.user.userId
+																					}, {
+																							$push: {
+																									quizzesStarted: {
+																											quizId
+																									}
+																							}
+																					})
+																					.exec()
+																					.then(async (result1) => {
+																							await Quiz.updateOne({
+																											_id: req.body.quizId
+																									}, {
+																											$set: {
+																													quizStatus: 1
+																											}
+																									})
+																									.then(async (result1) => {
+																											var data = [];
+																											for (i = 0; i < result.length; i++) {
+																													object = {
+																															quizId: result[i].quizId,
+																															description: result[i].description,
+																															options: result[i].options,
+																															questionId: result[i]._id,
+																													};
+																													data.push(object);
+																											}
+																											await res.status(200).json({
+																													message: "Quiz started for " + req.user.name,
+																													data,
+																													duration: result0.quizDuration,
+																													scheduledFor: result0.scheduledFor,
+																													quizRestart: result0.quizRestart,
+																													quizStatus: result0.quizStatus,
+																											});
+																									})
+																									.catch(async (err) => {
+																											await res.status(400).json({
+																													err: err.toString(),
+																											});
+																									});
+																					})
+																					.catch(async (err) => {
+																							await res.status(400).json({
+																									message: "some error occurred",
+																							});
+																					});
+																	})
+																	.catch(async (err) => {
+																			await res.status(400).json({
+																					message: err.toString(),
+																			});
+																	});
+													}
 											}
-										}
-									})
-									.exec()
-									.then(async (result1) => {
-										var data = [];
-										for (i = 0; i < result.length; i++) {
-											object = {
-												quizId: result[i].quizId,
-												description: result[i].description,
-												options: result[i].options,
-												questionId: result[i]._id,
-											};
-											data.push(object);
-										}
-										await res.status(200).json({
-											message: "Quiz started for " + req.user.name,
-											data,
-											duration: result0.quizDuration,
-											scheduledFor: result0.scheduledFor,
-											quizRestart: result0.quizRestart,
-											quizStatus: result0.quizStatus,
-										});
-									})
-									.catch(async (err) => {
-										await res.status(400).json({
-											message: "some error occurred",
-											error: err.toString(),
-										});
-									});
+											return res.status(401).json({
+													message: "Quiz hasn't started yet",
+											});
+									} else if (result0.quizStatus == 1) {
+											await User.findById(req.user.userId)
+													.then(async (result2) => {
+															for (let i = result.length - 1; i > 0; i--) {
+																	const j = Math.floor(Math.random() * (i + 1));
+																	[result[i], result[j]] = [result[j], result[i]];
+															}
+															var flag = 0;
+															var numQuiz = result2.quizzesStarted.length;
+															var numEnrolled = result2.quizzesEnrolled.length;
+															for (i = 0; i < numEnrolled; i++) {
+																	if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
+																			flag = 1;
+																	}
+															}
+
+															for (i = 0; i < numQuiz; i++) {
+																	if (result2.quizzesStarted[i].quizId == req.body.quizId) {
+																			return res.status(405).json({
+																					message: "Quiz already started",
+																			});
+																	}
+															}
+															if (flag === 0) {
+																	return res.status(409).json({
+																			message: "You are not enrolled in this quiz",
+																	});
+															}
+															// var clientId = questions+req.user.userId
+															client.setex(req.user.userId, 3600, JSON.stringify(result));
+															var quizId = req.body.quizId;
+															await User.updateOne({
+																			_id: req.user.userId
+																	}, {
+																			$push: {
+																					quizzesStarted: {
+																							quizId
+																					}
+																			}
+																	})
+																	.exec()
+																	.then(async (result1) => {
+																			var data = [];
+																			for (i = 0; i < result.length; i++) {
+																					object = {
+																							quizId: result[i].quizId,
+																							description: result[i].description,
+																							options: result[i].options,
+																							questionId: result[i]._id,
+																					};
+																					data.push(object);
+																			}
+																			await res.status(200).json({
+																					message: "Quiz started for " + req.user.name,
+																					data,
+																					duration: result0.quizDuration,
+																					scheduledFor: result0.scheduledFor,
+																					quizRestart: result0.quizRestart,
+																					quizStatus: result0.quizStatus,
+																			});
+																	})
+																	.catch(async (err) => {
+																			await res.status(400).json({
+																					message: "some error occurred",
+																					error: err.toString(),
+																			});
+																	});
+													})
+													.catch(async (err) => {
+															await res.status(400).json({
+																	message: "Some error Occurred",
+															});
+													});
+									} else {
+											res.status(402).json({
+													message: "Quiz time elapsed",
+											});
+									}
 							})
 							.catch(async (err) => {
-								await res.status(400).json({
-									message: "Some error Occurred",
-								});
-							});
-					} else if (result0.quizStatus == 0) {
-						var numericsChanged = Number(result0.quizDuration*60*100)
-						var stringtobeGenerated = '1-' + numericsChanged.toString() + ' * * * *';
-						// Explaination 
-						// The Strings Generated makes it possible for scheduling a task to recheck if the process 
-						// is still holding true for the route. If the negation of Boolean Operator helps us to generate the First True 
-						// as well as the Second and More False Cases, Which allows not to change the same status again and again 
-						// The Code is generative to 3 Test Cases and can fail if some edge cases are generated. 
-						if (
-							// Date.now() >= Number(result0.scheduledFor) + Number(result0.quizDuration * 60 * 1000)
-							cron.schedule(stringtobeGenerated, async () => {
-								console.log(`Running For Quiz Time : ${stringtobeGenerated}` )
-							})
-						) {
-							await Quiz.updateOne({
-									_id: req.body.quizId
-								}, {
-									$set: {
-										quizStatus: 2
-									}
-								})
-								.then((result) => {
-									res.status(402).json({
-										message: "Quiz time elapsed",
-									});
-								})
-								.catch((err) => {
-									res.status(400).json({
-										message: err.toString(),
-									});
-								});
-						} else{ 
-							var Numerics = Number(result0.scheduledFor*60*1000) 
-							var stringtobeGenerated = '1-'+Numerics.toString() + ' * * * *'
-							
-							if (!cron.schedule(stringtobeGenerated, () => console (!true)) != Null) {
-							await User.findById(req.user.userId)
-								.then(async (result2) => {
-									for (let i = result.length - 1; i > 0; i--) {
-										const j = Math.floor(Math.random() * (i + 1));
-										[result[i], result[j]] = [result[j], result[i]];
-									}
-									var flag = 0;
-									var numQuiz = result2.quizzesStarted.length;
-									var numEnrolled = result2.quizzesEnrolled.length;
-									for (i = 0; i < numEnrolled; i++) {
-										if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-											flag = 1;
-										}
-									}
-
-									for (i = 0; i < numQuiz; i++) {
-										if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-											return res.status(405).json({
-												message: "Quiz already started",
-											});
-										}
-									}
-									if (flag === 0) {
-										return res.status(409).json({
-											message: "You are not enrolled in this quiz",
-										});
-									}
-									// var clientId = questions+req.user.userId
-									client.setex(req.user.userId, 3600, JSON.stringify(result));
-									var quizId = req.body.quizId;
-									await User.updateOne({
-											_id: req.user.userId
-										}, {
-											$push: {
-												quizzesStarted: {
-													quizId
-												}
-											}
-										})
-										.exec()
-										.then(async (result1) => {
-											await Quiz.updateOne({
-													_id: req.body.quizId
-												}, {
-													$set: {
-														quizStatus: 1
-													}
-												})
-												.then(async (result1) => {
-													var data = [];
-													for (i = 0; i < result.length; i++) {
-														object = {
-															quizId: result[i].quizId,
-															description: result[i].description,
-															options: result[i].options,
-															questionId: result[i]._id,
-														};
-														data.push(object);
-													}
-													await res.status(200).json({
-														message: "Quiz started for " + req.user.name,
-														data,
-														duration: result0.quizDuration,
-														scheduledFor: result0.scheduledFor,
-														quizRestart: result0.quizRestart,
-														quizStatus: result0.quizStatus,
-													});
-												})
-												.catch(async (err) => {
-													await res.status(400).json({
-														err: err.toString(),
-													});
-												});
-										})
-										.catch(async (err) => {
-											await res.status(400).json({
-												message: "some error occurred",
-											});
-										});
-								})
-								.catch(async (err) => {
 									await res.status(400).json({
-										message: err.toString(),
+											message: err.toString(),
 									});
-								});
-						}
-					}
-						return res.status(401).json({
-							message: "Quiz hasn't started yet",
-						});
-					} else if (result0.quizStatus == 1) {
-						await User.findById(req.user.userId)
-							.then(async (result2) => {
-								for (let i = result.length - 1; i > 0; i--) {
-									const j = Math.floor(Math.random() * (i + 1));
-									[result[i], result[j]] = [result[j], result[i]];
-								}
-								var flag = 0;
-								var numQuiz = result2.quizzesStarted.length;
-								var numEnrolled = result2.quizzesEnrolled.length;
-								for (i = 0; i < numEnrolled; i++) {
-									if (result2.quizzesEnrolled[i].quizId == req.body.quizId) {
-										flag = 1;
-									}
-								}
-
-								for (i = 0; i < numQuiz; i++) {
-									if (result2.quizzesStarted[i].quizId == req.body.quizId) {
-										return res.status(405).json({
-											message: "Quiz already started",
-										});
-									}
-								}
-								if (flag === 0) {
-									return res.status(409).json({
-										message: "You are not enrolled in this quiz",
-									});
-								}
-								// var clientId = questions+req.user.userId
-								client.setex(req.user.userId, 3600, JSON.stringify(result));
-								var quizId = req.body.quizId;
-								await User.updateOne({
-										_id: req.user.userId
-									}, {
-										$push: {
-											quizzesStarted: {
-												quizId
-											}
-										}
-									})
-									.exec()
-									.then(async (result1) => {
-										var data = [];
-										for (i = 0; i < result.length; i++) {
-											object = {
-												quizId: result[i].quizId,
-												description: result[i].description,
-												options: result[i].options,
-												questionId: result[i]._id,
-											};
-											data.push(object);
-										}
-										await res.status(200).json({
-											message: "Quiz started for " + req.user.name,
-											data,
-											duration: result0.quizDuration,
-											scheduledFor: result0.scheduledFor,
-											quizRestart: result0.quizRestart,
-											quizStatus: result0.quizStatus,
-										});
-									})
-									.catch(async (err) => {
-										await res.status(400).json({
-											message: "some error occurred",
-											error: err.toString(),
-										});
-									});
-							})
-							.catch(async (err) => {
-								await res.status(400).json({
-									message: "Some error Occurred",
-								});
 							});
-					} else {
-						res.status(402).json({
-							message: "Quiz time elapsed",
-						});
-					}
-				})
-				.catch(async (err) => {
+			})
+			.catch(async (err) => {
 					await res.status(400).json({
-						message: err.toString(),
+							message: err.toString(),
 					});
-				});
-		})
-		.catch(async (err) => {
-			await res.status(400).json({
-				message: err.toString(),
 			});
-		});
 })
 
 router.patch("/start", checkAuth, checkAuthUser, verifyURL, async (req, res, next) => {
