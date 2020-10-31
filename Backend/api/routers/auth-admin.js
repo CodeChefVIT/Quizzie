@@ -40,7 +40,7 @@ router.get(
 		var name = encodeURIComponent(req.user.name);
 		res.redirect(
 			303,
-			"https://quizzie.codechefvit.com/?name=" + name + "&token=" + token
+			"https://quizzie.vinayakg.me/?name=" + name + "&token=" + token
 		);
 	}
 );

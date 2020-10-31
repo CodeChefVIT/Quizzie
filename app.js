@@ -86,6 +86,10 @@ app.use("/general", generalRoutes);
 app.use("/owner", ownerRoutes);
 app.use("/auth/admin", authAdminRoutes);
 
+app.get('/', async (req, res) => {
+  res.send('hi')
+})
+
 //route not found
 app.use((req, res, next) => {
 	const error = new Error("Route not found");
