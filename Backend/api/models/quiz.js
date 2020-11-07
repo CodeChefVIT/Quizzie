@@ -35,6 +35,10 @@ const QuizSchema = new mongoose.Schema({
   quizRestart:{
     type: Number,
     default:0
+  },
+  reminderSent: {
+    type: Boolean,
+    default: false,
   }
 });
 
