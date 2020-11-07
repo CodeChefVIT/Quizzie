@@ -9,6 +9,11 @@ const cors = require("cors");
 const cookieSession = require("cookie-session");
 const ipfilter = require('express-ipfilter').IpFilter
 const rateLimit = require("express-rate-limit");
+const schedule = require('node-schedule');
+const sgMail = require("@sendgrid/mail");
+const emailTemplates = require("./Backend/emails/email");
+
+sgMail.setApiKey(process.env.SendgridAPIKey);
 
 ////routers
 
@@ -22,6 +27,14 @@ const authRoutes = require("./Backend/api/routers/auth");
 const authAdminRoutes = require("./Backend/api/routers/auth-admin");
 const generalRoutes = require("./Backend/api/routers/general");
 const ownerRoutes = require("./Backend/api/routers/owner");
+
+
+//IMPORT QUIZ AND USERS
+
+const Quiz = require('./Backend/api/models/quiz');
+const User = require('./Backend/api/models/user');
+const Admin = require('./Backend/api/models/admin');
+
 
 const dbURI = process.env.dbURI;
 
@@ -86,6 +99,10 @@ app.use("/general", generalRoutes);
 app.use("/owner", ownerRoutes);
 app.use("/auth/admin", authAdminRoutes);
 
+app.get('/', async (req, res) => {
+  res.send('hi')
+})
+
 //route not found
 app.use((req, res, next) => {
 	const error = new Error("Route not found");
@@ -100,6 +117,47 @@ app.use((error, req, res, next) => {
 			message: error.message,
 		},
 	});
+});
+
+////SEND REMINDER EMAIL 
+var rule = new schedule.RecurrenceRule();
+
+rule.minute = new schedule.Range(0, 59, 5);
+
+schedule.scheduleJob(rule, async function(){
+  let currentTime = Date.now();
+  const quizzes = await Quiz.find({
+    reminderSent: {$ne: true},
+    scheduledFor: {
+      $lte: currentTime + 30*60*1000,
+    }
+  })
+  console.log(`${quizzes.length} number of quizzes need to be reminded`);
+
+  for(let i = 0; i < quizzes.length; i++){
+    console.log(quizzes[i])
+    for(j = 0; j < quizzes[i].usersEnrolled.length; j++){
+      console.log(quizzes[i].usersEnrolled[j])
+      const user = await User.findById(quizzes[i].usersEnrolled[j].userId)
+      const msg = {
+        to: user.email,
+        from: process.env.sendgridEmail,
+        subject: "Quzzie: Quiz Reminder",
+        text: `This is an automatically genrated email sent from Quizzie. This is to remind you that your quiz ${quizzes[i].quizName} is scheduled at ${new Date(Number(quizzes[i].scheduledFor))}, Please login on time to not miss out on your quiz.`,
+      };
+    
+      sgMail
+        .send(msg)
+        .then((result) => {
+          console.log(`Reminder email for ${quizzes[i].quizName} to ${msg.to}`)
+        })
+        .catch((err) => {
+          console.log('Some Error Occured', err.toString())
+        });
+    }  
+    await Quiz.updateOne({ _id: quizzes[i]._id }, { reminderSent: true })
+  }
+  // console.log(quizzes)
 });
 
 const PORT = process.env.PORT || 3000;
