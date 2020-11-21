@@ -30,4 +30,4 @@ jobs:
 
     - name: Build
       working-directory: ./Frontend
-      run: npm run build
+      run: CI=false npm run build
