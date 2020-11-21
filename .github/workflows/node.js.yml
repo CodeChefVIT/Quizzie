@@ -28,10 +28,6 @@ jobs:
       working-directory: ./Frontend
       run: npm install
 
-    - name: Run the tes and generate coverage report
-      working-directory: ./Frontend
-      run: npm test 
-
     - name: Build
       working-directory: ./Frontend
       run: npm run build
