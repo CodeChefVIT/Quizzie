@@ -28,13 +28,16 @@
     "react-router-dom": "^5.2.0",
     "react-router-sitemap": "^1.2.0",
     "react-scripts": "4.0.0",
-    "react-search-filter": "0.0.5"
+    "react-search-filter": "0.0.5",
+    "snyk": "^1.437.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -50,5 +53,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "snyk": true
 }
