@@ -29,7 +29,7 @@
     "react-router-sitemap": "^1.2.0",
     "react-scripts": "4.0.0",
     "react-search-filter": "0.0.5",
-    "snyk": "^1.465.0"
+    "snyk": "^1.518.0"
   },
   "scripts": {
     "start": "react-scripts start",
